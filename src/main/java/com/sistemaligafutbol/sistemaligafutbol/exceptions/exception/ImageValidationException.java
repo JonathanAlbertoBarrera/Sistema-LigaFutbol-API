@@ -1,4 +1,4 @@
-package com.sistemaligafutbol.sistemaligafutbol.modules.imagen;
+package com.sistemaligafutbol.sistemaligafutbol.exceptions.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
