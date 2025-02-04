@@ -105,6 +105,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
 
+    //Excepciones en general que no sean las anteriores
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorMessage> handleGenerarlException(Exception ex){
+        ErrorMessage message=new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, "Ocurrió un error inesperado: "+ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+    }
+
+
 
 
 
