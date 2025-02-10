@@ -2,12 +2,12 @@ package com.sistemaligafutbol.sistemaligafutbol.security.auth;
 
 public class AuthResponse {
     private String token;
-    private String username;
+    private String correo;
     private String roles;
 
-    public AuthResponse(String token, String username, String roles) {
+    public AuthResponse(String token, String correo, String roles) {
         this.token = token;
-        this.username = username;
+        this.correo = correo;
         this.roles = roles;
     }
 
@@ -15,8 +15,8 @@ public class AuthResponse {
         return token;
     }
 
-    public String getUsername() {
-        return username;
+    public String getCorreo() {
+        return correo;
     }
 
     public String getRoles() {

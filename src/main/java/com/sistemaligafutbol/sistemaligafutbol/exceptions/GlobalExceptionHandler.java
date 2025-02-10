@@ -8,6 +8,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -64,22 +67,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 
     //401 Unauthorized → Falta autenticación
-//    @ExceptionHandler(AuthenticationException.class)
-//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-//    public ResponseEntity<ErrorMessage> handleAuthenticationException(AuthenticationException ex) {
-//        ErrorMessage message = new ErrorMessage(HttpStatus.UNAUTHORIZED, "No estás autenticado. Por favor, inicia sesión.");
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
-//    }
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<ErrorMessage> handleAuthenticationException(AuthenticationException ex) {
+        ErrorMessage message = new ErrorMessage(HttpStatus.UNAUTHORIZED, "No estás autenticado. Por favor, inicia sesión.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
+    }
 
     //403 403 Forbidden → Autenticado, pero sin permisos
-//    @ExceptionHandler(AccessDeniedException.class)
-//    @ResponseStatus(HttpStatus.FORBIDDEN)
-//    public ResponseEntity<ErrorMessage> handleAccessDeniedException(AccessDeniedException ex) {
-//        ErrorMessage message = new ErrorMessage(HttpStatus.FORBIDDEN, "No tienes permiso para acceder a este recurso.");
-//        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
-//    }
-
-
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<ErrorMessage> handleAccessDeniedException(AccessDeniedException ex) {
+        ErrorMessage message = new ErrorMessage(HttpStatus.FORBIDDEN, "No tienes permiso para acceder a este recurso.");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
+    }
 
     //500 INTERNAL SERVER ERROR
     @ExceptionHandler(Exception.class)
@@ -104,5 +105,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST, ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
+
+    //PARA CREDENCIALES INCORRECTAS DEL LOGIN DE CONTRA Y CORREO
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<ErrorMessage> handleBadCredentials(BadCredentialsException ex) {
+        ErrorMessage message = new ErrorMessage(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
+    }
+
 
 }
