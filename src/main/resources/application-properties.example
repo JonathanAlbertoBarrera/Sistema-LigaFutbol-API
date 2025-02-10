@@ -1,5 +1,6 @@
-# Ejemplo de configuración - Copiar a application-dev.properties
-# Este archivo es un ejemplo, no lo llenes
+# Ejemplo de configuración
+#CREAR Y- Copiar a application-dev.properties
+# Este archivo es un ejemplo, no lo llenes Y MUCHO MENOS LO SUBAS A GITHUB LLENADO
 
 # Configuración de la base de datos
 spring.jpa.hibernate.ddl-auto=update
@@ -16,4 +17,13 @@ spring.servlet.multipart.max-request-size=10MB
 # Credenciales de Imgur
 imgur.client.id=
 imgur.client.secret=
+
+# JWT
+jwt.secret=
+jwt.issuer=
+jwt.expiration=
+
+# Credenciales del admin
+admin.email=
+admin.password=
 
