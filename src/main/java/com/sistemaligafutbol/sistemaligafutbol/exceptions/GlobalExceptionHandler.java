@@ -57,14 +57,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorMessage> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         String errorMessage = "Error de integridad en la base de datos.";
 
-        if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
-            errorMessage = "Violación de restricción en la base de datos: " + ex.getCause().getMessage();
+        if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException constraintEx) {
+            String message = constraintEx.getMessage(); // Obtener el mensaje real de la DB
+
+            if (message.contains("usuario.email") || message.toLowerCase().contains("duplicate entry")) {
+                errorMessage = "El correo electrónico ya está registrado. Intente con otro.";
+            }
         }
 
-        ErrorMessage message = new ErrorMessage(HttpStatus.CONFLICT, errorMessage);
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
+        ErrorMessage messageResponse = new ErrorMessage(HttpStatus.CONFLICT, errorMessage);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(messageResponse);
     }
-
 
     //401 Unauthorized → Falta autenticación
     @ExceptionHandler(AuthenticationException.class)
