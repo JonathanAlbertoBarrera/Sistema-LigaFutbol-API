@@ -1,5 +1,6 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.equipo;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.Jugador;
 import jakarta.persistence.*;
 
@@ -18,6 +19,7 @@ public class Equipo {
 
     // Relación con Jugador (Un equipo tiene muchos jugadores)
     @OneToMany(mappedBy = "equipo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Jugador> jugadores = new ArrayList<>();
 
     public Long getId() {

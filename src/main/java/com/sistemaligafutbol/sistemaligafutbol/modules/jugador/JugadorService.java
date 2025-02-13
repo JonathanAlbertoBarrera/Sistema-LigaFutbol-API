@@ -2,6 +2,8 @@ package com.sistemaligafutbol.sistemaligafutbol.modules.jugador;
 
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ImageValidationException;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundException;
+import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
+import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.EquipoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.ImgurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,16 +20,28 @@ public class JugadorService {
     private JugadorRepository jugadorRepository;
 
     @Autowired
+    private EquipoRepository equipoRepository;
+
+    @Autowired
     private ImgurService imgurService;
 
     @Transactional
     public Jugador crearJugador(JugadorDTO jugadorDTO, MultipartFile imagen) {
         try {
-            String imagenUrl = imgurService.uploadImage(imagen);
+            String imagenUrl = (imagen != null && !imagen.isEmpty()) ? imgurService.uploadImage(imagen) : null;
+
+            Equipo equipo = equipoRepository.findById(jugadorDTO.getIdEquipo())
+                    .orElseThrow(() -> new NotFoundException("Equipo no encontrado con ID: " + jugadorDTO.getIdEquipo()));
+
             Jugador jugador = new Jugador();
             jugador.setNombre(jugadorDTO.getNombre());
             jugador.setApellido(jugadorDTO.getApellido());
+            jugador.setFechaNacimiento(jugadorDTO.getFechaNacimiento());
             jugador.setImagenUrl(imagenUrl);
+            jugador.setHabilitado(true);
+            jugador.setPartidosJugados(0);
+            jugador.setEquipo(equipo);
+
             return jugadorRepository.save(jugador);
         } catch (IOException e) {
             throw new ImageValidationException("No se pudo procesar la imagen del jugador");
@@ -35,7 +49,7 @@ public class JugadorService {
     }
 
     @Transactional
-    public Jugador actualizarJugador(Long id, JugadorDTO jugadorDTO, MultipartFile imagen) {
+    public Jugador actualizarJugador(Long id, JugadorActualizarDTO jugadorDTO, MultipartFile imagen) {
         Jugador jugador = jugadorRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Jugador no encontrado con ID: " + id));
 
@@ -46,12 +60,14 @@ public class JugadorService {
             }
             jugador.setNombre(jugadorDTO.getNombre());
             jugador.setApellido(jugadorDTO.getApellido());
+            jugador.setFechaNacimiento(jugadorDTO.getFechaNacimiento());
 
             return jugadorRepository.save(jugador);
         } catch (IOException e) {
             throw new ImageValidationException("No se pudo actualizar la imagen del jugador");
         }
     }
+
 
     @Transactional(readOnly = true)
     public List<Jugador> obtenerTodosLosJugadores() {

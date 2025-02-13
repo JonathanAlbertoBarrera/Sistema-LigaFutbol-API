@@ -1,13 +1,20 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.jugador;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
+
+import java.time.LocalDate;
 
 public class JugadorDTO {
-    @NotBlank
+    @NotBlank(message = "Debes de ingresar el nombre")
     private String nombre;
+    @NotBlank(message = "Debes de ingresar un apellido")
     private String apellido;
+    @Past(message = "La fecha de nacimiento debe ser anterior a la actual")
+    private LocalDate fechaNacimiento;
     private String imagenUrl;
 
+    @NotNull(message = "Debes asignar un equipo")
+    private Long idEquipo;
 
     //--GETTERS Y SETTERS
     public String getNombre() {
@@ -32,5 +39,21 @@ public class JugadorDTO {
 
     public void setImagenUrl(String imagenUrl) {
         this.imagenUrl = imagenUrl;
+    }
+
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
+    }
+
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public Long getIdEquipo() {
+        return idEquipo;
+    }
+
+    public void setIdEquipo(Long idEquipo) {
+        this.idEquipo = idEquipo;
     }
 }

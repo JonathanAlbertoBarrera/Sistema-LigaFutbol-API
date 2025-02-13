@@ -39,8 +39,8 @@ public class JugadorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Jugador> actualizarJugador(@PathVariable Long id, @RequestPart("jugador") @Valid JugadorDTO jugadorDTO, @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
-        return ResponseEntity.ok(jugadorService.actualizarJugador(id, jugadorDTO, imagen));
+    public ResponseEntity<Jugador> actualizarJugador(@PathVariable Long id, @RequestPart("jugador") @Valid JugadorActualizarDTO jugadorActualizarDTO, @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+        return ResponseEntity.ok(jugadorService.actualizarJugador(id, jugadorActualizarDTO, imagen));
     }
 }
 
