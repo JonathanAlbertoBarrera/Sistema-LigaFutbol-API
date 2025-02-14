@@ -1,7 +1,10 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("api/arbitros")
@@ -11,7 +14,7 @@ public class ArbitroController {
     private ArbitroService arbitroService;
 
     @PostMapping
-    public Arbitro registrarArbitro(@RequestBody ArbitroRegistroDTO arbitroRegistroDTO) {
-        return arbitroService.registrarArbitro(arbitroRegistroDTO);
+    public ResponseEntity<Arbitro> registrarArbitro(@RequestPart("arbitro") @Valid ArbitroDTO arbitroDTO, @RequestPart("imagen") MultipartFile imagen) {
+         return ResponseEntity.ok(arbitroService.registrarArbitro(arbitroDTO,imagen));
     }
 }

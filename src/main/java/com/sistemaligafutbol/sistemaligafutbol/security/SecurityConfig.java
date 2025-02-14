@@ -36,14 +36,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login").permitAll()
                         //CREACION DE USUARIOS
-                        .requestMatchers(HttpMethod.POST,"/api/duenos/**").permitAll() // TODOS PUEDEN REGISTRARSE COMO ADMIN
+                        .requestMatchers(HttpMethod.POST,"/api/duenos/**").permitAll() // TODOS PUEDEN REGISTRARSE COMO DUENO
                         .requestMatchers(HttpMethod.POST,"/api/arbitros").hasRole("ADMIN") // Solo ADMIN puede REGISTRAR a árbitros
 
                         //CRUD DE JUGADORES
                         .requestMatchers(HttpMethod.POST, "/api/jugadores").hasRole("DUENO") //SOLO DUENOS PUEDEN REGISTRAR JUGADORES
                         .requestMatchers(HttpMethod.PUT,"/api/jugadores/").hasRole("DUENO") //SOLO DUENOS PUEDEN MODIFICAR A SUS JUGADORES
                         .requestMatchers(HttpMethod.GET,"/api/jugadores/**").permitAll() // todos necesitarian ver el listado de jugadores
-                        .requestMatchers(HttpMethod.DELETE,"/api/jugadores").hasAnyRole("ADMIN","DUENO")
+                        .requestMatchers(HttpMethod.DELETE,"/api/jugadores").hasAnyRole("DUENO") //SOLO LOS DUENOS PODRAN ELIMINAR A SUS JUGADORES
 
 
                         .anyRequest().authenticated() // Cualquier otra ruta requiere autenticación

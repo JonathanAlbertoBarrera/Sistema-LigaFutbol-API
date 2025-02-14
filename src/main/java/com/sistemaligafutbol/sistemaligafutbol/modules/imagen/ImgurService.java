@@ -52,7 +52,7 @@ public class ImgurService {
 
     private void validateImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new ImageValidationException("El archivo está vacío");
+            throw new ImageValidationException("El archivo está vacío. Sube una imagen");
         }
 
         if (file.getSize() > MAX_FILE_SIZE) {

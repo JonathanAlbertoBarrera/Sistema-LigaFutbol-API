@@ -3,22 +3,19 @@ package com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public class ArbitroRegistroDTO {
+public class ArbitroDTO {
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "El email no puede estar vacío")
+    @Email(message = "El email no es válido")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Debes ingresar una contraseña")
     private String password;
 
-    @NotBlank
+    @NotBlank(message = "El nombre no puede estar vacío")
     private String nombreCompleto;
 
-    private String imagenUrl;
-
     // Getters y Setters
-
 
     public @NotBlank @Email String getEmail() {
         return email;
@@ -44,11 +41,4 @@ public class ArbitroRegistroDTO {
         this.nombreCompleto = nombreCompleto;
     }
 
-    public String getImagenUrl() {
-        return imagenUrl;
-    }
-
-    public void setImagenUrl(String imagenUrl) {
-        this.imagenUrl = imagenUrl;
-    }
 }
