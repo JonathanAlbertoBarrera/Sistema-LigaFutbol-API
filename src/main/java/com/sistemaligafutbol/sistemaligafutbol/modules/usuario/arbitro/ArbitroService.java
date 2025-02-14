@@ -1,6 +1,7 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro;
 
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ImageValidationException;
+import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundException;
 import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.ImgurService;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Usuario;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.UsuarioRepository;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -51,5 +53,16 @@ public class ArbitroService {
         }catch (IOException e){
             throw new ImageValidationException("No se pudo procesar la imagen del jugador");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Arbitro> obtenerTodosLosArbitros(){
+        return arbitroRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Arbitro obtenerJugadorPorId(Long id){
+        return arbitroRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Árbitro no encontrado"));
     }
 }

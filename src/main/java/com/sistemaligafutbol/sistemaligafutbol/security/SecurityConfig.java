@@ -34,9 +34,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF
                 .authorizeHttpRequests(auth -> auth
+                        //GESTION DE USUARIOS
                         .requestMatchers("/auth/login").permitAll()
-                        //CREACION DE USUARIOS
+
+                        //GESTION DE DUENOS
                         .requestMatchers(HttpMethod.POST,"/api/duenos/**").permitAll() // TODOS PUEDEN REGISTRARSE COMO DUENO
+
+                        //GESTION DE ARBITROS
+                        .requestMatchers(HttpMethod.GET,"/api/arbitros/**").permitAll() //Todos pueden ver los arbitros
                         .requestMatchers(HttpMethod.POST,"/api/arbitros").hasRole("ADMIN") // Solo ADMIN puede REGISTRAR a árbitros
 
                         //CRUD DE JUGADORES

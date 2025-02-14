@@ -1,5 +1,6 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.usuario;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -20,6 +21,7 @@ public class Usuario {
     private String email;
 
     @NotBlank
+    @JsonIgnore
     private String password;
 
     private boolean estatus;

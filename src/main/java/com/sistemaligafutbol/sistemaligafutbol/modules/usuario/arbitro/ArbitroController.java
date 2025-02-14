@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/arbitros")
 public class ArbitroController {
@@ -13,8 +15,19 @@ public class ArbitroController {
     @Autowired
     private ArbitroService arbitroService;
 
+    @GetMapping
+    public ResponseEntity<List<Arbitro>> obtenerTodosLosJugadores(){
+        return ResponseEntity.ok(arbitroService.obtenerTodosLosArbitros());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Arbitro> obtenerArbitroPorId(@PathVariable Long id){
+        return ResponseEntity.ok(arbitroService.obtenerJugadorPorId(id));
+    }
+
     @PostMapping
     public ResponseEntity<Arbitro> registrarArbitro(@RequestPart("arbitro") @Valid ArbitroDTO arbitroDTO, @RequestPart("imagen") MultipartFile imagen) {
          return ResponseEntity.ok(arbitroService.registrarArbitro(arbitroDTO,imagen));
     }
+
 }
