@@ -27,6 +27,7 @@ public class ArbitroService {
         Usuario usuario = new Usuario();
         usuario.setEmail(arbitroRegistroDTO.getEmail());
         usuario.setPassword(passwordEncoder.encode(arbitroRegistroDTO.getPassword()));
+        usuario.setEstatus(true);
         usuario.setRoles(Set.of("ROLE_ARBITRO")); // Asignar el rol de árbitro
         usuarioRepository.save(usuario);
 

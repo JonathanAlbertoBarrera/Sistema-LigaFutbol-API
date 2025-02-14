@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 
 @Component
-public class AdminInitializer {
+public class DataInitializer {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -33,6 +33,7 @@ public class AdminInitializer {
             admin.setEmail(adminEmail);
             admin.setPassword(passwordEncoder.encode(adminPassword));
             admin.setRoles(Set.of("ROLE_ADMIN")); //  ES ADMIN
+            admin.setEstatus(true);
             usuarioRepository.save(admin);
         }
     }

@@ -1,5 +1,6 @@
 package com.sistemaligafutbol.sistemaligafutbol.security.auth;
 
+import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.UsuarioInactivoException;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Usuario;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.UsuarioRepository;
 import com.sistemaligafutbol.sistemaligafutbol.security.jwt.JwtUtils;
@@ -31,8 +32,12 @@ public class AuthController {
         // Verificar si el correo existe en la base de datos
         Usuario usuario = usuarioRepository.findByEmail(authRequest.getEmail());
 
-        if (usuario == null) { // Evita el NullPointerException
+        if (usuario == null) {
             throw new BadCredentialsException("El correo no está registrado");
+        }
+
+        if(!usuario.isEstatus()){
+            throw new UsuarioInactivoException("El usuario esta inactivo, puedes contactar al administrador para alguna aclaración");
         }
 
         try {

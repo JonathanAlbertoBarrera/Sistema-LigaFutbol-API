@@ -27,6 +27,7 @@ public class DuenoService {
         Usuario usuario = new Usuario();
         usuario.setEmail(duenoRegistroDTO.getEmail());
         usuario.setPassword(passwordEncoder.encode(duenoRegistroDTO.getPassword()));
+        usuario.setEstatus(true);
         usuario.setRoles(Set.of("ROLE_DUENO")); // Asignar el rol de dueño
         usuarioRepository.save(usuario);
 

@@ -22,6 +22,8 @@ public class Usuario {
     @NotBlank
     private String password;
 
+    private boolean estatus;
+
     @ElementCollection(fetch = FetchType.EAGER)
     private Collection<String> roles;
 
@@ -30,10 +32,11 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(Long id, String email, String password, Collection<String> roles) {
+    public Usuario(Long id, String email, String password, boolean estatus, Collection<String> roles) {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.estatus = estatus;
         this.roles = roles;
     }
 
@@ -61,6 +64,14 @@ public class Usuario {
 
     public void setPassword(@NotBlank String password) {
         this.password = password;
+    }
+
+    public boolean isEstatus() {
+        return estatus;
+    }
+
+    public void setEstatus(boolean estatus) {
+        this.estatus = estatus;
     }
 
     public Collection<String> getRoles() {
