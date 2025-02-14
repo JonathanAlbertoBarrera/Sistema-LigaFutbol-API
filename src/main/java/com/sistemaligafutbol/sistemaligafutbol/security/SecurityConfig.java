@@ -43,6 +43,7 @@ public class SecurityConfig {
                         //GESTION DE ARBITROS
                         .requestMatchers(HttpMethod.GET,"/api/arbitros/**").permitAll() //Todos pueden ver los arbitros
                         .requestMatchers(HttpMethod.POST,"/api/arbitros").hasRole("ADMIN") // Solo ADMIN puede REGISTRAR a árbitros
+                        .requestMatchers(HttpMethod.PUT,"/api/arbitros").hasRole("ADMIN") // Solo ADMIN puede MODIFICAR a árbitros
 
                         //CRUD DE JUGADORES
                         .requestMatchers(HttpMethod.POST, "/api/jugadores").hasRole("DUENO") //SOLO DUENOS PUEDEN REGISTRAR JUGADORES

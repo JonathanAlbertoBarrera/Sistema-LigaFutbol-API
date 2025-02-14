@@ -55,6 +55,34 @@ public class ArbitroService {
         }
     }
 
+    @Transactional
+    public Arbitro actualizarArbitro(Long id, ArbitroDTO arbitroDTO, MultipartFile imagen) {
+        Arbitro arbitro = arbitroRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Árbitro no encontrado con ID: " + id));
+
+        try {
+            // Si se proporciona una nueva imagen, actualizar la URL
+            if (imagen != null && !imagen.isEmpty()) {
+                String nuevaImagenUrl = imgurService.uploadImage(imagen);
+                arbitro.setImagenUrl(nuevaImagenUrl);
+            }
+
+            // Actualizar datos del árbitro
+            arbitro.setNombreCompleto(arbitroDTO.getNombreCompleto());
+
+            // Actualizar datos del usuario asociado
+            Usuario usuario = arbitro.getUsuario();
+            usuario.setEmail(arbitroDTO.getEmail());
+            usuario.setPassword(passwordEncoder.encode(arbitroDTO.getPassword())); // Reencriptar contraseña
+
+            usuarioRepository.save(usuario);
+            return arbitroRepository.save(arbitro);
+        } catch (IOException e) {
+            throw new ImageValidationException("No se pudo actualizar la imagen del árbitro");
+        }
+    }
+
+
     @Transactional(readOnly = true)
     public List<Arbitro> obtenerTodosLosArbitros(){
         return arbitroRepository.findAll();
