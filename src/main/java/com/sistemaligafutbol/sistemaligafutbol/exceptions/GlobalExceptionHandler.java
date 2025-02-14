@@ -3,6 +3,7 @@ package com.sistemaligafutbol.sistemaligafutbol.exceptions;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.dto.ErrorMessage;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ImageValidationException;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundException;
+import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.UsuarioInactivoException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -115,6 +116,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorMessage> handleBadCredentials(BadCredentialsException ex) {
         ErrorMessage message = new ErrorMessage(HttpStatus.UNAUTHORIZED, ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
+    }
+
+    //PARA USUARIO INACTIVO
+    @ExceptionHandler(UsuarioInactivoException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<ErrorMessage> handleUsuarioInactivo(UsuarioInactivoException ex){
+        ErrorMessage message=new ErrorMessage(HttpStatus.FORBIDDEN, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
     }
 
 
