@@ -39,11 +39,15 @@ public class SecurityConfig {
 
                         //GESTION DE DUENOS
                         .requestMatchers(HttpMethod.POST,"/api/duenos/**").permitAll() // TODOS PUEDEN REGISTRARSE COMO DUENO
+                        .requestMatchers(HttpMethod.GET,"/api/duenos").hasRole("ADMIN") //Solo ADMIN puede ver el listado de duenos
+                        .requestMatchers(HttpMethod.GET,"/api/duenos/{id}").permitAll() //todos podrian ver a un dueno especifico, por ejemplo al ver un equipo
+                        .requestMatchers(HttpMethod.PUT, "/api/duenos").hasRole("DUENO") //solo DUENOS podrian modificar sus datos
 
                         //GESTION DE ARBITROS
-                        .requestMatchers(HttpMethod.GET,"/api/arbitros/**").permitAll() //Todos pueden ver los arbitros
                         .requestMatchers(HttpMethod.POST,"/api/arbitros").hasRole("ADMIN") // Solo ADMIN puede REGISTRAR a árbitros
-                        .requestMatchers(HttpMethod.PUT,"/api/arbitros").hasRole("ADMIN") // Solo ADMIN puede MODIFICAR a árbitros
+                        .requestMatchers(HttpMethod.GET,"/api/arbitros").hasRole("ADMIN") //solo ADMIN puede ver el listado de arbitros
+                        .requestMatchers(HttpMethod.GET,"/api/arbitros/{id}").permitAll()//todos podrian ver a un arbitro especifico, por ejemplo al ver un partido
+                        .requestMatchers(HttpMethod.PUT,"/api/arbitros").hasRole("ARBITRO") // Solo ARBITROS podrian modificar sus datos
 
                         //CRUD DE JUGADORES
                         .requestMatchers(HttpMethod.POST, "/api/jugadores").hasRole("DUENO") //SOLO DUENOS PUEDEN REGISTRAR JUGADORES
