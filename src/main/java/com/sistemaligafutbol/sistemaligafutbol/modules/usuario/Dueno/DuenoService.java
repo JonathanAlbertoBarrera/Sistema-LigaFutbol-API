@@ -72,6 +72,9 @@ public class DuenoService {
             //Actualizar datos del usuario aosciado
             Usuario usuario= dueno.getUsuario();
             usuario.setEmail(duenoactualizarDTO.getEmail());
+            if(duenoactualizarDTO.getPassword() != null && !duenoactualizarDTO.getPassword().isEmpty()){
+                usuario.setPassword(passwordEncoder.encode(duenoactualizarDTO.getPassword()));
+            }
 
             usuarioRepository.save(usuario);
             return duenoRepository.save(dueno);

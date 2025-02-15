@@ -11,6 +11,8 @@ public class DuenoActualizarDTO {
     @NotBlank(message = "El nombre no puede estar vacío")
     private String nombreCompleto;
 
+    private String password;
+
     // Getters y Setters
 
     public @NotBlank(message = "El email no puede estar vacío") @Email(message = "El email no es válido") String getEmail() {
@@ -27,5 +29,13 @@ public class DuenoActualizarDTO {
 
     public void setNombreCompleto(@NotBlank(message = "El nombre no puede estar vacío") String nombreCompleto) {
         this.nombreCompleto = nombreCompleto;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
