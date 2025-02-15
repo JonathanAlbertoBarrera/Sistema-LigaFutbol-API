@@ -15,8 +15,6 @@ public class DuenoRegistroDTO {
     @NotBlank
     private String nombreCompleto;
 
-    private String telefono;
-
     // Getters y Setters
 
     public @NotBlank @Email String getEmail() {
@@ -41,13 +39,5 @@ public class DuenoRegistroDTO {
 
     public void setNombreCompleto(@NotBlank String nombreCompleto) {
         this.nombreCompleto = nombreCompleto;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
     }
 }

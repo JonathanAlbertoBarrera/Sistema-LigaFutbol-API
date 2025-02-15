@@ -1,5 +1,6 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Dueno;
 
+import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Usuario;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +16,11 @@ public class Dueno {
     @NotBlank
     private String nombreCompleto;
 
-    private String telefono;
+    private String imagenUrl;
+
+    @OneToOne
+    @JoinColumn(name = "equipo_id", referencedColumnName = "id")
+    private Equipo equipo;
 
     @OneToOne
     @JoinColumn(name = "usuario_id", referencedColumnName = "id")
@@ -26,15 +31,15 @@ public class Dueno {
     public Dueno() {
     }
 
-    public Dueno(Long id, String nombreCompleto, String telefono, Usuario usuario) {
+    public Dueno(Long id, String nombreCompleto, String imagenUrl, Equipo equipo, Usuario usuario) {
         this.id = id;
         this.nombreCompleto = nombreCompleto;
-        this.telefono = telefono;
+        this.imagenUrl = imagenUrl;
+        this.equipo = equipo;
         this.usuario = usuario;
     }
+
     // Getters y Setters
-
-
     public Long getId() {
         return id;
     }
@@ -51,19 +56,27 @@ public class Dueno {
         this.nombreCompleto = nombreCompleto;
     }
 
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
     public Usuario getUsuario() {
         return usuario;
     }
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public String getImagenUrl() {
+        return imagenUrl;
+    }
+
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
+    }
+
+    public Equipo getEquipo() {
+        return equipo;
+    }
+
+    public void setEquipo(Equipo equipo) {
+        this.equipo = equipo;
     }
 }
