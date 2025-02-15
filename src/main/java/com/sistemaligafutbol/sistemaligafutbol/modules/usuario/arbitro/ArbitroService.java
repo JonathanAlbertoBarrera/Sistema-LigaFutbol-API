@@ -56,7 +56,7 @@ public class ArbitroService {
     }
 
     @Transactional
-    public Arbitro actualizarArbitro(Long id, ArbitroDTO arbitroDTO, MultipartFile imagen) {
+    public Arbitro actualizarArbitro(Long id, ArbitroActualizarDTO arbitroActualizarDTO, MultipartFile imagen) {
         Arbitro arbitro = arbitroRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Árbitro no encontrado con ID: " + id));
 
@@ -68,12 +68,11 @@ public class ArbitroService {
             }
 
             // Actualizar datos del árbitro
-            arbitro.setNombreCompleto(arbitroDTO.getNombreCompleto());
+            arbitro.setNombreCompleto(arbitroActualizarDTO.getNombreCompleto());
 
             // Actualizar datos del usuario asociado
             Usuario usuario = arbitro.getUsuario();
-            usuario.setEmail(arbitroDTO.getEmail());
-            usuario.setPassword(passwordEncoder.encode(arbitroDTO.getPassword())); // Reencriptar contraseña
+            usuario.setEmail(arbitroActualizarDTO.getEmail());
 
             usuarioRepository.save(usuario);
             return arbitroRepository.save(arbitro);

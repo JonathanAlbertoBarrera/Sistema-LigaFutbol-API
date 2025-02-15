@@ -31,8 +31,8 @@ public class ArbitroController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Arbitro> actualizarArbitro(@PathVariable Long id, @RequestPart("arbitro") @Valid ArbitroDTO arbitroDTO, @RequestPart(value = "imagen", required = false) MultipartFile imagen){
-        return ResponseEntity.ok(arbitroService.actualizarArbitro(id,arbitroDTO,imagen));
+    public ResponseEntity<Arbitro> actualizarArbitro(@PathVariable Long id, @RequestPart("arbitro") @Valid ArbitroActualizarDTO arbitroActualizarDTO, @RequestPart(value = "imagen", required = false) MultipartFile imagen){
+        return ResponseEntity.ok(arbitroService.actualizarArbitro(id,arbitroActualizarDTO,imagen));
     }
 
 }
