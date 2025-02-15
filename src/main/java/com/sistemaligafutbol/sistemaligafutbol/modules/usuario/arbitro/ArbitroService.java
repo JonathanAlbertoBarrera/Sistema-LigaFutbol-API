@@ -73,6 +73,9 @@ public class ArbitroService {
             // Actualizar datos del usuario asociado
             Usuario usuario = arbitro.getUsuario();
             usuario.setEmail(arbitroActualizarDTO.getEmail());
+            if (arbitroActualizarDTO.getPassword() != null && !arbitroActualizarDTO.getPassword().isEmpty()) {
+                usuario.setPassword(passwordEncoder.encode(arbitroActualizarDTO.getPassword()));
+            }
 
             usuarioRepository.save(usuario);
             return arbitroRepository.save(arbitro);
