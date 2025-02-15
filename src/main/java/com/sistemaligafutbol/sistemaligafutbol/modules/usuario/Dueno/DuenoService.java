@@ -31,7 +31,7 @@ public class DuenoService {
     @Transactional
     public Dueno registrarDueno(DuenoRegistroDTO duenoRegistroDTO, MultipartFile imagen) {
         try{
-            String imagenUrl = (imagen != null && !imagen.isEmpty()) ? imgurService.uploadImage(imagen) : null;
+            String imagenUrl = imgurService.uploadImage(imagen);
             // Crear el usuario
             Usuario usuario = new Usuario();
             usuario.setEmail(duenoRegistroDTO.getEmail());
