@@ -1,6 +1,8 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.jugador_estadistica;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.Jugador;
+import com.sistemaligafutbol.sistemaligafutbol.modules.partido.Partido;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,7 +15,13 @@ public class JugadorEstadistica {
     // Relación con Jugador (Muchos registros de estadísticas pertenecen a un jugador)
     @ManyToOne
     @JoinColumn(name = "id_jugador", nullable = false)
+    @JsonBackReference
     private Jugador jugador;
+
+    @ManyToOne
+    @JoinColumn(name = "id_partido", nullable = false)
+    @JsonBackReference
+    private Partido partido;
 
     private int goles;
     private int amarillas;
@@ -67,5 +75,13 @@ public class JugadorEstadistica {
 
     public void setComentarioExpulsion(String comentarioExpulsion) {
         this.comentarioExpulsion = comentarioExpulsion;
+    }
+
+    public Partido getPartido() {
+        return partido;
+    }
+
+    public void setPartido(Partido partido) {
+        this.partido = partido;
     }
 }
