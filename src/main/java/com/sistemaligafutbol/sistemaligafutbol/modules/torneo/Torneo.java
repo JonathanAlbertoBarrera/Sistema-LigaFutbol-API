@@ -20,18 +20,21 @@ public class Torneo {
 
     @Column(name = "fecha_inicio")
     private LocalDate fechaInicio;
-
     @Column(name = "fecha_fin")
     private LocalDate fechaFin;
-
+    @Column(name = "max_equipos")
     private int maxEquipos;
+    @Column(name = "min_equipos")
     private int minEquipos;
-
     @Column(name = "equipos_liguilla")
     private int equiposLiguilla;
-
+    @Column(name = "logo_torneo")
     private String logoTorneo;
+    @Column(name = "estatus_llenado")
+    private boolean estatusLlenado;
+    @Column(name = "estatus_torneo")
     private boolean estatusTorneo;
+    @Column(name = "motivo_finalizacion")
     private String motivoFinalizacion;
 
     @OneToMany(mappedBy = "torneo", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -43,7 +46,7 @@ public class Torneo {
     public Torneo() {
     }
 
-    public Torneo(Long id, String nombreTorneo, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, int maxEquipos, int minEquipos, int equiposLiguilla, String logoTorneo, boolean estatusTorneo, String motivoFinalizacion, List<Partido> partidos) {
+    public Torneo(Long id, String nombreTorneo, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, int maxEquipos, int minEquipos, int equiposLiguilla, String logoTorneo, boolean estatusLlenado, boolean estatusTorneo, String motivoFinalizacion, List<Partido> partidos) {
         this.id = id;
         this.nombreTorneo = nombreTorneo;
         this.descripcion = descripcion;
@@ -53,6 +56,7 @@ public class Torneo {
         this.minEquipos = minEquipos;
         this.equiposLiguilla = equiposLiguilla;
         this.logoTorneo = logoTorneo;
+        this.estatusLlenado = estatusLlenado;
         this.estatusTorneo = estatusTorneo;
         this.motivoFinalizacion = motivoFinalizacion;
         this.partidos = partidos;
@@ -138,6 +142,14 @@ public class Torneo {
 
     public void setEstatusTorneo(boolean estatusTorneo) {
         this.estatusTorneo = estatusTorneo;
+    }
+
+    public boolean isEstatusLlenado() {
+        return estatusLlenado;
+    }
+
+    public void setEstatusLlenado(boolean estatusLlenado) {
+        this.estatusLlenado = estatusLlenado;
     }
 
     public String getMotivoFinalizacion() {
