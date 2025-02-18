@@ -1,5 +1,6 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.torneo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sistemaligafutbol.sistemaligafutbol.modules.partido.Partido;
 import jakarta.persistence.*;
 
@@ -28,15 +29,18 @@ public class Torneo {
     private int minEquipos;
     @Column(name = "equipos_liguilla")
     private int equiposLiguilla;
+    private int vueltas;
     @Column(name = "logo_torneo")
     private String logoTorneo;
     @Column(name = "estatus_llenado")
     private boolean estatusLlenado;
+    private boolean iniciado;
     @Column(name = "estatus_torneo")
     private boolean estatusTorneo;
     @Column(name = "motivo_finalizacion")
     private String motivoFinalizacion;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "torneo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Partido> partidos;
 
@@ -46,7 +50,7 @@ public class Torneo {
     public Torneo() {
     }
 
-    public Torneo(Long id, String nombreTorneo, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, int maxEquipos, int minEquipos, int equiposLiguilla, String logoTorneo, boolean estatusLlenado, boolean estatusTorneo, String motivoFinalizacion, List<Partido> partidos) {
+    public Torneo(Long id, String nombreTorneo, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, int maxEquipos, int minEquipos, int equiposLiguilla, int vueltas, String logoTorneo, boolean estatusLlenado, boolean iniciado, boolean estatusTorneo, String motivoFinalizacion, List<Partido> partidos) {
         this.id = id;
         this.nombreTorneo = nombreTorneo;
         this.descripcion = descripcion;
@@ -55,8 +59,10 @@ public class Torneo {
         this.maxEquipos = maxEquipos;
         this.minEquipos = minEquipos;
         this.equiposLiguilla = equiposLiguilla;
+        this.vueltas = vueltas;
         this.logoTorneo = logoTorneo;
         this.estatusLlenado = estatusLlenado;
+        this.iniciado = iniciado;
         this.estatusTorneo = estatusTorneo;
         this.motivoFinalizacion = motivoFinalizacion;
         this.partidos = partidos;
@@ -124,6 +130,14 @@ public class Torneo {
         return equiposLiguilla;
     }
 
+    public int getVueltas() {
+        return vueltas;
+    }
+
+    public void setVueltas(int vueltas) {
+        this.vueltas = vueltas;
+    }
+
     public void setEquiposLiguilla(int equiposLiguilla) {
         this.equiposLiguilla = equiposLiguilla;
     }
@@ -150,6 +164,14 @@ public class Torneo {
 
     public void setEstatusLlenado(boolean estatusLlenado) {
         this.estatusLlenado = estatusLlenado;
+    }
+
+    public boolean isIniciado() {
+        return iniciado;
+    }
+
+    public void setIniciado(boolean iniciado) {
+        this.iniciado = iniciado;
     }
 
     public String getMotivoFinalizacion() {
