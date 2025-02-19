@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class TorneoService {
@@ -50,6 +51,26 @@ public class TorneoService {
         } catch (IOException e) {
             throw new ImageValidationException("No se pudo procesar la imagen del torneo");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Torneo> obtenerTodosLosTorneos(){
+        return torneoRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Torneo> obtenerTorneosEnEspera(){
+        return torneoRepository.findByEstatusTorneoTrueAndIniciadoFalse();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Torneo> obtenerTorneosIniciados(){
+        return torneoRepository.findByEstatusTorneoTrueAndIniciadoTrue();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Torneo> obtenerTorneosFinalizados(){
+        return torneoRepository.findByEstatusTorneoFalseAndIniciadoTrue();
     }
 
 }

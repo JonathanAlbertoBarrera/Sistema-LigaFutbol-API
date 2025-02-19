@@ -1,6 +1,7 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.torneo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.partido.Partido;
 import jakarta.persistence.*;
 
@@ -37,6 +38,9 @@ public class Torneo {
     private boolean iniciado;
     @Column(name = "estatus_torneo")
     private boolean estatusTorneo;
+    @OneToOne
+    @JoinColumn(name = "ganador_id", referencedColumnName = "id")
+    private Equipo ganador;
     @Column(name = "motivo_finalizacion")
     private String motivoFinalizacion;
 
@@ -188,5 +192,13 @@ public class Torneo {
 
     public void setPartidos(List<Partido> partidos) {
         this.partidos = partidos;
+    }
+
+    public Equipo getGanador() {
+        return ganador;
+    }
+
+    public void setGanador(Equipo ganador) {
+        this.ganador = ganador;
     }
 }
