@@ -94,8 +94,8 @@ public class DataInitializer {
             Torneo torneoEnJuego = new Torneo();
             torneoEnJuego.setNombreTorneo("Torneo Mayor Liga Temixco - En Juego");
             torneoEnJuego.setDescripcion("Rango de edad: 18+ años.");
-            torneoEnJuego.setFechaInicio(LocalDate.now().minusWeeks(4)); // Inició hace 1 mes
-            torneoEnJuego.setFechaFin(LocalDate.now().plusMonths(2));
+            torneoEnJuego.setFechaInicio(LocalDate.now().minusWeeks(6)); // Inició hace 6 semanas
+            torneoEnJuego.setFechaFin(LocalDate.now().plusMonths(1));
             torneoEnJuego.setMaxEquipos(20);
             torneoEnJuego.setMinEquipos(10);
             torneoEnJuego.setEquiposLiguilla(8);
@@ -106,5 +106,6 @@ public class DataInitializer {
             torneoEnJuego.setEstatusTorneo(true);
             torneoRepository.save(torneoEnJuego);
         }
+
     }
 }

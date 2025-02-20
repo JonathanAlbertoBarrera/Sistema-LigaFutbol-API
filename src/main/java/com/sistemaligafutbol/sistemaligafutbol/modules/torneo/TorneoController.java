@@ -20,6 +20,11 @@ public class TorneoController {
         return ResponseEntity.ok(torneoService.registrarTorneo(torneoDTO, imagen));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Torneo> actualizarTorneo(@PathVariable Long id, @RequestPart("torneo") @Valid TorneoDTO torneoDTO, @RequestPart(value = "imagen", required = false) MultipartFile imagen){
+        return ResponseEntity.ok(torneoService.actualizarTorneo(id, torneoDTO, imagen));
+    }
+
     @GetMapping
     public ResponseEntity<List<Torneo>> obtenerTodosLosTorneos(){
         return ResponseEntity.ok(torneoService.obtenerTodosLosTorneos());

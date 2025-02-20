@@ -126,5 +126,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
     }
 
+    //409 - CONFLICT para estado inválido de torneo
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<ErrorMessage> handleIllegalStateException(IllegalStateException ex) {
+        ErrorMessage message = new ErrorMessage(HttpStatus.CONFLICT, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
+    }
+
+
 
 }

@@ -1,6 +1,7 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.torneo;
 
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ImageValidationException;
+import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundException;
 import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.ImgurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,51 @@ public class TorneoService {
             return torneoRepository.save(torneo);
         } catch (IOException e) {
             throw new ImageValidationException("No se pudo procesar la imagen del torneo");
+        }
+    }
+
+    @Transactional
+    public Torneo actualizarTorneo(Long id, TorneoDTO torneoDTO, MultipartFile imagen) {
+        Torneo torneo = torneoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Torneo no encontrado con ID: " + id));
+
+        LocalDate hoy = LocalDate.now();
+        LocalDate inicioLiguilla = torneo.getFechaFin().minusWeeks((int) (Math.log(torneo.getEquiposLiguilla()) / Math.log(2)));
+
+        // Si ya está en la etapa de liguilla o terminó, no se permite la modificación
+        if (hoy.isAfter(inicioLiguilla) || hoy.isAfter(torneo.getFechaFin())) {
+            throw new IllegalStateException("No se puede modificar un torneo que ya está en la etapa de liguilla o ha finalizado.");
+        }
+
+        try {
+            // Si se proporciona una nueva imagen, actualizar la URL
+            if (imagen != null && !imagen.isEmpty()) {
+                String nuevaImagenUrl = imgurService.uploadImage(imagen);
+                torneo.setLogoTorneo(nuevaImagenUrl);
+            }
+
+            // Actualizar datos generales
+            torneo.setNombreTorneo(torneoDTO.getNombreTorneo());
+            torneo.setDescripcion(torneoDTO.getDescripcion());
+
+            // Si el torneo aún no ha iniciado, permitir cambios en maxEquipos, minEquipos, fechaInicio, vueltas y equiposLiguilla
+            if (!torneo.isIniciado()) {
+                torneo.setMaxEquipos(torneoDTO.getMaxEquipos());
+                torneo.setMinEquipos(torneoDTO.getMinEquipos());
+                torneo.setFechaInicio(torneoDTO.getFechaInicio());
+                torneo.setVueltas(torneoDTO.getVueltas());
+                torneo.setEquiposLiguilla(torneoDTO.getEquiposLiguilla());
+
+                // Recalcular la fecha de fin porque se permitieron cambios
+                int jornadas = (torneoDTO.getMaxEquipos() - 1) * torneoDTO.getVueltas();
+                int semanasLiguilla = (int) (Math.log(torneoDTO.getEquiposLiguilla()) / Math.log(2));
+                LocalDate fechaFinCalculada = torneoDTO.getFechaInicio().plusWeeks(jornadas + semanasLiguilla);
+                torneo.setFechaFin(fechaFinCalculada);
+            }
+
+            return torneoRepository.save(torneo);
+        } catch (IOException e) {
+            throw new ImageValidationException("No se pudo actualizar la imagen del torneo");
         }
     }
 
