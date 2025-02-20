@@ -30,6 +30,7 @@ public class TorneoService {
             Torneo torneo = new Torneo();
             torneo.setNombreTorneo(torneoDTO.getNombreTorneo());
             torneo.setDescripcion(torneoDTO.getDescripcion());
+            torneo.setPremio(torneoDTO.getPremio());
             torneo.setFechaInicio(torneoDTO.getFechaInicio());
             torneo.setVueltas(torneoDTO.getVueltas());
 
@@ -77,6 +78,7 @@ public class TorneoService {
             // Actualizar datos generales
             torneo.setNombreTorneo(torneoDTO.getNombreTorneo());
             torneo.setDescripcion(torneoDTO.getDescripcion());
+            torneo.setPremio(torneoDTO.getPremio());
 
             // Si el torneo aún no ha iniciado, permitir cambios en maxEquipos, minEquipos, fechaInicio, vueltas y equiposLiguilla
             if (!torneo.isIniciado()) {

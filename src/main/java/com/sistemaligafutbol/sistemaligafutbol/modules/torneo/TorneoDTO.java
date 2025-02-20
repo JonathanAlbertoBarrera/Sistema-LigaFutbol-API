@@ -23,6 +23,8 @@ public class TorneoDTO {
     private int equiposLiguilla;
     @Min(value = 1,message = "Mínimo debe haber 1 vuelta de partidos")
     private int vueltas;
+    @NotBlank(message = "El premio no puede estar vacío")
+    private String premio;
 
     //Getters and setters
     public @NotBlank(message = "El nombre del torneo no puede estar vacío") String getNombreTorneo() {
@@ -82,5 +84,13 @@ public class TorneoDTO {
 
     public void setVueltas(@Min(value = 1, message = "Mínimo debe haber 1 vuelta de partidos") int vueltas) {
         this.vueltas = vueltas;
+    }
+
+    public @NotBlank(message = "El premio no puede estar vacío") String getPremio() {
+        return premio;
+    }
+
+    public void setPremio(@NotBlank(message = "El premio no puede estar vacío") String premio) {
+        this.premio = premio;
     }
 }
