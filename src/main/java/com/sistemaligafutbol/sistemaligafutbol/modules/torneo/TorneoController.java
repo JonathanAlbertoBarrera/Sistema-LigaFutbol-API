@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/torneos")
@@ -23,6 +24,18 @@ public class TorneoController {
     @PutMapping("/{id}")
     public ResponseEntity<Torneo> actualizarTorneo(@PathVariable Long id, @RequestPart("torneo") @Valid TorneoDTO torneoDTO, @RequestPart(value = "imagen", required = false) MultipartFile imagen){
         return ResponseEntity.ok(torneoService.actualizarTorneo(id, torneoDTO, imagen));
+    }
+
+    @PatchMapping("/{id}/cancelar")
+    public ResponseEntity<Torneo> cancelarTorneo(@PathVariable Long id, @RequestBody Map<String, String> request) {
+
+        String motivo = request.get("motivoFinalizacion");
+        if (motivo == null || motivo.trim().isEmpty()) {
+            throw new IllegalArgumentException("El motivo de cancelación es obligatorio.");
+        }
+
+        Torneo torneoCancelado = torneoService.cancelarTorneo(id, motivo);
+        return ResponseEntity.ok(torneoCancelado);
     }
 
     @GetMapping

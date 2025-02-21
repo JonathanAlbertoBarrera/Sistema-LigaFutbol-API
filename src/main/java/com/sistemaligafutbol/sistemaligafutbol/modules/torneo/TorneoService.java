@@ -101,6 +101,26 @@ public class TorneoService {
         }
     }
 
+    @Transactional
+    public Torneo cancelarTorneo(Long id, String motivoFinalizacion) {
+        Torneo torneo = torneoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Torneo no encontrado con ID: " + id));
+
+        LocalDate hoy = LocalDate.now();
+        LocalDate inicioLiguilla = torneo.getFechaFin().minusWeeks((int) (Math.log(torneo.getEquiposLiguilla()) / Math.log(2)));
+
+        // Validar si el torneo ya está en liguilla o finalizado
+        if (hoy.isAfter(inicioLiguilla) || hoy.isAfter(torneo.getFechaFin())) {
+            throw new IllegalStateException("No se puede cancelar un torneo que ya está en la liguilla o ha finalizado.");
+        }
+
+        torneo.setEstatusTorneo(false);
+        torneo.setMotivoFinalizacion(motivoFinalizacion);
+
+        return torneoRepository.save(torneo);
+    }
+
+
     @Transactional(readOnly = true)
     public List<Torneo> obtenerTodosLosTorneos(){
         return torneoRepository.findAll();
