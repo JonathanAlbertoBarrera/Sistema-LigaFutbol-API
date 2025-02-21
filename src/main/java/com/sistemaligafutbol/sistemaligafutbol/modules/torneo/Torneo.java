@@ -45,17 +45,12 @@ public class Torneo {
     @Column(name = "motivo_finalizacion")
     private String motivoFinalizacion;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "torneo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Partido> partidos;
-
     //Constructor
-
 
     public Torneo() {
     }
 
-    public Torneo(Long id, String nombreTorneo, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, int maxEquipos, int minEquipos, int equiposLiguilla, int vueltas, String logoTorneo, String premio, boolean estatusLlenado, boolean iniciado, boolean estatusTorneo, Equipo ganador, String motivoFinalizacion, List<Partido> partidos) {
+    public Torneo(Long id, String nombreTorneo, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, int maxEquipos, int minEquipos, int equiposLiguilla, int vueltas, String logoTorneo, String premio, boolean estatusLlenado, boolean iniciado, boolean estatusTorneo, Equipo ganador, String motivoFinalizacion) {
         this.id = id;
         this.nombreTorneo = nombreTorneo;
         this.descripcion = descripcion;
@@ -72,7 +67,6 @@ public class Torneo {
         this.estatusTorneo = estatusTorneo;
         this.ganador = ganador;
         this.motivoFinalizacion = motivoFinalizacion;
-        this.partidos = partidos;
     }
 
     //Getter and setters
@@ -187,14 +181,6 @@ public class Torneo {
 
     public void setMotivoFinalizacion(String motivoFinalizacion) {
         this.motivoFinalizacion = motivoFinalizacion;
-    }
-
-    public List<Partido> getPartidos() {
-        return partidos;
-    }
-
-    public void setPartidos(List<Partido> partidos) {
-        this.partidos = partidos;
     }
 
     public Equipo getGanador() {

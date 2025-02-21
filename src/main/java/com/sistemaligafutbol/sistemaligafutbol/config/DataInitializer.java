@@ -1,5 +1,9 @@
 package com.sistemaligafutbol.sistemaligafutbol.config;
 
+import com.sistemaligafutbol.sistemaligafutbol.modules.campo.Campo;
+import com.sistemaligafutbol.sistemaligafutbol.modules.campo.CampoRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.Cancha;
+import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.CanchaRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.Torneo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.TorneoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Usuario;
@@ -11,6 +15,7 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -21,6 +26,12 @@ public class DataInitializer {
 
     @Autowired
     private TorneoRepository torneoRepository;
+
+    @Autowired
+    private CampoRepository campoRepository;
+
+    @Autowired
+    CanchaRepository canchaRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -37,6 +48,7 @@ public class DataInitializer {
     public void init() {
         inicializarAdmin();
         inicializarTorneos();
+        inicializarCampos();
     }
 
     private void inicializarAdmin() {
@@ -108,4 +120,59 @@ public class DataInitializer {
         }
 
     }
+
+    private void inicializarCampos() {
+        if (campoRepository.count() == 0) { // Solo insertar si no hay registros
+
+            // 🏟️ Campo Galaxy con 2 canchas
+            Campo campoGalaxy = new Campo();
+            campoGalaxy.setNombre("Campo Galaxy");
+            campoGalaxy.setDireccion("Col. Temixco Centro, Calle 22");
+            campoGalaxy.setLatitud(18.8525);
+            campoGalaxy.setLongitud(-99.2314);
+            campoGalaxy.setEstatusCampo(true);
+            campoRepository.save(campoGalaxy);
+
+            Cancha cancha1 = new Cancha();
+            cancha1.setNumeroCancha(1);
+            cancha1.setDescripcion("Cancha techada");
+            cancha1.setEstatusCancha(true);
+            cancha1.setCampo(campoGalaxy);
+
+            Cancha cancha2 = new Cancha();
+            cancha2.setNumeroCancha(2);
+            cancha2.setDescripcion("Cancha de césped sintético");
+            cancha2.setEstatusCancha(true);
+            cancha2.setCampo(campoGalaxy);
+
+            canchaRepository.saveAll(List.of(cancha1, cancha2));
+
+            // ⚽ Campo El Guaje con 1 cancha
+            Campo campoGuaje = new Campo();
+            campoGuaje.setNombre("El Guaje");
+            campoGuaje.setDireccion("Avenida Futbolistas 456");
+            campoGuaje.setLatitud(18.8471);
+            campoGuaje.setLongitud(-99.2205);
+            campoGuaje.setEstatusCampo(true);
+            campoRepository.save(campoGuaje);
+
+            Cancha cancha3 = new Cancha();
+            cancha3.setNumeroCancha(1);
+            cancha3.setDescripcion("Cancha de tierra");
+            cancha3.setEstatusCancha(true);
+            cancha3.setCampo(campoGuaje);
+
+            canchaRepository.save(cancha3);
+
+            // 🏟️ Campo Azteca sin canchas y deshabilitado
+            Campo campoAzteca = new Campo();
+            campoAzteca.setNombre("Campo Azteca");
+            campoAzteca.setDireccion("Plaza Azteca 789");
+            campoAzteca.setLatitud(18.8403);
+            campoAzteca.setLongitud(-99.2158);
+            campoAzteca.setEstatusCampo(false);
+            campoRepository.save(campoAzteca);
+        }
+    }
+
 }

@@ -55,6 +55,20 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/api/torneos").hasRole("ADMIN") //solo ADMIN puede modificar torneos
                         .requestMatchers(HttpMethod.PATCH, "/api/torneos/{id}/cancelar").hasRole("ADMIN")//solo ADMIN puede cancelar torneos
 
+                        //GESTION DE CAMPOS
+                        .requestMatchers(HttpMethod.POST,"/api/campos").hasAnyRole("ADMIN") //SOLO ADMIN puede crear CAMPOS
+                        .requestMatchers(HttpMethod.PUT,"/api/campos").hasAnyRole("ADMIN") //SOLO ADMIN puede modificar CAMPOS
+                        .requestMatchers(HttpMethod.GET,"/api/campos").hasRole("ADMIN")//SOLO ADMIN PUEDE VER EL LISTADO DE TODOS LOS CAMPOS
+                        .requestMatchers(HttpMethod.GET,"/api/campos/activos").hasAnyRole("ADMIN","DUENO") //TANTO ADMIN como DUENO pueden ver los campos activos, ADMIN para gestion y DUENO cuando quiere seleccionar su campo
+                        .requestMatchers(HttpMethod.GET,"/api/campos/{id}").permitAll() //TODOS Pueden ver algun campo en especifico, por ejemplo al ver datos de un partido
+
+                        //GESTION DE CANCHAS
+                        .requestMatchers(HttpMethod.POST,"/api/canchas").hasRole("ADMIN") //SOLO ADMIN puede crear canchas
+                        .requestMatchers(HttpMethod.PUT,"/api/canchas").hasRole("ADMIN")  //SOLO ADMIN puede modificar canchas
+                        .requestMatchers(HttpMethod.GET,"/api/canchas").hasRole("ADMIN") //SOLO ADMIN puede ver el Listado de todas las canchas
+                        .requestMatchers(HttpMethod.GET,"/api/canchas/{id}").permitAll()////TODOS Pueden ver alguna cancha en especifico, por ejemplo al ver datos de un partido
+
+
                         //CRUD DE JUGADORES
                         .requestMatchers(HttpMethod.POST, "/api/jugadores").hasRole("DUENO") //SOLO DUENOS PUEDEN REGISTRAR JUGADORES
                         .requestMatchers(HttpMethod.PUT,"/api/jugadores/").hasRole("DUENO") //SOLO DUENOS PUEDEN MODIFICAR A SUS JUGADORES
