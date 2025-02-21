@@ -7,5 +7,5 @@ import java.util.List;
 public interface TorneoRepository extends JpaRepository<Torneo,Long> {
     List<Torneo> findByEstatusTorneoTrueAndIniciadoFalse();
     List<Torneo> findByEstatusTorneoTrueAndIniciadoTrue();
-    List<Torneo> findByEstatusTorneoFalseAndIniciadoTrue();
+    List<Torneo> findByEstatusTorneoFalse();
 }

@@ -138,7 +138,7 @@ public class TorneoService {
 
     @Transactional(readOnly = true)
     public List<Torneo> obtenerTorneosFinalizados(){
-        return torneoRepository.findByEstatusTorneoFalseAndIniciadoTrue();
+        return torneoRepository.findByEstatusTorneoFalse();
     }
 
 }

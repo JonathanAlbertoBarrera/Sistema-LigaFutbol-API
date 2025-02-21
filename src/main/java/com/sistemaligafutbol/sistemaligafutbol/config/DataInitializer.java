@@ -53,7 +53,7 @@ public class DataInitializer {
 
     private void inicializarTorneos() {
         // Torneo finalizado
-        if (torneoRepository.findByEstatusTorneoFalseAndIniciadoTrue().isEmpty()) {
+        if (torneoRepository.findByEstatusTorneoFalse().isEmpty()) {
             Torneo torneoFinalizado = new Torneo();
             torneoFinalizado.setNombreTorneo("Torneo Infantil Liga Temixco - Finalizado");
             torneoFinalizado.setDescripcion("Rango de edad: 8-12 años.");
