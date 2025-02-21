@@ -6,8 +6,12 @@ import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.Cancha;
 import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.CanchaRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.Torneo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.TorneoRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Dueno.Dueno;
+import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Dueno.DuenoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Usuario;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.UsuarioRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro.Arbitro;
+import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro.ArbitroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +27,12 @@ public class DataInitializer {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private ArbitroRepository arbitroRepository;
+
+    @Autowired
+    private DuenoRepository duenoRepository;
 
     @Autowired
     private TorneoRepository torneoRepository;
@@ -47,6 +57,7 @@ public class DataInitializer {
     @PostConstruct
     public void init() {
         inicializarAdmin();
+        inicializarArbitrosYDueno();
         inicializarTorneos();
         inicializarCampos();
     }
@@ -174,5 +185,72 @@ public class DataInitializer {
             campoRepository.save(campoAzteca);
         }
     }
+
+    private void inicializarArbitrosYDueno() {
+        if (usuarioRepository.countByRolesContainingIgnoreCase("ROLE_ARBITRO") == 0) { // Verifica si hay árbitros registrados
+
+            // 🟢 Árbitro 1
+            Usuario usuarioArbitro1 = new Usuario();
+            usuarioArbitro1.setEmail("arbitro1@gmail.com");
+            usuarioArbitro1.setPassword(passwordEncoder.encode("arbi123"));
+            usuarioArbitro1.setEstatus(true);
+            usuarioArbitro1.setRoles(Set.of("ROLE_ARBITRO"));
+            usuarioRepository.save(usuarioArbitro1);
+
+            Arbitro arbitro1 = new Arbitro();
+            arbitro1.setNombreCompleto("Arbitro 1");
+            arbitro1.setImagenUrl("https://i.imgur.com/cuIjks0.jpeg");
+            arbitro1.setUsuario(usuarioArbitro1);
+            arbitroRepository.save(arbitro1);
+
+            // 🟢 Árbitro 2
+            Usuario usuarioArbitro2 = new Usuario();
+            usuarioArbitro2.setEmail("arbitro2@gmail.com");
+            usuarioArbitro2.setPassword(passwordEncoder.encode("arbi456"));
+            usuarioArbitro2.setEstatus(true);
+            usuarioArbitro2.setRoles(Set.of("ROLE_ARBITRO"));
+            usuarioRepository.save(usuarioArbitro2);
+
+            Arbitro arbitro2 = new Arbitro();
+            arbitro2.setNombreCompleto("Arbitro 2");
+            arbitro2.setImagenUrl("https://i.imgur.com/cuIjks0.jpeg");
+            arbitro2.setUsuario(usuarioArbitro2);
+            arbitroRepository.save(arbitro2);
+        }
+
+        if (usuarioRepository.countByRolesContainingIgnoreCase("ROLE_DUENO") == 0) { // Verifica si hay dueños registrados
+
+            // 🟠 Dueño 1
+            Usuario usuarioDueno1 = new Usuario();
+            usuarioDueno1.setEmail("dueno1@gmail.com");
+            usuarioDueno1.setPassword(passwordEncoder.encode("d123"));
+            usuarioDueno1.setEstatus(true);
+            usuarioDueno1.setRoles(Set.of("ROLE_DUENO"));
+            usuarioRepository.save(usuarioDueno1);
+
+            Dueno dueno1 = new Dueno();
+            dueno1.setNombreCompleto("Dueno 1");
+            dueno1.setImagenUrl("https://i.imgur.com/BClPFAt.jpeg");
+            dueno1.setUsuario(usuarioDueno1);
+            //aqui se setearia el equipo cuando se tenga ese crud
+            duenoRepository.save(dueno1);
+
+            // 🟠 Dueño 2
+            Usuario usuarioDueno2 = new Usuario();
+            usuarioDueno2.setEmail("dueno2@gmail.com");
+            usuarioDueno2.setPassword(passwordEncoder.encode("d456"));
+            usuarioDueno2.setEstatus(true);
+            usuarioDueno2.setRoles(Set.of("ROLE_DUENO"));
+            usuarioRepository.save(usuarioDueno2);
+
+            Dueno dueno2 = new Dueno();
+            dueno2.setNombreCompleto("Dueno 2");
+            dueno2.setImagenUrl("https://i.imgur.com/BClPFAt.jpeg");
+            dueno2.setUsuario(usuarioDueno2);
+            //aqui se setearia el equipo cuando se tenga ese crud
+            duenoRepository.save(dueno2);
+        }
+    }
+
 
 }
