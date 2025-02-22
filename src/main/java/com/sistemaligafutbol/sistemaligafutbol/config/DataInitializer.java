@@ -232,7 +232,6 @@ public class DataInitializer {
             dueno1.setNombreCompleto("Dueno 1");
             dueno1.setImagenUrl("https://i.imgur.com/BClPFAt.jpeg");
             dueno1.setUsuario(usuarioDueno1);
-            //aqui se setearia el equipo cuando se tenga ese crud
             duenoRepository.save(dueno1);
 
             // 🟠 Dueño 2
@@ -247,7 +246,6 @@ public class DataInitializer {
             dueno2.setNombreCompleto("Dueno 2");
             dueno2.setImagenUrl("https://i.imgur.com/BClPFAt.jpeg");
             dueno2.setUsuario(usuarioDueno2);
-            //aqui se setearia el equipo cuando se tenga ese crud
             duenoRepository.save(dueno2);
         }
     }

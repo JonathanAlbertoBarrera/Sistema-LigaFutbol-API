@@ -19,10 +19,6 @@ public class Dueno {
     private String imagenUrl;
 
     @OneToOne
-    @JoinColumn(name = "equipo_id", referencedColumnName = "id")
-    private Equipo equipo;
-
-    @OneToOne
     @JoinColumn(name = "usuario_id", referencedColumnName = "id")
     private Usuario usuario;
 
@@ -31,15 +27,15 @@ public class Dueno {
     public Dueno() {
     }
 
-    public Dueno(Long id, String nombreCompleto, String imagenUrl, Equipo equipo, Usuario usuario) {
+    public Dueno(Long id, String nombreCompleto, String imagenUrl, Usuario usuario) {
         this.id = id;
         this.nombreCompleto = nombreCompleto;
         this.imagenUrl = imagenUrl;
-        this.equipo = equipo;
         this.usuario = usuario;
     }
 
     // Getters y Setters
+
     public Long getId() {
         return id;
     }
@@ -56,14 +52,6 @@ public class Dueno {
         this.nombreCompleto = nombreCompleto;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
     public String getImagenUrl() {
         return imagenUrl;
     }
@@ -72,11 +60,11 @@ public class Dueno {
         this.imagenUrl = imagenUrl;
     }
 
-    public Equipo getEquipo() {
-        return equipo;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setEquipo(Equipo equipo) {
-        this.equipo = equipo;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 }
