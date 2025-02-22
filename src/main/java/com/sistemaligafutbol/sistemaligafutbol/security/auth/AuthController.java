@@ -13,6 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin
@@ -48,7 +50,13 @@ public class AuthController {
             String token = jwtUtils.createToken(authentication);
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-            return new AuthResponse(token, userDetails.getUsername(), userDetails.getAuthorities().toString());
+            String roles = userDetails.getAuthorities()
+                    .stream()
+                    .map(grantedAuthority -> grantedAuthority.getAuthority())
+                    .collect(Collectors.joining(","));
+
+
+            return new AuthResponse(token, userDetails.getUsername(), roles,usuario.getId());
         } catch (org.springframework.security.authentication.BadCredentialsException ex) {
             throw new BadCredentialsException("La contraseña es incorrecta");
         }
