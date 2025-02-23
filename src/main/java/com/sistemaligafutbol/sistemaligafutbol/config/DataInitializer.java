@@ -4,6 +4,8 @@ import com.sistemaligafutbol.sistemaligafutbol.modules.campo.Campo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.campo.CampoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.Cancha;
 import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.CanchaRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
+import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.EquipoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.Torneo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.TorneoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Dueno.Dueno;
@@ -44,6 +46,9 @@ public class DataInitializer {
     CanchaRepository canchaRepository;
 
     @Autowired
+    EquipoRepository equipoRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Value("${admin.email}")
@@ -60,6 +65,7 @@ public class DataInitializer {
         inicializarArbitrosYDueno();
         inicializarTorneos();
         inicializarCampos();
+        inicializarEquipos();
     }
 
     private void inicializarAdmin() {
@@ -78,7 +84,7 @@ public class DataInitializer {
         // Torneo finalizado
         if (torneoRepository.findByEstatusTorneoFalse().isEmpty()) {
             Torneo torneoFinalizado = new Torneo();
-            torneoFinalizado.setNombreTorneo("Torneo Infantil Liga Temixco - Finalizado");
+            torneoFinalizado.setNombreTorneo("Torneo Infantil Sub-12 Liga Temixco - Finalizado");
             torneoFinalizado.setDescripcion("Rango de edad: 8-12 años.");
             torneoFinalizado.setFechaInicio(LocalDate.now().minusMonths(3));
             torneoFinalizado.setFechaFin(LocalDate.now().minusWeeks(1));
@@ -92,24 +98,6 @@ public class DataInitializer {
             torneoFinalizado.setEstatusTorneo(false); // Finalizado
             //aqui agregar equipo ganador cuando se haga ese crud
             torneoRepository.save(torneoFinalizado);
-        }
-
-        // Torneo en espera
-        if (torneoRepository.findByEstatusTorneoTrueAndIniciadoFalse().isEmpty()) {
-            Torneo torneoEnEspera = new Torneo();
-            torneoEnEspera.setNombreTorneo("Torneo Juvenil Liga Temixco - En Espera");
-            torneoEnEspera.setDescripcion("Rango de edad: 13-17 años.");
-            torneoEnEspera.setFechaInicio(LocalDate.now().plusWeeks(2)); // Próximo torneo
-            torneoEnEspera.setFechaFin(LocalDate.now().plusMonths(3));
-            torneoEnEspera.setMaxEquipos(12);
-            torneoEnEspera.setMinEquipos(6);
-            torneoEnEspera.setEquiposLiguilla(6);
-            torneoEnEspera.setVueltas(2);
-            torneoEnEspera.setLogoTorneo(IMAGEN_TORNEO);
-            torneoEnEspera.setEstatusLlenado(false);
-            torneoEnEspera.setIniciado(false);
-            torneoEnEspera.setEstatusTorneo(true);
-            torneoRepository.save(torneoEnEspera);
         }
 
         // Torneo en juego
@@ -129,6 +117,25 @@ public class DataInitializer {
             torneoEnJuego.setEstatusTorneo(true);
             torneoRepository.save(torneoEnJuego);
         }
+
+        // Torneo en espera
+        if (torneoRepository.findByEstatusTorneoTrueAndIniciadoFalse().isEmpty()) {
+            Torneo torneoEnEspera = new Torneo();
+            torneoEnEspera.setNombreTorneo("Torneo Juvenil Sub-17 Liga Temixco - En Espera");
+            torneoEnEspera.setDescripcion("Rango de edad: 13-17 años.");
+            torneoEnEspera.setFechaInicio(LocalDate.now().plusWeeks(2)); // Próximo torneo
+            torneoEnEspera.setFechaFin(LocalDate.now().plusMonths(3));
+            torneoEnEspera.setMaxEquipos(12);
+            torneoEnEspera.setMinEquipos(6);
+            torneoEnEspera.setEquiposLiguilla(6);
+            torneoEnEspera.setVueltas(2);
+            torneoEnEspera.setLogoTorneo(IMAGEN_TORNEO);
+            torneoEnEspera.setEstatusLlenado(false);
+            torneoEnEspera.setIniciado(false);
+            torneoEnEspera.setEstatusTorneo(true);
+            torneoRepository.save(torneoEnEspera);
+        }
+
 
     }
 
@@ -249,6 +256,47 @@ public class DataInitializer {
             duenoRepository.save(dueno2);
         }
     }
+
+    private void inicializarEquipos() {
+        if (equipoRepository.count() == 0) { // Verifica si hay equipos registrados
+
+            // Dueños
+            Dueno dueno1 = duenoRepository.findByUsuario(usuarioRepository.findByEmail("dueno1@gmail.com"))
+                    .orElseThrow(() -> new RuntimeException("Dueño 1 no encontrado"));
+
+            Dueno dueno2 = duenoRepository.findByUsuario(usuarioRepository.findByEmail("dueno2@gmail.com"))
+                    .orElseThrow(() -> new RuntimeException("Dueño 2 no encontrado"));
+
+            // Campo
+            Campo campoGalaxy = campoRepository.findById(1L)
+                    .orElseThrow(() -> new RuntimeException("Campo Galaxy no encontrado"));
+
+            // ⚽ Equipo FC Barcelona Sub-12
+            Equipo barcaSub12 = new Equipo();
+            barcaSub12.setNombreEquipo("FC Barcelona Sub-12");
+            barcaSub12.setLogo("https://i.imgur.com/iYLVKCo.jpeg");
+            barcaSub12.setDueno(dueno1);
+            barcaSub12.setCampo(campoGalaxy);
+            equipoRepository.save(barcaSub12);
+
+            // ⚽ Equipo FC Barcelona Sub-17
+            Equipo barcaSub17 = new Equipo();
+            barcaSub17.setNombreEquipo("FC Barcelona Sub-17");
+            barcaSub17.setLogo("https://i.imgur.com/iYLVKCo.jpeg");
+            barcaSub17.setDueno(dueno1);
+            barcaSub17.setCampo(campoGalaxy);
+            equipoRepository.save(barcaSub17);
+
+            // ⚽ Equipo Real Madrid Sub-17
+            Equipo madridSub17 = new Equipo();
+            madridSub17.setNombreEquipo("Real Madrid Sub-17");
+            madridSub17.setLogo("https://i.imgur.com/n2WNvY8.jpeg");
+            madridSub17.setDueno(dueno2);
+            madridSub17.setCampo(campoGalaxy);
+            equipoRepository.save(madridSub17);
+        }
+    }
+
 
 
 }

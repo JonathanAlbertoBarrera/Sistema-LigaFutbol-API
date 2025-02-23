@@ -66,14 +66,18 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/canchas").hasRole("ADMIN") //SOLO ADMIN puede crear canchas
                         .requestMatchers(HttpMethod.PUT,"/api/canchas").hasRole("ADMIN")  //SOLO ADMIN puede modificar canchas
                         .requestMatchers(HttpMethod.GET,"/api/canchas").hasRole("ADMIN") //SOLO ADMIN puede ver el Listado de todas las canchas
-                        .requestMatchers(HttpMethod.GET,"/api/canchas/{id}").permitAll()////TODOS Pueden ver alguna cancha en especifico, por ejemplo al ver datos de un partido
+                        .requestMatchers(HttpMethod.GET,"/api/canchas/{id}").permitAll()//TODOS Pueden ver alguna cancha en especifico, por ejemplo al ver datos de un partido
 
+                        //GESTION DE EQUIPOS
+                                .requestMatchers(HttpMethod.POST,"/api/equipos").hasRole("DUENO") //SOLO DUENOS pueden crear equipos
+                                .requestMatchers(HttpMethod.PUT,"/api/equipos").hasRole("DUENO")  //SOLO DUENOS pueden modificar a su equipo
+                                .requestMatchers(HttpMethod.GET,"/api/equipos/**").permitAll() //TODOS podran ver los equipos
 
-                        //CRUD DE JUGADORES
-                        .requestMatchers(HttpMethod.POST, "/api/jugadores").hasRole("DUENO") //SOLO DUENOS PUEDEN REGISTRAR JUGADORES
-                        .requestMatchers(HttpMethod.PUT,"/api/jugadores/").hasRole("DUENO") //SOLO DUENOS PUEDEN MODIFICAR A SUS JUGADORES
-                        .requestMatchers(HttpMethod.GET,"/api/jugadores/**").permitAll() // todos necesitarian ver el listado de jugadores
-                        .requestMatchers(HttpMethod.DELETE,"/api/jugadores").hasAnyRole("DUENO") //SOLO LOS DUENOS PODRAN ELIMINAR A SUS JUGADORES
+                                //CRUD DE JUGADORES
+//                        .requestMatchers(HttpMethod.POST, "/api/jugadores").hasRole("DUENO") //SOLO DUENOS PUEDEN REGISTRAR JUGADORES
+//                        .requestMatchers(HttpMethod.PUT,"/api/jugadores/").hasRole("DUENO") //SOLO DUENOS PUEDEN MODIFICAR A SUS JUGADORES
+//                        .requestMatchers(HttpMethod.GET,"/api/jugadores/**").permitAll() // todos necesitarian ver el listado de jugadores
+//                        .requestMatchers(HttpMethod.DELETE,"/api/jugadores").hasAnyRole("DUENO") //SOLO LOS DUENOS PODRAN ELIMINAR A SUS JUGADORES
 
 
                         .anyRequest().authenticated() // Cualquier otra ruta requiere autenticación

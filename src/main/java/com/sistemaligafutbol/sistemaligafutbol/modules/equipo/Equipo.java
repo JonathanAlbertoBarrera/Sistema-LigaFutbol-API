@@ -1,21 +1,13 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.equipo;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.sistemaligafutbol.sistemaligafutbol.modules.campo.Campo;
-import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.Jugador;
+import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Dueno.Dueno;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "equipo")
 public class Equipo {
-
-    public interface EquipoViews {
-        interface Lista {}  // Vista solo para GET /equipos
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,26 +15,35 @@ public class Equipo {
 
     @Column(name = "nombre_equipo", nullable = false)
     private String nombreEquipo;
-
     private String logo;
 
-    @Column(name = "solicitud_estatus")
-    @JsonView(EquipoViews.Lista.class)
-    private boolean solicitudEstatus;
+    @Column(name = "equipo_estatus")
+    private boolean equipoEstatus;
 
-    @Column(name = "inscripcion_estatus")
-    @JsonView(EquipoViews.Lista.class)
-    private boolean inscripcionEstatus;
-
-    // Relación con Jugador (Un equipo tiene muchos jugadores)
-    @OneToMany(mappedBy = "equipo", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Jugador> jugadores = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "id_dueno", nullable = false)
+    private Dueno dueno;
 
     @ManyToOne
     @JoinColumn(name = "id_campo", nullable = false)
     private Campo campo;
 
+    //Constructores
+
+
+    public Equipo() {
+    }
+
+    public Equipo(Long id, String nombreEquipo, String logo, boolean equipoEstatus, Dueno dueno, Campo campo) {
+        this.id = id;
+        this.nombreEquipo = nombreEquipo;
+        this.logo = logo;
+        this.equipoEstatus = equipoEstatus;
+        this.dueno = dueno;
+        this.campo = campo;
+    }
+
+    //Getters and setters
 
     public Long getId() {
         return id;
@@ -60,14 +61,6 @@ public class Equipo {
         this.nombreEquipo = nombreEquipo;
     }
 
-    public List<Jugador> getJugadores() {
-        return jugadores;
-    }
-
-    public void setJugadores(List<Jugador> jugadores) {
-        this.jugadores = jugadores;
-    }
-
     public String getLogo() {
         return logo;
     }
@@ -76,20 +69,20 @@ public class Equipo {
         this.logo = logo;
     }
 
-    public boolean isSolicitudEstatus() {
-        return solicitudEstatus;
+    public boolean isEquipoEstatus() {
+        return equipoEstatus;
     }
 
-    public void setSolicitudEstatus(boolean solicitudEstatus) {
-        this.solicitudEstatus = solicitudEstatus;
+    public void setEquipoEstatus(boolean equipoEstatus) {
+        this.equipoEstatus = equipoEstatus;
     }
 
-    public boolean isInscripcionEstatus() {
-        return inscripcionEstatus;
+    public Dueno getDueno() {
+        return dueno;
     }
 
-    public void setInscripcionEstatus(boolean inscripcionEstatus) {
-        this.inscripcionEstatus = inscripcionEstatus;
+    public void setDueno(Dueno dueno) {
+        this.dueno = dueno;
     }
 
     public Campo getCampo() {
