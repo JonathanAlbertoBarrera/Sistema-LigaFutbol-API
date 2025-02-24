@@ -74,7 +74,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET,"/api/equipos/**").permitAll() //TODOS podran ver los equipos
 
                                 //GESTION DE SOLICITUDES
-                                .requestMatchers(HttpMethod.POST,"/api/solicitudes/{idEquipo}/{idTorneo}").hasRole("DUENO") //SOLO DUENOS PUEDEN SOLICITAR UNIRSE A UN TORNEO
+                                .requestMatchers(HttpMethod.POST,"/api/solicitudes/{idEquipo}/{idTorneo}").hasRole("DUENO") //SOLO DUENOS pueden solicitar unirse a un torneo
+                                .requestMatchers(HttpMethod.POST,"/api/solicitudes/admin/agregarEquipo/").hasRole("ADMIN") //solo ADMIN puede agregar equipos directamente al torneo
                                 .requestMatchers(HttpMethod.PUT,"/api/solicitudes/**").hasRole("ADMIN") //Solo ADMIN puede aceptar/rechazar las solicitudes
                                 .requestMatchers(HttpMethod.GET,"/api/solicitudes/admin/**").hasRole("ADMIN") //solo ADMIN puede ver las solicitudes
                                 .requestMatchers(HttpMethod.GET,"/api/solicitudes/dueno/**").hasAnyRole("ADMIN","DUENO") //tanto ADMIN como DUENOS pueden ver las solicitudes por Duenos

@@ -175,6 +175,34 @@ public class SolicitudService {
     }
 
     @Transactional
+    public SolicitudDTO agregarEquipo(Long idEquipo, Long idTorneo) {
+        Equipo equipo = equipoRepository.findById(idEquipo)
+                .orElseThrow(() -> new NotFoundException("Equipo no encontrado"));
+        Torneo torneo = torneoRepository.findById(idTorneo)
+                .orElseThrow(() -> new NotFoundException("Torneo no encontrado"));
+
+        Solicitud solicitud = new Solicitud();
+        solicitud.setEquipo(equipo);
+        solicitud.setTorneo(torneo);
+        solicitud.setInscripcionEstatus(false);
+        solicitud.setResolucion(true);//por defecto como el admin agrega al equipo, la resolucion es true
+        solicitud.setPendiente(false);//no estaria pendiente ya que no hay que aceptar la solicitud, automaticamente se hizo.
+
+        solicitud = solicitudRepository.save(solicitud);
+
+        return new SolicitudDTO(
+                solicitud.getIdEquipoTorneo(),
+                solicitud.getEquipo().getId(),
+                solicitud.getEquipo().getNombreEquipo(),
+                solicitud.getTorneo().getId(),
+                solicitud.getTorneo().getNombreTorneo(),
+                solicitud.getInscripcionEstatus(),
+                solicitud.getResolucion(),
+                solicitud.getPendiente()
+        );
+    }
+
+    @Transactional
     public String aceptarSolicitud(Long id) {
         Solicitud solicitud = solicitudRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Solicitud no encontrada"));

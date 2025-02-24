@@ -48,6 +48,11 @@ public class SolicitudController {
         return ResponseEntity.ok(solicitudService.crearSolicitud(idEquipo, idTorneo));
     }
 
+    @PostMapping("/admin/agregarEquipo/{idEquipo}/{idTorneo}")
+    public ResponseEntity<SolicitudDTO> agregarEquipo(@PathVariable Long idEquipo, @PathVariable Long idTorneo){
+        return ResponseEntity.ok(solicitudService.agregarEquipo(idEquipo,idTorneo));
+    }
+
     @PutMapping("/{id}/aceptar")
     public ResponseEntity<String> aceptarSolicitud(@PathVariable Long id) {
         return ResponseEntity.ok(solicitudService.aceptarSolicitud(id));
