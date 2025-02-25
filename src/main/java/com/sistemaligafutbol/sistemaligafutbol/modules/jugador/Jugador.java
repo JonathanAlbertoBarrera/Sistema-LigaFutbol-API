@@ -12,14 +12,16 @@ public class Jugador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String nombre;
-    private String apellido;
+    @Column(name = "nombre_completo",unique = true)
+    private String nombreCompleto;
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
 
-    @Column(name = "imagen_url")
-    private String imagenUrl;
+    @Column(name = "foto_jugador")
+    private String fotoJugador;
+
+    @Column(name = "numero_camiseta")
+    private int numeroCamiseta;
 
     @Column(name = "partidos_jugados")
     private int partidosJugados;
@@ -32,11 +34,24 @@ public class Jugador {
     @JsonBackReference
     private Equipo equipo;
 
-    // Relación con JugadorEstadisticas (Un jugador tiene muchas estadísticas)
-//    @OneToMany(mappedBy = "jugador", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<JugadorEstadistica> estadisticas = new ArrayList<>();
+    //Constructores
+
+    public Jugador() {
+    }
+
+    public Jugador(Long id, String nombreCompleto, LocalDate fechaNacimiento, String fotoJugador, int numeroCamiseta, int partidosJugados, boolean habilitado, Equipo equipo) {
+        this.id = id;
+        this.nombreCompleto = nombreCompleto;
+        this.fechaNacimiento = fechaNacimiento;
+        this.fotoJugador = fotoJugador;
+        this.numeroCamiseta = numeroCamiseta;
+        this.partidosJugados = partidosJugados;
+        this.habilitado = habilitado;
+        this.equipo = equipo;
+    }
 
     //--GETTERS Y SETTERS
+
 
     public Long getId() {
         return id;
@@ -46,28 +61,12 @@ public class Jugador {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getNombreCompleto() {
+        return nombreCompleto;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApellido() {
-        return apellido;
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-
-    public String getImagenUrl() {
-        return imagenUrl;
-    }
-
-    public void setImagenUrl(String imagenUrl) {
-        this.imagenUrl = imagenUrl;
+    public void setNombreCompleto(String nombreCompleto) {
+        this.nombreCompleto = nombreCompleto;
     }
 
     public LocalDate getFechaNacimiento() {
@@ -76,6 +75,22 @@ public class Jugador {
 
     public void setFechaNacimiento(LocalDate fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public String getFotoJugador() {
+        return fotoJugador;
+    }
+
+    public void setFotoJugador(String fotoJugador) {
+        this.fotoJugador = fotoJugador;
+    }
+
+    public int getNumeroCamiseta() {
+        return numeroCamiseta;
+    }
+
+    public void setNumeroCamiseta(int numeroCamiseta) {
+        this.numeroCamiseta = numeroCamiseta;
     }
 
     public int getPartidosJugados() {

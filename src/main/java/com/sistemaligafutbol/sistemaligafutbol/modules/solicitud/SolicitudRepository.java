@@ -11,4 +11,10 @@ public interface SolicitudRepository extends JpaRepository<Solicitud,Long> {
     List<Solicitud> findByTorneoAndPendienteTrue(Torneo torneo);
     List<Solicitud> findByTorneoAndResolucionTrue(Torneo torneo);
     List<Solicitud> findByEquipo_Dueno_Id(Long idDueno);
+
+    // Verifica si un equipo tiene una solicitud aceptada
+    boolean existsByEquipo_IdAndResolucionTrue(Long equipoId);
+
+    // Verifica si un equipo está en un torneo específico
+    boolean existsByEquipo_IdAndTorneo_Id(Long equipoId, Long torneoId);
 }

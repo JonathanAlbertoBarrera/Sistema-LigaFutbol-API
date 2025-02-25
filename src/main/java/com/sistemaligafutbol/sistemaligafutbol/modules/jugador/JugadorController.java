@@ -17,21 +17,6 @@ public class JugadorController {
     @Autowired
     private JugadorService jugadorService;
 
-    @GetMapping
-    public ResponseEntity<List<Jugador>> obtenerTodosLosJugadores() {
-        return ResponseEntity.ok(jugadorService.obtenerTodosLosJugadores());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Jugador> obtenerJugadorPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(jugadorService.obtenerJugadorPorId(id));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> eliminarJugador(@PathVariable Long id) {
-        jugadorService.eliminarJugador(id);
-        return ResponseEntity.ok(Map.of("mensaje", "Jugador eliminado con éxito", "id", id.toString()));
-    }
 
     @PostMapping
     public ResponseEntity<Jugador> crearJugador(@RequestPart("jugador") @Valid JugadorDTO jugadorDTO, @RequestPart("imagen") MultipartFile imagen) {
@@ -42,5 +27,33 @@ public class JugadorController {
     public ResponseEntity<Jugador> actualizarJugador(@PathVariable Long id, @RequestPart("jugador") @Valid JugadorActualizarDTO jugadorActualizarDTO, @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
         return ResponseEntity.ok(jugadorService.actualizarJugador(id, jugadorActualizarDTO, imagen));
     }
+
+    @PutMapping("/estatus/{id}")
+    public ResponseEntity<Jugador> alternarEstatusJugador(@PathVariable Long id) {
+        return ResponseEntity.ok(jugadorService.alternarEstatusJugador(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Jugador>> obtenerTodosLosJugadores() {
+        return ResponseEntity.ok(jugadorService.obtenerTodosLosJugadores());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Jugador> obtenerJugadorPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(jugadorService.obtenerJugadorPorId(id));
+    }
+
+    @GetMapping("/porEquipo/{idEquipo}")
+    public ResponseEntity<List<Jugador>> obtenerJugadoresPorEquipo(@PathVariable Long idEquipo){
+        return ResponseEntity.ok(jugadorService.obtenerJugadoresPorEquipo(idEquipo));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> eliminarJugador(@PathVariable Long id) {
+        jugadorService.eliminarJugador(id);
+        return ResponseEntity.ok(Map.of("mensaje", "Jugador eliminado con éxito", "id", id.toString()));
+    }
+
+
 }
 

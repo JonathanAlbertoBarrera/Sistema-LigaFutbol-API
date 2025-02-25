@@ -5,55 +5,51 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
 public class JugadorDTO {
-    @NotBlank(message = "Debes de ingresar el nombre")
-    private String nombre;
-    @NotBlank(message = "Debes de ingresar un apellido")
-    private String apellido;
+    @NotBlank(message = "Debes de ingresar el nombre completo")
+    private String nombreCompleto;
+
     @Past(message = "La fecha de nacimiento debe ser anterior a la actual")
     private LocalDate fechaNacimiento;
-    private String imagenUrl;
+
+    @NotNull(message = "Debes ingresar un número de camiseta")
+    private int numero_camiseta;
 
     @NotNull(message = "Debes asignar un equipo")
     private Long idEquipo;
 
     //--GETTERS Y SETTERS
-    public String getNombre() {
-        return nombre;
+
+
+    public @NotBlank(message = "Debes de ingresar el nombre completo") String getNombreCompleto() {
+        return nombreCompleto;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombreCompleto(@NotBlank(message = "Debes de ingresar el nombre completo") String nombreCompleto) {
+        this.nombreCompleto = nombreCompleto;
     }
 
-    public String getApellido() {
-        return apellido;
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-
-    public String getImagenUrl() {
-        return imagenUrl;
-    }
-
-    public void setImagenUrl(String imagenUrl) {
-        this.imagenUrl = imagenUrl;
-    }
-
-    public LocalDate getFechaNacimiento() {
+    public @Past(message = "La fecha de nacimiento debe ser anterior a la actual") LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+    public void setFechaNacimiento(@Past(message = "La fecha de nacimiento debe ser anterior a la actual") LocalDate fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    public Long getIdEquipo() {
+    @NotNull(message = "Debes ingresar un número de camiseta")
+    public int getNumero_camiseta() {
+        return numero_camiseta;
+    }
+
+    public void setNumero_camiseta(@NotNull(message = "Debes ingresar un número de camiseta") int numero_camiseta) {
+        this.numero_camiseta = numero_camiseta;
+    }
+
+    public @NotNull(message = "Debes asignar un equipo") Long getIdEquipo() {
         return idEquipo;
     }
 
-    public void setIdEquipo(Long idEquipo) {
+    public void setIdEquipo(@NotNull(message = "Debes asignar un equipo") Long idEquipo) {
         this.idEquipo = idEquipo;
     }
 }

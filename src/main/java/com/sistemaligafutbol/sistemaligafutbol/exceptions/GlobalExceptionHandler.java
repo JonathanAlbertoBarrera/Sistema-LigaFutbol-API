@@ -4,6 +4,7 @@ import com.sistemaligafutbol.sistemaligafutbol.exceptions.dto.ErrorMessage;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ImageValidationException;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundException;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.UsuarioInactivoException;
+import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ValidationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -133,6 +134,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorMessage message = new ErrorMessage(HttpStatus.CONFLICT, ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
     }
+
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorMessage> handleValidationException(ValidationException ex) {
+        ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+    }
+
 
 
 
