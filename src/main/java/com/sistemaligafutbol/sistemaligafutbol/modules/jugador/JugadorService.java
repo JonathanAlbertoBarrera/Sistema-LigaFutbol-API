@@ -6,9 +6,8 @@ import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ValidationEx
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.EquipoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.ImgurService;
+import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.Solicitud;
 import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.SolicitudRepository;
-import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.Torneo;
-import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.TorneoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class JugadorService {
@@ -28,9 +28,6 @@ public class JugadorService {
 
     @Autowired
     private SolicitudRepository solicitudRepository;
-
-    @Autowired
-    private TorneoRepository torneoRepository;
 
     @Autowired
     private ImgurService imgurService;
@@ -51,9 +48,11 @@ public class JugadorService {
 
         // Contar jugadores activos en el equipo
         long jugadoresActivos = jugadorRepository.countByEquipoAndHabilitadoTrue(equipo);
-        if (jugadoresActivos >= 20) {
-            throw new ValidationException("El equipo ya tiene 20 jugadores activos, no puede registrar más.");
-        }
+        boolean equipoLleno = jugadoresActivos >= 20;
+
+        // Buscar si el equipo está inscrito en un torneo y obtener el torneo
+        Optional<Solicitud> solicitudOpt = solicitudRepository.findByEquipoAndResolucionTrue(equipo);
+        boolean esLiguilla = solicitudOpt.map(s -> s.getTorneo().isEsliguilla()).orElse(false);
 
         try {
             String imagenUrl = imgurService.uploadImage(imagen);
@@ -63,14 +62,40 @@ public class JugadorService {
             jugador.setFechaNacimiento(jugadorDTO.getFechaNacimiento());
             jugador.setFotoJugador(imagenUrl);
             jugador.setNumeroCamiseta(jugadorDTO.getNumero_camiseta());
-            jugador.setHabilitado(true);
             jugador.setPartidosJugados(0);
             jugador.setEquipo(equipo);
+
+            // Definir si el jugador estará habilitado o no
+            jugador.setHabilitado(!(esLiguilla || equipoLleno));
 
             return jugadorRepository.save(jugador);
         } catch (IOException e) {
             throw new ImageValidationException("No se pudo procesar la imagen del jugador");
         }
+    }
+
+    @Transactional
+    public Jugador cambiarEstatusJugador(Long idJugador) {
+        Jugador jugador = jugadorRepository.findById(idJugador)
+                .orElseThrow(() -> new NotFoundException("Jugador no encontrado"));
+
+        // Buscar si el equipo está inscrito en un torneo y obtener el torneo
+        Optional<Solicitud> solicitudOpt = solicitudRepository.findByEquipoAndResolucionTrue(jugador.getEquipo());
+        boolean esLiguilla = solicitudOpt.map(s -> s.getTorneo().isEsliguilla()).orElse(false);
+
+        if (esLiguilla) {
+            throw new ValidationException("No se puede cambiar el estatus del jugador porque su equipo está en liguilla.");
+        }
+
+        long jugadoresActivos = jugadorRepository.countByEquipoAndHabilitadoTrue(jugador.getEquipo());
+        boolean equipoLleno = jugadoresActivos >= 20;
+
+        if(equipoLleno && !jugador.isHabilitado()){
+            throw new ValidationException("El equipo ya tiene 20 jugadores activos, puedes desactivar a algún jugador para liberar un espacio");
+        }
+
+        jugador.setHabilitado(!jugador.isHabilitado());
+        return jugadorRepository.save(jugador);
     }
 
 
@@ -79,7 +104,6 @@ public class JugadorService {
         Jugador jugador = jugadorRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Jugador no encontrado con ID: " + id));
 
-        validarSiJugadorPuedeSerModificado(jugador);
 
         if (jugadorDTO.getNumero_camiseta() != jugador.getNumeroCamiseta()
                 && jugadorRepository.existsByEquipo_IdAndNumeroCamiseta(jugador.getEquipo().getId(), jugadorDTO.getNumero_camiseta())) {
@@ -125,43 +149,8 @@ public class JugadorService {
         return jugadorRepository.findByEquipo_Id(idEquipo);
     }
 
-    @Transactional
-    public void eliminarJugador(Long id) {
-        Jugador jugador = jugadorRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Jugador no encontrado"));
-
-        validarSiJugadorPuedeSerModificado(jugador);
-
-        jugadorRepository.deleteById(id);
-    }
-
-    @Transactional
-    public Jugador alternarEstatusJugador(Long id) {
-        Jugador jugador = jugadorRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Jugador no encontrado"));
-
-        validarSiJugadorPuedeSerModificado(jugador);
-
-        jugador.setHabilitado(!jugador.isHabilitado()); // Cambia el estatus automáticamente
-        return jugadorRepository.save(jugador);
-    }
 
 
-    private void validarSiJugadorPuedeSerModificado(Jugador jugador) {
-        Long equipoId = jugador.getEquipo().getId();
 
-        // Buscar si hay una solicitud aceptada para el equipo
-        boolean tieneSolicitudAprobada = solicitudRepository.existsByEquipo_IdAndResolucionTrue(equipoId);
-
-        if (tieneSolicitudAprobada) {
-            List<Torneo> torneosEnJuego = torneoRepository.findByEstatusTorneoTrueAndIniciadoTrue();
-            boolean equipoEnTorneoIniciado = torneosEnJuego.stream()
-                    .anyMatch(torneo -> solicitudRepository.existsByEquipo_IdAndTorneo_Id(equipoId, torneo.getId()));
-
-            if (equipoEnTorneoIniciado) {
-                throw new ValidationException("No puedes modificar o eliminar al jugador porque está en un torneo iniciado.");
-            }
-        }
-    }
 }
 

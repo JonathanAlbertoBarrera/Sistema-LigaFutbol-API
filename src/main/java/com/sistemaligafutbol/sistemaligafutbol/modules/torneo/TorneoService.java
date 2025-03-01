@@ -47,6 +47,7 @@ public class TorneoService {
             torneo.setLogoTorneo(imagenUrl);
             torneo.setEstatusLlenado(false);
             torneo.setIniciado(false);
+            torneo.setEsliguilla(false);
             torneo.setEstatusTorneo(true);
 
             return torneoRepository.save(torneo);

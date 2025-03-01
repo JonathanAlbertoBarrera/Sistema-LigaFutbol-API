@@ -82,9 +82,8 @@ public class SecurityConfig {
 
                                 //CRUD DE JUGADORES
                         .requestMatchers(HttpMethod.POST, "/api/jugadores").hasRole("DUENO") //SOLO DUENOS PUEDEN REGISTRAR JUGADORES
-                        .requestMatchers(HttpMethod.PUT,"/api/jugadores/").hasRole("DUENO") //SOLO DUENOS PUEDEN MODIFICAR A SUS JUGADORES
+                        .requestMatchers(HttpMethod.PUT,"/api/jugadores/").hasRole("DUENO") //SOLO DUENOS PUEDEN MODIFICAR/desactivar A SUS JUGADORES
                         .requestMatchers(HttpMethod.GET,"/api/jugadores/**").permitAll() // todos necesitarian ver el listado de jugadores
-                        .requestMatchers(HttpMethod.DELETE,"/api/jugadores").hasAnyRole("DUENO") //SOLO LOS DUENOS PODRAN ELIMINAR A SUS JUGADORES
 
 
                         .anyRequest().authenticated() // Cualquier otra ruta requiere autenticación

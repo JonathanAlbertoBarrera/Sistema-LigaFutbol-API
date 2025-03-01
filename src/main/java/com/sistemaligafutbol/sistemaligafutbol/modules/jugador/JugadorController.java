@@ -30,7 +30,7 @@ public class JugadorController {
 
     @PutMapping("/estatus/{id}")
     public ResponseEntity<Jugador> alternarEstatusJugador(@PathVariable Long id) {
-        return ResponseEntity.ok(jugadorService.alternarEstatusJugador(id));
+        return ResponseEntity.ok(jugadorService.cambiarEstatusJugador(id));
     }
 
     @GetMapping
@@ -47,13 +47,6 @@ public class JugadorController {
     public ResponseEntity<List<Jugador>> obtenerJugadoresPorEquipo(@PathVariable Long idEquipo){
         return ResponseEntity.ok(jugadorService.obtenerJugadoresPorEquipo(idEquipo));
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> eliminarJugador(@PathVariable Long id) {
-        jugadorService.eliminarJugador(id);
-        return ResponseEntity.ok(Map.of("mensaje", "Jugador eliminado con éxito", "id", id.toString()));
-    }
-
 
 }
 

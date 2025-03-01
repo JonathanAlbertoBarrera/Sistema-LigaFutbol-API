@@ -6,6 +6,10 @@ import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.Cancha;
 import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.CanchaRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.EquipoRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.Jugador;
+import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.JugadorRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.Solicitud;
+import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.SolicitudRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.Torneo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.TorneoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Dueno.Dueno;
@@ -18,11 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
 import jakarta.annotation.PostConstruct;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class DataInitializer {
@@ -43,10 +47,16 @@ public class DataInitializer {
     private CampoRepository campoRepository;
 
     @Autowired
-    CanchaRepository canchaRepository;
+    private CanchaRepository canchaRepository;
 
     @Autowired
-    EquipoRepository equipoRepository;
+    private EquipoRepository equipoRepository;
+
+    @Autowired
+    private JugadorRepository jugadorRepository;
+
+    @Autowired
+    private SolicitudRepository solicitudRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -58,14 +68,20 @@ public class DataInitializer {
     private String adminPassword;
 
     private static final String IMAGEN_TORNEO = "https://i.imgur.com/WwiUN4K.jpeg";
+    private static final String IMAGEN_EQUIPO = "https://i.imgur.com/iYLVKCo.jpeg";
+    private static final String IMAGEN_DUENO = "https://i.imgur.com/BClPFAt.jpeg";
+    private static final String IMAGEN_ARBITRO = "https://i.imgur.com/cuIjks0.jpeg";
+    private static final String IMAGEN_JUGADOR = "https://i.imgur.com/NOG10zb.jpeg";
 
     @PostConstruct
     public void init() {
         inicializarAdmin();
-        inicializarArbitrosYDueno();
+        inicializarArbitrosYDuenos();
         inicializarTorneos();
         inicializarCampos();
         inicializarEquipos();
+        inicializarJugadores();
+        inicializarSolicitudes();
     }
 
     private void inicializarAdmin() {
@@ -80,68 +96,108 @@ public class DataInitializer {
         }
     }
 
+    private void inicializarArbitrosYDuenos() {
+        // 🟢 Árbitros
+        if (usuarioRepository.countByRolesContainingIgnoreCase("ROLE_ARBITRO") == 0) {
+            for (int i = 1; i <= 3; i++) {
+                Usuario usuarioArbitro = new Usuario();
+                usuarioArbitro.setEmail("arbitro" + i + "@gmail.com");
+                usuarioArbitro.setPassword(passwordEncoder.encode("arbi123"));
+                usuarioArbitro.setEstatus(true);
+                usuarioArbitro.setRoles(Set.of("ROLE_ARBITRO"));
+                usuarioRepository.save(usuarioArbitro);
+
+                Arbitro arbitro = new Arbitro();
+                arbitro.setNombreCompleto("Arbitro " + i);
+                arbitro.setImagenUrl(IMAGEN_ARBITRO);
+                arbitro.setUsuario(usuarioArbitro);
+                arbitroRepository.save(arbitro);
+            }
+        }
+
+        // 🟠 Dueños
+        if (usuarioRepository.countByRolesContainingIgnoreCase("ROLE_DUENO") == 0) {
+            for (int i = 1; i <= 8; i++) {
+                Usuario usuarioDueno = new Usuario();
+                usuarioDueno.setEmail("dueno" + i + "@gmail.com");
+                usuarioDueno.setPassword(passwordEncoder.encode("d123"));
+                usuarioDueno.setEstatus(true);
+                usuarioDueno.setRoles(Set.of("ROLE_DUENO"));
+                usuarioRepository.save(usuarioDueno);
+
+                Dueno dueno = new Dueno();
+                dueno.setNombreCompleto("Dueno " + i);
+                dueno.setImagenUrl(IMAGEN_DUENO);
+                dueno.setUsuario(usuarioDueno);
+                duenoRepository.save(dueno);
+            }
+        }
+    }
+
     private void inicializarTorneos() {
-        // Torneo finalizado
-        if (torneoRepository.findByEstatusTorneoFalse().isEmpty()) {
+        // Torneo finalizado (Sub-12)
+        if (torneoRepository.findByNombreTorneo("Torneo Sub-12 Finalizado").isEmpty()) {
             Torneo torneoFinalizado = new Torneo();
-            torneoFinalizado.setNombreTorneo("Torneo Infantil Sub-12 Liga Temixco - Finalizado");
-            torneoFinalizado.setDescripcion("Rango de edad: 8-12 años.");
+            torneoFinalizado.setNombreTorneo("Torneo Sub-12 Finalizado");
+            torneoFinalizado.setDescripcion("Torneo para menores de 12 años.");
             torneoFinalizado.setFechaInicio(LocalDate.now().minusMonths(3));
             torneoFinalizado.setFechaFin(LocalDate.now().minusWeeks(1));
-            torneoFinalizado.setMaxEquipos(16);
-            torneoFinalizado.setMinEquipos(8);
-            torneoFinalizado.setEquiposLiguilla(8);
+            torneoFinalizado.setMaxEquipos(6);
+            torneoFinalizado.setMinEquipos(4);
+            torneoFinalizado.setEquiposLiguilla(4);
             torneoFinalizado.setVueltas(2);
             torneoFinalizado.setLogoTorneo(IMAGEN_TORNEO);
+            torneoFinalizado.setPremio("Medallas individuales");
             torneoFinalizado.setEstatusLlenado(true);
             torneoFinalizado.setIniciado(true);
+            torneoFinalizado.setEsliguilla(false);
             torneoFinalizado.setEstatusTorneo(false); // Finalizado
-            //aqui agregar equipo ganador cuando se haga ese crud
             torneoRepository.save(torneoFinalizado);
         }
 
-        // Torneo en juego
-        if (torneoRepository.findByEstatusTorneoTrueAndIniciadoTrue().isEmpty()) {
+        // Torneo en juego (Sub-15)
+        if (torneoRepository.findByNombreTorneo("Torneo Sub-15 En Juego").isEmpty()) {
             Torneo torneoEnJuego = new Torneo();
-            torneoEnJuego.setNombreTorneo("Torneo Mayor Liga Temixco - En Juego");
-            torneoEnJuego.setDescripcion("Rango de edad: 18+ años.");
-            torneoEnJuego.setFechaInicio(LocalDate.now().minusWeeks(6)); // Inició hace 6 semanas
-            torneoEnJuego.setFechaFin(LocalDate.now().plusMonths(1));
-            torneoEnJuego.setMaxEquipos(20);
-            torneoEnJuego.setMinEquipos(10);
-            torneoEnJuego.setEquiposLiguilla(8);
-            torneoEnJuego.setVueltas(2);
+            torneoEnJuego.setNombreTorneo("Torneo Sub-15 En Juego");
+            torneoEnJuego.setDescripcion("Torneo para menores de 15 años.");
+            torneoEnJuego.setFechaInicio(LocalDate.now().minusWeeks(6));
+            torneoEnJuego.setFechaFin(LocalDate.now().plusWeeks(1));
+            torneoEnJuego.setMaxEquipos(8);
+            torneoEnJuego.setMinEquipos(4);
+            torneoEnJuego.setEquiposLiguilla(4);
+            torneoEnJuego.setVueltas(1);
             torneoEnJuego.setLogoTorneo(IMAGEN_TORNEO);
+            torneoEnJuego.setPremio("5000 pesos por equipo + medallas");
             torneoEnJuego.setEstatusLlenado(true);
             torneoEnJuego.setIniciado(true);
+            torneoEnJuego.setEsliguilla(true);
             torneoEnJuego.setEstatusTorneo(true);
             torneoRepository.save(torneoEnJuego);
         }
 
-        // Torneo en espera
-        if (torneoRepository.findByEstatusTorneoTrueAndIniciadoFalse().isEmpty()) {
+        // Torneo en espera (Sub-17)
+        if (torneoRepository.findByNombreTorneo("Torneo Sub-17 En Espera").isEmpty()) {
             Torneo torneoEnEspera = new Torneo();
-            torneoEnEspera.setNombreTorneo("Torneo Juvenil Sub-17 Liga Temixco - En Espera");
-            torneoEnEspera.setDescripcion("Rango de edad: 13-17 años.");
-            torneoEnEspera.setFechaInicio(LocalDate.now().plusWeeks(2)); // Próximo torneo
+            torneoEnEspera.setNombreTorneo("Torneo Sub-17 En Espera");
+            torneoEnEspera.setDescripcion("Torneo para menores de 17 años.");
+            torneoEnEspera.setFechaInicio(LocalDate.now().plusWeeks(2));
             torneoEnEspera.setFechaFin(LocalDate.now().plusMonths(3));
-            torneoEnEspera.setMaxEquipos(12);
-            torneoEnEspera.setMinEquipos(6);
-            torneoEnEspera.setEquiposLiguilla(6);
+            torneoEnEspera.setMaxEquipos(6);
+            torneoEnEspera.setMinEquipos(4);
+            torneoEnEspera.setEquiposLiguilla(4);
             torneoEnEspera.setVueltas(2);
             torneoEnEspera.setLogoTorneo(IMAGEN_TORNEO);
+            torneoEnEspera.setPremio("15,000 pesos para el equipo + medallas individuales");
             torneoEnEspera.setEstatusLlenado(false);
             torneoEnEspera.setIniciado(false);
+            torneoEnEspera.setEsliguilla(false);
             torneoEnEspera.setEstatusTorneo(true);
             torneoRepository.save(torneoEnEspera);
         }
-
-
     }
 
     private void inicializarCampos() {
-        if (campoRepository.count() == 0) { // Solo insertar si no hay registros
-
+        if (campoRepository.count() == 0) {
             // 🏟️ Campo Galaxy con 2 canchas
             Campo campoGalaxy = new Campo();
             campoGalaxy.setNombre("Campo Galaxy");
@@ -181,122 +237,151 @@ public class DataInitializer {
             cancha3.setCampo(campoGuaje);
 
             canchaRepository.save(cancha3);
-
-            // 🏟️ Campo Azteca sin canchas y deshabilitado
-            Campo campoAzteca = new Campo();
-            campoAzteca.setNombre("Campo Azteca");
-            campoAzteca.setDireccion("Plaza Azteca 789");
-            campoAzteca.setLatitud(18.8403);
-            campoAzteca.setLongitud(-99.2158);
-            campoAzteca.setEstatusCampo(false);
-            campoRepository.save(campoAzteca);
-        }
-    }
-
-    private void inicializarArbitrosYDueno() {
-        if (usuarioRepository.countByRolesContainingIgnoreCase("ROLE_ARBITRO") == 0) { // Verifica si hay árbitros registrados
-
-            // 🟢 Árbitro 1
-            Usuario usuarioArbitro1 = new Usuario();
-            usuarioArbitro1.setEmail("arbitro1@gmail.com");
-            usuarioArbitro1.setPassword(passwordEncoder.encode("arbi123"));
-            usuarioArbitro1.setEstatus(true);
-            usuarioArbitro1.setRoles(Set.of("ROLE_ARBITRO"));
-            usuarioRepository.save(usuarioArbitro1);
-
-            Arbitro arbitro1 = new Arbitro();
-            arbitro1.setNombreCompleto("Arbitro 1");
-            arbitro1.setImagenUrl("https://i.imgur.com/cuIjks0.jpeg");
-            arbitro1.setUsuario(usuarioArbitro1);
-            arbitroRepository.save(arbitro1);
-
-            // 🟢 Árbitro 2
-            Usuario usuarioArbitro2 = new Usuario();
-            usuarioArbitro2.setEmail("arbitro2@gmail.com");
-            usuarioArbitro2.setPassword(passwordEncoder.encode("arbi456"));
-            usuarioArbitro2.setEstatus(true);
-            usuarioArbitro2.setRoles(Set.of("ROLE_ARBITRO"));
-            usuarioRepository.save(usuarioArbitro2);
-
-            Arbitro arbitro2 = new Arbitro();
-            arbitro2.setNombreCompleto("Arbitro 2");
-            arbitro2.setImagenUrl("https://i.imgur.com/cuIjks0.jpeg");
-            arbitro2.setUsuario(usuarioArbitro2);
-            arbitroRepository.save(arbitro2);
-        }
-
-        if (usuarioRepository.countByRolesContainingIgnoreCase("ROLE_DUENO") == 0) { // Verifica si hay dueños registrados
-
-            // 🟠 Dueño 1
-            Usuario usuarioDueno1 = new Usuario();
-            usuarioDueno1.setEmail("dueno1@gmail.com");
-            usuarioDueno1.setPassword(passwordEncoder.encode("d123"));
-            usuarioDueno1.setEstatus(true);
-            usuarioDueno1.setRoles(Set.of("ROLE_DUENO"));
-            usuarioRepository.save(usuarioDueno1);
-
-            Dueno dueno1 = new Dueno();
-            dueno1.setNombreCompleto("Dueno 1");
-            dueno1.setImagenUrl("https://i.imgur.com/BClPFAt.jpeg");
-            dueno1.setUsuario(usuarioDueno1);
-            duenoRepository.save(dueno1);
-
-            // 🟠 Dueño 2
-            Usuario usuarioDueno2 = new Usuario();
-            usuarioDueno2.setEmail("dueno2@gmail.com");
-            usuarioDueno2.setPassword(passwordEncoder.encode("d456"));
-            usuarioDueno2.setEstatus(true);
-            usuarioDueno2.setRoles(Set.of("ROLE_DUENO"));
-            usuarioRepository.save(usuarioDueno2);
-
-            Dueno dueno2 = new Dueno();
-            dueno2.setNombreCompleto("Dueno 2");
-            dueno2.setImagenUrl("https://i.imgur.com/BClPFAt.jpeg");
-            dueno2.setUsuario(usuarioDueno2);
-            duenoRepository.save(dueno2);
         }
     }
 
     private void inicializarEquipos() {
-        if (equipoRepository.count() == 0) { // Verifica si hay equipos registrados
-
-            // Dueños
-            Dueno dueno1 = duenoRepository.findByUsuario(usuarioRepository.findByEmail("dueno1@gmail.com"))
-                    .orElseThrow(() -> new RuntimeException("Dueño 1 no encontrado"));
-
-            Dueno dueno2 = duenoRepository.findByUsuario(usuarioRepository.findByEmail("dueno2@gmail.com"))
-                    .orElseThrow(() -> new RuntimeException("Dueño 2 no encontrado"));
+        if (equipoRepository.count() == 0) {
+            // Lista de nombres de equipos famosos
+            String[] nombresEquipos = {"Barcelona", "Real Madrid", "Manchester United", "Juventus", "Bayern Munich", "Paris Saint-Germain", "Chelsea", "Liverpool"};
 
             // Campo
             Campo campoGalaxy = campoRepository.findById(1L)
                     .orElseThrow(() -> new RuntimeException("Campo Galaxy no encontrado"));
 
-            // ⚽ Equipo FC Barcelona Sub-12
-            Equipo barcaSub12 = new Equipo();
-            barcaSub12.setNombreEquipo("FC Barcelona Sub-12");
-            barcaSub12.setLogo("https://i.imgur.com/iYLVKCo.jpeg");
-            barcaSub12.setDueno(dueno1);
-            barcaSub12.setCampo(campoGalaxy);
-            equipoRepository.save(barcaSub12);
+            // Crear equipos para cada dueño
+            for (int i = 1; i <= 8; i++) {
+                Dueno dueno = duenoRepository.findById((long) i)
+                        .orElseThrow(() -> new RuntimeException("Dueño no encontrado"));
 
-            // ⚽ Equipo FC Barcelona Sub-17
-            Equipo barcaSub17 = new Equipo();
-            barcaSub17.setNombreEquipo("FC Barcelona Sub-17");
-            barcaSub17.setLogo("https://i.imgur.com/iYLVKCo.jpeg");
-            barcaSub17.setDueno(dueno1);
-            barcaSub17.setCampo(campoGalaxy);
-            equipoRepository.save(barcaSub17);
-
-            // ⚽ Equipo Real Madrid Sub-17
-            Equipo madridSub17 = new Equipo();
-            madridSub17.setNombreEquipo("Real Madrid Sub-17");
-            madridSub17.setLogo("https://i.imgur.com/n2WNvY8.jpeg");
-            madridSub17.setDueno(dueno2);
-            madridSub17.setCampo(campoGalaxy);
-            equipoRepository.save(madridSub17);
+                // Cada dueño tiene 2 o 3 equipos en diferentes categorías
+                for (int j = 0; j < 3; j++) {
+                    String categoria = j == 0 ? "Sub-12" : (j == 1 ? "Sub-15" : "Sub-17");
+                    Equipo equipo = new Equipo();
+                    equipo.setNombreEquipo(nombresEquipos[i - 1] + " " + categoria);
+                    equipo.setLogo(IMAGEN_EQUIPO);
+                    equipo.setDueno(dueno);
+                    equipo.setCampo(campoGalaxy);
+                    equipoRepository.save(equipo);
+                }
+            }
         }
     }
 
+    private void inicializarJugadores() {
+        if (jugadorRepository.count() == 0) {
+            List<Equipo> equipos = equipoRepository.findAll();
+
+            for (Equipo equipo : equipos) {
+                int numJugadores = (int) (Math.random() * 10) + 11; // Entre 11 y 20 jugadores por equipo
+
+                // Determinar la categoría del equipo
+                String nombreEquipo = equipo.getNombreEquipo();
+                String categoria = nombreEquipo.substring(nombreEquipo.lastIndexOf(" ") + 1); // Obtiene la última parte del nombre (Sub-12, Sub-15, etc.)
+
+                // Calcular la fecha de nacimiento según la categoría
+                LocalDate fechaNacimientoBase;
+                switch (categoria) {
+                    case "Sub-12":
+                        fechaNacimientoBase = LocalDate.now().minusYears(12); // Jugadores menores de 12 años
+                        break;
+                    case "Sub-15":
+                        fechaNacimientoBase = LocalDate.now().minusYears(15); // Jugadores menores de 15 años
+                        break;
+                    case "Sub-17":
+                        fechaNacimientoBase = LocalDate.now().minusYears(17); // Jugadores menores de 17 años
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Categoría no válida: " + categoria);
+                }
+
+                for (int i = 1; i <= numJugadores; i++) {
+                    Jugador jugador = new Jugador();
+                    jugador.setNombreCompleto("Jugador " + i + " - " + equipo.getNombreEquipo());
+
+                    // Fecha de nacimiento aleatoria dentro del rango de la categoría
+                    LocalDate fechaNacimiento = fechaNacimientoBase.minusDays((long) (Math.random() * 365)); // +/- 1 año
+                    jugador.setFechaNacimiento(fechaNacimiento);
+
+                    jugador.setFotoJugador(IMAGEN_JUGADOR);
+                    jugador.setNumeroCamiseta(i);
+                    jugador.setPartidosJugados(0);
+                    jugador.setHabilitado(true);
+                    jugador.setEquipo(equipo);
+                    jugadorRepository.save(jugador);
+                }
+            }
+        }
+    }
+
+    private void inicializarSolicitudes() {
+        if (solicitudRepository.count() == 0) {
+            List<Torneo> torneos = torneoRepository.findAll();
+            List<Equipo> equipos = equipoRepository.findAll();
+
+            // Organizar equipos por categoría
+            Map<String, List<Equipo>> equiposPorCategoria = new HashMap<>();
+            for (Equipo equipo : equipos) {
+                String nombreEquipo = equipo.getNombreEquipo();
+                String categoria = nombreEquipo.substring(nombreEquipo.lastIndexOf(" ") + 1); // Extraer la categoría
+                equiposPorCategoria.computeIfAbsent(categoria, k -> new ArrayList<>()).add(equipo);
+            }
+
+            // Asignar equipos a torneos de la misma categoría
+            for (Torneo torneo : torneos) {
+                String categoriaTorneo = torneo.getNombreTorneo().contains("Sub-12") ? "Sub-12" :
+                        torneo.getNombreTorneo().contains("Sub-15") ? "Sub-15" :
+                                "Sub-17";
+
+                List<Equipo> equiposCategoria = equiposPorCategoria.get(categoriaTorneo);
+                if (equiposCategoria != null) {
+                    int maxEquiposTorneo = torneo.getMaxEquipos(); // Obtener el máximo de equipos del torneo
+                    int equiposAceptados = 0;
+
+                    for (int i = 0; i < equiposCategoria.size(); i++) {
+                        Equipo equipo = equiposCategoria.get(i);
+                        Solicitud solicitud = new Solicitud();
+                        solicitud.setEquipo(equipo);
+                        solicitud.setTorneo(torneo);
+
+                        // Lógica para determinar el estado de la solicitud
+                        if (categoriaTorneo.equals("Sub-12")) {
+                            if (i < 6) { // Primeros 6 equipos aceptados
+                                solicitud.setInscripcionEstatus(true);
+                                solicitud.setResolucion(true);
+                                solicitud.setPendiente(false);
+                            } else { // Los últimos 2 equipos rechazados
+                                solicitud.setInscripcionEstatus(false);
+                                solicitud.setResolucion(false);
+                                solicitud.setPendiente(false);
+                            }
+                        } else if (categoriaTorneo.equals("Sub-15")) {
+                            // Todos los equipos aceptados
+                            solicitud.setInscripcionEstatus(true);
+                            solicitud.setResolucion(true);
+                            solicitud.setPendiente(false);
+                        } else if (categoriaTorneo.equals("Sub-17")) {
+                            if (i < 4) { // Primeros 4 equipos aceptados
+                                solicitud.setInscripcionEstatus(true);
+                                solicitud.setResolucion(true);
+                                solicitud.setPendiente(false);
+                            } else if (i == 4) { // Quinto equipo pendiente
+                                solicitud.setInscripcionEstatus(false);
+                                solicitud.setResolucion(false);
+                                solicitud.setPendiente(true);
+                            } else { // Sexto equipo rechazado
+                                solicitud.setInscripcionEstatus(false);
+                                solicitud.setResolucion(false);
+                                solicitud.setPendiente(false);
+                            }
+                        }
+
+                        solicitudRepository.save(solicitud);
+                    }
+                }
+            }
+        }
+    }
 
 
 }

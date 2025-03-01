@@ -37,6 +37,7 @@ public class Torneo {
     @Column(name = "estatus_llenado")
     private boolean estatusLlenado;
     private boolean iniciado;
+    private boolean esliguilla;
     @Column(name = "estatus_torneo")
     private boolean estatusTorneo;
     @OneToOne
@@ -50,7 +51,7 @@ public class Torneo {
     public Torneo() {
     }
 
-    public Torneo(Long id, String nombreTorneo, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, int maxEquipos, int minEquipos, int equiposLiguilla, int vueltas, String logoTorneo, String premio, boolean estatusLlenado, boolean iniciado, boolean estatusTorneo, Equipo ganador, String motivoFinalizacion) {
+    public Torneo(Long id, String nombreTorneo, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, int maxEquipos, int minEquipos, int equiposLiguilla, int vueltas, String logoTorneo, String premio, boolean estatusLlenado, boolean iniciado, boolean esliguilla, boolean estatusTorneo, Equipo ganador, String motivoFinalizacion) {
         this.id = id;
         this.nombreTorneo = nombreTorneo;
         this.descripcion = descripcion;
@@ -64,12 +65,14 @@ public class Torneo {
         this.premio = premio;
         this.estatusLlenado = estatusLlenado;
         this.iniciado = iniciado;
+        this.esliguilla = esliguilla;
         this.estatusTorneo = estatusTorneo;
         this.ganador = ganador;
         this.motivoFinalizacion = motivoFinalizacion;
     }
 
     //Getter and setters
+
 
     public Long getId() {
         return id;
@@ -131,16 +134,16 @@ public class Torneo {
         return equiposLiguilla;
     }
 
+    public void setEquiposLiguilla(int equiposLiguilla) {
+        this.equiposLiguilla = equiposLiguilla;
+    }
+
     public int getVueltas() {
         return vueltas;
     }
 
     public void setVueltas(int vueltas) {
         this.vueltas = vueltas;
-    }
-
-    public void setEquiposLiguilla(int equiposLiguilla) {
-        this.equiposLiguilla = equiposLiguilla;
     }
 
     public String getLogoTorneo() {
@@ -151,12 +154,12 @@ public class Torneo {
         this.logoTorneo = logoTorneo;
     }
 
-    public boolean isEstatusTorneo() {
-        return estatusTorneo;
+    public String getPremio() {
+        return premio;
     }
 
-    public void setEstatusTorneo(boolean estatusTorneo) {
-        this.estatusTorneo = estatusTorneo;
+    public void setPremio(String premio) {
+        this.premio = premio;
     }
 
     public boolean isEstatusLlenado() {
@@ -175,12 +178,20 @@ public class Torneo {
         this.iniciado = iniciado;
     }
 
-    public String getMotivoFinalizacion() {
-        return motivoFinalizacion;
+    public boolean isEsliguilla() {
+        return esliguilla;
     }
 
-    public void setMotivoFinalizacion(String motivoFinalizacion) {
-        this.motivoFinalizacion = motivoFinalizacion;
+    public void setEsliguilla(boolean esliguilla) {
+        this.esliguilla = esliguilla;
+    }
+
+    public boolean isEstatusTorneo() {
+        return estatusTorneo;
+    }
+
+    public void setEstatusTorneo(boolean estatusTorneo) {
+        this.estatusTorneo = estatusTorneo;
     }
 
     public Equipo getGanador() {
@@ -191,11 +202,11 @@ public class Torneo {
         this.ganador = ganador;
     }
 
-    public String getPremio() {
-        return premio;
+    public String getMotivoFinalizacion() {
+        return motivoFinalizacion;
     }
 
-    public void setPremio(String premio) {
-        this.premio = premio;
+    public void setMotivoFinalizacion(String motivoFinalizacion) {
+        this.motivoFinalizacion = motivoFinalizacion;
     }
 }
