@@ -44,12 +44,12 @@ public class Partido {
 
     private LocalTime hora;
 
+    @Column(name = "goles_local")
     private int golesLocal;
+    @Column(name = "goles_visitate")
     private int golesVisitante;
 
-    @OneToMany(mappedBy = "partido", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<JugadorEstadistica> jugadorEstadisticas;
+    private boolean jugado;
 
     //Constructores
 
@@ -57,7 +57,7 @@ public class Partido {
     public Partido() {
     }
 
-    public Partido(Long id, Torneo torneo, Equipo equipoLocal, Equipo equipoVisitante, Cancha cancha, Arbitro arbitro, LocalDate fechaPartido, LocalTime hora, int golesLocal, int golesVisitante, List<JugadorEstadistica> jugadorEstadisticas) {
+    public Partido(Long id, Torneo torneo, Equipo equipoLocal, Equipo equipoVisitante, Cancha cancha, Arbitro arbitro, LocalDate fechaPartido, LocalTime hora, int golesLocal, int golesVisitante, boolean jugado) {
         this.id = id;
         this.torneo = torneo;
         this.equipoLocal = equipoLocal;
@@ -68,10 +68,11 @@ public class Partido {
         this.hora = hora;
         this.golesLocal = golesLocal;
         this.golesVisitante = golesVisitante;
-        this.jugadorEstadisticas = jugadorEstadisticas;
+        this.jugado = jugado;
     }
 
     //Getters and setters
+
 
     public Long getId() {
         return id;
@@ -153,11 +154,11 @@ public class Partido {
         this.golesVisitante = golesVisitante;
     }
 
-    public List<JugadorEstadistica> getJugadorEstadisticas() {
-        return jugadorEstadisticas;
+    public boolean isJugado() {
+        return jugado;
     }
 
-    public void setJugadorEstadisticas(List<JugadorEstadistica> jugadorEstadisticas) {
-        this.jugadorEstadisticas = jugadorEstadisticas;
+    public void setJugado(boolean jugado) {
+        this.jugado = jugado;
     }
 }

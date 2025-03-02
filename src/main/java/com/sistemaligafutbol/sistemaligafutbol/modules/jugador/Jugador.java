@@ -26,6 +26,8 @@ public class Jugador {
     @Column(name = "partidos_jugados")
     private int partidosJugados;
 
+    private boolean expulsado;
+
     private boolean habilitado;
 
     // Relación con Equipo (Muchos jugadores pertenecen a un equipo)
@@ -39,13 +41,14 @@ public class Jugador {
     public Jugador() {
     }
 
-    public Jugador(Long id, String nombreCompleto, LocalDate fechaNacimiento, String fotoJugador, int numeroCamiseta, int partidosJugados, boolean habilitado, Equipo equipo) {
+    public Jugador(Long id, String nombreCompleto, LocalDate fechaNacimiento, String fotoJugador, int numeroCamiseta, int partidosJugados, boolean expulsado, boolean habilitado, Equipo equipo) {
         this.id = id;
         this.nombreCompleto = nombreCompleto;
         this.fechaNacimiento = fechaNacimiento;
         this.fotoJugador = fotoJugador;
         this.numeroCamiseta = numeroCamiseta;
         this.partidosJugados = partidosJugados;
+        this.expulsado = expulsado;
         this.habilitado = habilitado;
         this.equipo = equipo;
     }
@@ -99,6 +102,14 @@ public class Jugador {
 
     public void setPartidosJugados(int partidosJugados) {
         this.partidosJugados = partidosJugados;
+    }
+
+    public boolean isExpulsado() {
+        return expulsado;
+    }
+
+    public void setExpulsado(boolean expulsado) {
+        this.expulsado = expulsado;
     }
 
     public boolean isHabilitado() {
