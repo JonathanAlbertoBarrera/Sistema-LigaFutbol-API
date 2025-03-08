@@ -51,7 +51,7 @@ public class JugadorService {
         boolean equipoLleno = jugadoresActivos >= 20;
 
         // Buscar si el equipo está inscrito en un torneo y obtener el torneo
-        Optional<Solicitud> solicitudOpt = solicitudRepository.findByEquipoAndResolucionTrue(equipo);
+        Optional<Solicitud> solicitudOpt = solicitudRepository.findByEquipoAndResolucionTrueAndInscripcionEstatusTrue(equipo);
         boolean esLiguilla = solicitudOpt.map(s -> s.getTorneo().isEsliguilla()).orElse(false);
 
         try {
@@ -64,6 +64,7 @@ public class JugadorService {
             jugador.setNumeroCamiseta(jugadorDTO.getNumero_camiseta());
             jugador.setPartidosJugados(0);
             jugador.setEquipo(equipo);
+            jugador.setExpulsado(false);
 
             // Definir si el jugador estará habilitado o no
             jugador.setHabilitado(!(esLiguilla || equipoLleno));
@@ -80,7 +81,7 @@ public class JugadorService {
                 .orElseThrow(() -> new NotFoundException("Jugador no encontrado"));
 
         // Buscar si el equipo está inscrito en un torneo y obtener el torneo
-        Optional<Solicitud> solicitudOpt = solicitudRepository.findByEquipoAndResolucionTrue(jugador.getEquipo());
+        Optional<Solicitud> solicitudOpt = solicitudRepository.findByEquipoAndResolucionTrueAndInscripcionEstatusTrue(jugador.getEquipo());
         boolean esLiguilla = solicitudOpt.map(s -> s.getTorneo().isEsliguilla()).orElse(false);
 
         if (esLiguilla) {
@@ -148,9 +149,6 @@ public class JugadorService {
         }
         return jugadorRepository.findByEquipo_Id(idEquipo);
     }
-
-
-
 
 }
 

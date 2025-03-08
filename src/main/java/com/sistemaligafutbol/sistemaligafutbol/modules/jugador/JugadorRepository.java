@@ -19,6 +19,9 @@ public interface JugadorRepository extends JpaRepository<Jugador, Long> {
     boolean existsByNombreCompleto(String nombreCompleto);
 
     long countByEquipoAndHabilitadoTrue(Equipo equipo);
+
+    List<Jugador> findByEquipo(Equipo equipo);
+    List<Jugador> findByExpulsadoTrue();
 }
 
 
