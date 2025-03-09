@@ -13,7 +13,7 @@ public interface SolicitudRepository extends JpaRepository<Solicitud,Long> {
     List<Solicitud> findByTorneoAndPendienteTrue(Torneo torneo);
     List<Solicitud> findByTorneoAndResolucionTrue(Torneo torneo);
     List<Solicitud> findByEquipo_Dueno_Id(Long idDueno);
-    Optional<Solicitud> findByEquipoAndResolucionTrueAndInscripcionEstatusTrue(Equipo equipo);
+    List<Solicitud> findByEquipoAndResolucionTrueAndInscripcionEstatusTrue(Equipo equipo);
     // Obtener la solicitud asociada a un equipo
     Optional<Solicitud> findByEquipo(Equipo equipo);
 

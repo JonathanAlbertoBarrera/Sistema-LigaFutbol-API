@@ -50,9 +50,9 @@ public class JugadorService {
         long jugadoresActivos = jugadorRepository.countByEquipoAndHabilitadoTrue(equipo);
         boolean equipoLleno = jugadoresActivos >= 20;
 
-        // Buscar si el equipo está inscrito en un torneo y obtener el torneo
-        Optional<Solicitud> solicitudOpt = solicitudRepository.findByEquipoAndResolucionTrueAndInscripcionEstatusTrue(equipo);
-        boolean esLiguilla = solicitudOpt.map(s -> s.getTorneo().isEsliguilla()).orElse(false);
+        // Buscar si el equipo del jugador esta en un torneo que esta en liguilla
+        List<Solicitud> solicitudes = solicitudRepository.findByEquipoAndResolucionTrueAndInscripcionEstatusTrue(equipo);
+        boolean esLiguilla = solicitudes.stream().anyMatch(s -> s.getTorneo().isEsliguilla());
 
         try {
             String imagenUrl = imgurService.uploadImage(imagen);
@@ -80,9 +80,9 @@ public class JugadorService {
         Jugador jugador = jugadorRepository.findById(idJugador)
                 .orElseThrow(() -> new NotFoundException("Jugador no encontrado"));
 
-        // Buscar si el equipo está inscrito en un torneo y obtener el torneo
-        Optional<Solicitud> solicitudOpt = solicitudRepository.findByEquipoAndResolucionTrueAndInscripcionEstatusTrue(jugador.getEquipo());
-        boolean esLiguilla = solicitudOpt.map(s -> s.getTorneo().isEsliguilla()).orElse(false);
+        // Buscar si el equipo del jugador esta en un torneo que esta en liguilla
+        List<Solicitud> solicitudes = solicitudRepository.findByEquipoAndResolucionTrueAndInscripcionEstatusTrue(jugador.getEquipo());
+        boolean esLiguilla = solicitudes.stream().anyMatch(s -> s.getTorneo().isEsliguilla());
 
         if (esLiguilla) {
             throw new ValidationException("No se puede cambiar el estatus del jugador porque su equipo está en liguilla.");
