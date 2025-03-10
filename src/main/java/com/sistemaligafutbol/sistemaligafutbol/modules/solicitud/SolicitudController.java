@@ -38,19 +38,29 @@ public class SolicitudController {
         return ResponseEntity.ok(solicitudService.listarSolicitudesAceptadasPorTorneo(torneoId));
     }
 
-    @GetMapping("/dueno/{idUsuario}")
+    @GetMapping("admin/confirmados/{torneoId}")
+    public ResponseEntity<List<SolicitudDTO>> listarEquiposConfirmadosPorTorneo(@PathVariable Long torneoId){
+        return ResponseEntity.ok(solicitudService.listarEquiposConfirmadosPorTorneo(torneoId));
+    }
+
+    @GetMapping("/dueno/pordueno/{idUsuario}")
     public ResponseEntity<List<SolicitudDTO>> obtenerSolicitudesPorDueno(@PathVariable Long idUsuario) {
         return ResponseEntity.ok(solicitudService.listarSolicitudesPorDueno(idUsuario));
+    }
+
+    @GetMapping("/dueno/byid/{idSolicitud}")
+    public ResponseEntity<SolicitudDTO> obtenerSolicitudById(@PathVariable Long idSolicitud){
+        return ResponseEntity.ok(solicitudService.obtenerSolicitudPorId(idSolicitud));
+    }
+
+    @GetMapping("/dueno/porequipo/{idEquipo}")
+    public ResponseEntity<List<SolicitudDTO>> obtenerSolicitudesPorEquipo(@PathVariable Long idEquipo){
+        return ResponseEntity.ok(solicitudService.listarSolicitudesPorEquipo(idEquipo));
     }
 
     @PostMapping("/{idEquipo}/{idTorneo}")
     public ResponseEntity<SolicitudDTO> crearSolicitud(@PathVariable Long idEquipo, @PathVariable Long idTorneo) {
         return ResponseEntity.ok(solicitudService.crearSolicitud(idEquipo, idTorneo));
-    }
-
-    @PostMapping("/admin/agregarEquipo/{idEquipo}/{idTorneo}")
-    public ResponseEntity<SolicitudDTO> agregarEquipo(@PathVariable Long idEquipo, @PathVariable Long idTorneo){
-        return ResponseEntity.ok(solicitudService.agregarEquipo(idEquipo,idTorneo));
     }
 
     @PutMapping("/{id}/aceptar")

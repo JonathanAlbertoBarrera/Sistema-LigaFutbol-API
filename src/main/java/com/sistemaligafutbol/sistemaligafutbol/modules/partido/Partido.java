@@ -48,7 +48,7 @@ public class Partido {
     private int golesLocal;
     @Column(name = "goles_visitate")
     private int golesVisitante;
-
+    private String descripcionResultado;
     private boolean jugado;
 
     //Constructores
@@ -57,7 +57,7 @@ public class Partido {
     public Partido() {
     }
 
-    public Partido(Long id, Torneo torneo, Equipo equipoLocal, Equipo equipoVisitante, Cancha cancha, Arbitro arbitro, LocalDate fechaPartido, LocalTime hora, int golesLocal, int golesVisitante, boolean jugado) {
+    public Partido(Long id, Torneo torneo, Equipo equipoLocal, Equipo equipoVisitante, Cancha cancha, Arbitro arbitro, LocalDate fechaPartido, LocalTime hora, int golesLocal, int golesVisitante, String descripcionResultado, boolean jugado) {
         this.id = id;
         this.torneo = torneo;
         this.equipoLocal = equipoLocal;
@@ -68,6 +68,7 @@ public class Partido {
         this.hora = hora;
         this.golesLocal = golesLocal;
         this.golesVisitante = golesVisitante;
+        this.descripcionResultado = descripcionResultado;
         this.jugado = jugado;
     }
 
@@ -156,6 +157,14 @@ public class Partido {
 
     public boolean isJugado() {
         return jugado;
+    }
+
+    public String getDescripcionResultado() {
+        return descripcionResultado;
+    }
+
+    public void setDescripcionResultado(String descripcionResultado) {
+        this.descripcionResultado = descripcionResultado;
     }
 
     public void setJugado(boolean jugado) {

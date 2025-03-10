@@ -2,15 +2,38 @@ package com.sistemaligafutbol.sistemaligafutbol.modules.torneo;
 
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ImageValidationException;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundException;
+import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ValidationException;
+import com.sistemaligafutbol.sistemaligafutbol.modules.campo.Campo;
+import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.Cancha;
+import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.CanchaRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.clasificacion.Clasificacion;
+import com.sistemaligafutbol.sistemaligafutbol.modules.clasificacion.ClasificacionRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.ImgurService;
+import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.Jugador;
+import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.JugadorRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.pago.Pago;
+import com.sistemaligafutbol.sistemaligafutbol.modules.pago.PagoRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.partido.Partido;
+import com.sistemaligafutbol.sistemaligafutbol.modules.partido.PartidoRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.Solicitud;
+import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.SolicitudRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro.Arbitro;
+import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro.ArbitroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TorneoService {
@@ -19,6 +42,12 @@ public class TorneoService {
 
     @Autowired
     private ImgurService imgurService;
+
+    @Autowired
+    private SolicitudRepository solicitudRepository;
+
+    @Autowired
+    private PagoRepository pagoRepository;
 
     @Transactional
     public Torneo registrarTorneo(TorneoDTO torneoDTO, MultipartFile imagen) {
@@ -56,6 +85,7 @@ public class TorneoService {
         }
     }
 
+
     @Transactional
     public Torneo actualizarTorneo(Long id, TorneoDTO torneoDTO, MultipartFile imagen) {
         Torneo torneo = torneoRepository.findById(id)
@@ -64,24 +94,20 @@ public class TorneoService {
         LocalDate hoy = LocalDate.now();
         LocalDate inicioLiguilla = torneo.getFechaFin().minusWeeks((int) (Math.log(torneo.getEquiposLiguilla()) / Math.log(2)));
 
-        // Si ya está en la etapa de liguilla o terminó, no se permite la modificación
         if (hoy.isAfter(inicioLiguilla) || hoy.isAfter(torneo.getFechaFin())) {
             throw new IllegalStateException("No se puede modificar un torneo que ya está en la etapa de liguilla o ha finalizado.");
         }
 
         try {
-            // Si se proporciona una nueva imagen, actualizar la URL
             if (imagen != null && !imagen.isEmpty()) {
                 String nuevaImagenUrl = imgurService.uploadImage(imagen);
                 torneo.setLogoTorneo(nuevaImagenUrl);
             }
 
-            // Actualizar datos generales
             torneo.setNombreTorneo(torneoDTO.getNombreTorneo());
             torneo.setDescripcion(torneoDTO.getDescripcion());
             torneo.setPremio(torneoDTO.getPremio());
 
-            // Si el torneo aún no ha iniciado, permitir cambios en maxEquipos, minEquipos, fechaInicio, vueltas y equiposLiguilla
             if (!torneo.isIniciado()) {
                 torneo.setMaxEquipos(torneoDTO.getMaxEquipos());
                 torneo.setMinEquipos(torneoDTO.getMinEquipos());
@@ -89,11 +115,19 @@ public class TorneoService {
                 torneo.setVueltas(torneoDTO.getVueltas());
                 torneo.setEquiposLiguilla(torneoDTO.getEquiposLiguilla());
 
-                // Recalcular la fecha de fin porque se permitieron cambios
                 int jornadas = (torneoDTO.getMaxEquipos() - 1) * torneoDTO.getVueltas();
                 int semanasLiguilla = (int) (Math.log(torneoDTO.getEquiposLiguilla()) / Math.log(2));
                 LocalDate fechaFinCalculada = torneoDTO.getFechaInicio().plusWeeks(jornadas + semanasLiguilla);
                 torneo.setFechaFin(fechaFinCalculada);
+
+                List<Solicitud> solicitudesAceptadas = solicitudRepository.findByTorneoAndResolucionTrue(torneo);
+                for (Solicitud solicitud : solicitudesAceptadas) {
+                    Pago pagoInscripcion = pagoRepository.findByEquipoAndTipoPago(solicitud.getEquipo(), "Inscripción")
+                            .orElseThrow(() -> new NotFoundException("Pago de inscripción no encontrado"));
+
+                    pagoInscripcion.setFechaLimitePago(Date.from(torneo.getFechaInicio().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                    pagoRepository.save(pagoInscripcion);
+                }
             }
 
             return torneoRepository.save(torneo);
@@ -110,9 +144,15 @@ public class TorneoService {
         LocalDate hoy = LocalDate.now();
         LocalDate inicioLiguilla = torneo.getFechaFin().minusWeeks((int) (Math.log(torneo.getEquiposLiguilla()) / Math.log(2)));
 
-        // Validar si el torneo ya está en liguilla o finalizado
         if (hoy.isAfter(inicioLiguilla) || hoy.isAfter(torneo.getFechaFin())) {
             throw new IllegalStateException("No se puede cancelar un torneo que ya está en la liguilla o ha finalizado.");
+        }
+
+        List<Solicitud> solicitudes = solicitudRepository.findByTorneo(torneo);
+        for (Solicitud solicitud : solicitudes) {
+            List<Pago> pagosPendientes = pagoRepository.findByEquipoAndEstatusPagoFalse(solicitud.getEquipo());
+            pagoRepository.deleteAll(pagosPendientes);
+            pagoRepository.flush();
         }
 
         torneo.setEstatusTorneo(false);
@@ -121,10 +161,15 @@ public class TorneoService {
         return torneoRepository.save(torneo);
     }
 
-
     @Transactional(readOnly = true)
     public List<Torneo> obtenerTodosLosTorneos(){
         return torneoRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Torneo obtenerTorneo(Long id){
+        return torneoRepository.findById(id)
+                .orElseThrow(()-> new NotFoundException("Torneo no encontrado"));
     }
 
     @Transactional(readOnly = true)
@@ -141,5 +186,4 @@ public class TorneoService {
     public List<Torneo> obtenerTorneosFinalizados(){
         return torneoRepository.findByEstatusTorneoFalse();
     }
-
 }

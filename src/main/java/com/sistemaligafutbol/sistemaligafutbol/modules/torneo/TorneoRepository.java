@@ -10,4 +10,5 @@ public interface TorneoRepository extends JpaRepository<Torneo,Long> {
     List<Torneo> findByEstatusTorneoTrueAndIniciadoTrue();
     List<Torneo> findByEstatusTorneoFalse();
     Optional<Torneo> findByNombreTorneo(String nombreTorneo);
+    boolean existsByNombreTorneo(String nombreTorneo);
 }

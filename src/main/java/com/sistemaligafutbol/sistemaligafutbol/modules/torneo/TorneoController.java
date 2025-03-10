@@ -43,6 +43,11 @@ public class TorneoController {
         return ResponseEntity.ok(torneoService.obtenerTodosLosTorneos());
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<Torneo> obtenerTorneoporId(@PathVariable Long id){
+        return ResponseEntity.ok(torneoService.obtenerTorneo(id));
+    }
+
     @GetMapping("/espera")
     public ResponseEntity<List<Torneo>> obtenerTorneosEnEspera(){
         return ResponseEntity.ok(torneoService.obtenerTorneosEnEspera());
