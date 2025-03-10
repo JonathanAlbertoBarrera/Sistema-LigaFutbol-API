@@ -8,6 +8,8 @@ import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.EquipoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.Jugador;
 import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.JugadorRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.pago.tipos.ConfiguracionPago;
+import com.sistemaligafutbol.sistemaligafutbol.modules.pago.tipos.ConfiguracionPagoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.Solicitud;
 import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.SolicitudRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.Torneo;
@@ -61,6 +63,9 @@ public class DataInitializer {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private ConfiguracionPagoRepository configuracionPagoRepository;
+
     @Value("${admin.email}")
     private String adminEmail;
 
@@ -82,6 +87,7 @@ public class DataInitializer {
         inicializarEquipos();
         inicializarJugadores();
         inicializarSolicitudes();
+        inicializarPagos();
     }
 
     private void inicializarAdmin() {
@@ -93,6 +99,25 @@ public class DataInitializer {
             admin.setRoles(Set.of("ROLE_ADMIN"));
             admin.setEstatus(true);
             usuarioRepository.save(admin);
+        }
+    }
+
+    private void inicializarPagos(){
+        if(configuracionPagoRepository.count()==0){
+            ConfiguracionPago pago=new ConfiguracionPago();
+            pago.setTipoPago("Inscripción");
+            pago.setMonto(850.00);
+            configuracionPagoRepository.save(pago);
+
+            ConfiguracionPago pagoA=new ConfiguracionPago();
+            pagoA.setTipoPago("Arbitraje");
+            pagoA.setMonto(150.00);
+            configuracionPagoRepository.save(pagoA);
+
+            ConfiguracionPago pagoC=new ConfiguracionPago();
+            pagoC.setTipoPago("Cancha");
+            pagoC.setMonto(200.00);
+            configuracionPagoRepository.save(pagoC);
         }
     }
 

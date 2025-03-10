@@ -4,6 +4,7 @@ import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundExce
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ValidationException;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.EquipoRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.pago.tipos.ConfiguracionPagoService;
 import com.sistemaligafutbol.sistemaligafutbol.modules.partido.Partido;
 import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.Solicitud;
 import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.SolicitudRepository;
@@ -33,24 +34,32 @@ public class PagoService {
     @Autowired
     private EquipoRepository equipoRepository;
 
+    @Autowired
+    private ConfiguracionPagoService configuracionPagoService;
+
     //PARA GENERAR PAGOS A LOS PARTIDOS
+    @Transactional
     public void generarPagoPorPartido(Partido partido) {
+        double precioArbitraje = configuracionPagoService.obtenerPrecioPorTipo("Arbitraje");
+        double precioCancha = configuracionPagoService.obtenerPrecioPorTipo("Cancha");
+
         Date fechaLimite = java.sql.Date.valueOf(partido.getFechaPartido().minusDays(4));
 
         if (!pagoRepository.existsByEquipoAndTipoPagoAndFechaLimitePago(partido.getEquipoLocal(), "Cancha", fechaLimite)) {
-            generarPago(partido.getEquipoLocal(), "Cancha", 200, partido);
+            generarPago(partido.getEquipoLocal(), "Cancha", precioCancha, partido);
         }
 
         if (!pagoRepository.existsByEquipoAndTipoPagoAndFechaLimitePago(partido.getEquipoLocal(), "Arbitraje", fechaLimite)) {
-            generarPago(partido.getEquipoLocal(), "Arbitraje", 100, partido);
+            generarPago(partido.getEquipoLocal(), "Arbitraje", precioArbitraje, partido);
         }
 
         if (!pagoRepository.existsByEquipoAndTipoPagoAndFechaLimitePago(partido.getEquipoVisitante(), "Arbitraje", fechaLimite)) {
-            generarPago(partido.getEquipoVisitante(), "Arbitraje", 100, partido);
+            generarPago(partido.getEquipoVisitante(), "Arbitraje", precioArbitraje, partido);
         }
     }
 
-    public void generarPago(Equipo equipo, String tipoPago, int monto, Partido partido) {
+    @Transactional
+    public void generarPago(Equipo equipo, String tipoPago, double monto, Partido partido) {
         Pago pago = new Pago();
         pago.setEquipo(equipo);
         pago.setTipoPago(tipoPago);
@@ -62,14 +71,22 @@ public class PagoService {
     }
 
     @Transactional
-    public String completarPagoInscripcion(Long idPago) {
+    public String pagar(Long idPago) {
         Pago pago = pagoRepository.findById(idPago)
                 .orElseThrow(() -> new NotFoundException("Pago no encontrado"));
 
         if (pago.isEstatusPago()) {
-            throw new ValidationException("El pago ya ha sido completado.");
+            throw new ValidationException("Este pago ya ha sido completado.");
         }
 
+        if ("Inscripción".equalsIgnoreCase(pago.getTipoPago())) {
+            return completarPagoInscripcion(pago);
+        } else {
+            return confirmarPago(pago);
+        }
+    }
+
+    private String completarPagoInscripcion(Pago pago) {
         // Obtener la solicitud asociada al equipo
         Solicitud solicitud = solicitudRepository.findByEquipoAndTorneo(pago.getEquipo(),
                         solicitudRepository.findByEquipo(pago.getEquipo())
@@ -88,16 +105,16 @@ public class PagoService {
             throw new ValidationException("El torneo ya ha alcanzado el número máximo de equipos permitidos. La solicitud y el pago han sido eliminados.");
         }
 
-        // Completar el pago
+        // Completar el pago de inscripción
         pago.setEstatusPago(true);
         pago.setFechaPago(new Date());
         pagoRepository.save(pago);
 
-        // Cambiar inscripcionEstatus a true
+        // Marcar la inscripción como completada
         solicitud.setInscripcionEstatus(true);
         solicitudRepository.save(solicitud);
 
-        // Verificar si se alcanzó el máximo de equipos
+        // Verificar si se alcanzó el máximo de equipos permitidos
         equiposAceptados = solicitudRepository.countByTorneoAndResolucionTrueAndInscripcionEstatusTrue(torneo);
         if (equiposAceptados >= torneo.getMaxEquipos()) {
             torneo.setEstatusLlenado(true);
@@ -107,14 +124,26 @@ public class PagoService {
         return "Pago de inscripción completado correctamente.";
     }
 
-    //ESTO SERIA PARA PAGOS DE TIPO ARBITRAJE Y CANCHA
-    @Transactional
-    public String confirmarPago(Long idPago) {
-        Pago pago = pagoRepository.findById(idPago)
-                .orElseThrow(() -> new NotFoundException("Pago no encontrado"));
+    private String confirmarPago(Pago pago) {
         pago.setEstatusPago(true);
+        pago.setFechaPago(new Date());
         pagoRepository.save(pago);
         return "Pago confirmado correctamente.";
+    }
+
+    @Transactional(readOnly = true)
+    public List<Pago> obtenerPagosPorTorneo(Long idTorneo) {
+        return pagoRepository.findPagosPorTorneo(idTorneo);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Pago> obtenerPagosPendientesPorTorneo(Long idTorneo) {
+        return pagoRepository.findPagosPendientesPorTorneo(idTorneo);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Pago> obtenerPagosConfirmadosPorTorneo(Long idTorneo) {
+        return pagoRepository.findPagosConfirmadosPorTorneo(idTorneo);
     }
 
     @Transactional(readOnly = true)
@@ -123,6 +152,14 @@ public class PagoService {
                 .orElseThrow(()-> new NotFoundException("Equipo no encontrado"));
 
         return pagoRepository.findByEquipo(equipo);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Pago> listarPagosInscripcionPorEquipo(Long idEquipo){
+        Equipo equipo=equipoRepository.findById(idEquipo)
+                .orElseThrow(()-> new NotFoundException("Equipo no encontrado"));
+
+        return pagoRepository.findAllByEquipoAndTipoPago(equipo,"Inscripción");
     }
 
     @Transactional(readOnly = true)
@@ -139,6 +176,42 @@ public class PagoService {
                 .orElseThrow(()-> new NotFoundException("Equipo no encontrado"));
 
         return pagoRepository.findAllByEquipoAndTipoPago(equipo,"Cancha");
+    }
+
+    // Obtener todos los pagos de un equipo en un torneo específico
+    @Transactional(readOnly = true)
+    public List<Pago> obtenerPagosPorEquipoYTorneo(Long idTorneo, Long idEquipo) {
+        Torneo torneo = torneoRepository.findById(idTorneo)
+                .orElseThrow(() -> new NotFoundException("Torneo no encontrado"));
+
+        Equipo equipo = equipoRepository.findById(idEquipo)
+                .orElseThrow(() -> new NotFoundException("Equipo no encontrado"));
+
+        return pagoRepository.findByTorneoAndEquipo(torneo, equipo);
+    }
+
+    // Obtener solo los pagos pendientes de un equipo en un torneo específico
+    @Transactional(readOnly = true)
+    public List<Pago> obtenerPagosPendientesPorEquipoYTorneo(Long idTorneo, Long idEquipo) {
+        Torneo torneo = torneoRepository.findById(idTorneo)
+                .orElseThrow(() -> new NotFoundException("Torneo no encontrado"));
+
+        Equipo equipo = equipoRepository.findById(idEquipo)
+                .orElseThrow(() -> new NotFoundException("Equipo no encontrado"));
+
+        return pagoRepository.findByTorneoAndEquipoAndEstatusPagoFalse(torneo, equipo);
+    }
+
+    // Obtener solo los pagos ya realizados de un equipo en un torneo específico
+    @Transactional(readOnly = true)
+    public List<Pago> obtenerPagosConfirmadosPorEquipoYTorneo(Long idTorneo, Long idEquipo) {
+        Torneo torneo = torneoRepository.findById(idTorneo)
+                .orElseThrow(() -> new NotFoundException("Torneo no encontrado"));
+
+        Equipo equipo = equipoRepository.findById(idEquipo)
+                .orElseThrow(() -> new NotFoundException("Equipo no encontrado"));
+
+        return pagoRepository.findByTorneoAndEquipoAndEstatusPagoTrue(torneo, equipo);
     }
 
     @Transactional

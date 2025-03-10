@@ -98,6 +98,7 @@ public class SecurityConfig {
                         //GESTION DE PAGOS
                         .requestMatchers(HttpMethod.PUT,"/api/pagos/admin/**").hasRole("ADMIN") //SOLO ADMIN puede indicar que se hizo una inscripcion, (cancha o arbitraje), y dar prorroga
                         .requestMatchers(HttpMethod.GET,"/api/pagos/equipo/**").hasAnyRole("ADMIN","DUENO")//SOLO ADMIN Y DUENOS pueden ver pagos por equipo (todos, arbitraje, cancha)
+                        .requestMatchers(HttpMethod.GET, "/api/pagos/todos/precios").permitAll()//todos pueden ver los precios de los tipos de pago
 
                         .anyRequest().authenticated() // Cualquier otra ruta requiere autenticación
                 )

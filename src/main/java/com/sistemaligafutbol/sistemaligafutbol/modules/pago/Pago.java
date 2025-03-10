@@ -16,7 +16,7 @@ public class Pago {
     @Column(name = "tipo_pago")
     private String tipoPago;
     private String descripcion;
-    private int monto;
+    private double monto;
 
     @Column(name = "fecha_pago")
     @Temporal(TemporalType.DATE)
@@ -40,18 +40,19 @@ public class Pago {
     public Pago() {
     }
 
-    public Pago(Long id, String tipoPago, String descripcion, int monto, Date fechaPago, Date fechaLimitePago, boolean estatusPago, Equipo equipo) {
+    public Pago(Long id, String tipoPago, String descripcion, double monto, Date fechaPago, Date fechaLimitePago, Equipo equipo, boolean estatusPago) {
         this.id = id;
         this.tipoPago = tipoPago;
         this.descripcion = descripcion;
         this.monto = monto;
         this.fechaPago = fechaPago;
         this.fechaLimitePago = fechaLimitePago;
-        this.estatusPago = estatusPago;
         this.equipo = equipo;
+        this.estatusPago = estatusPago;
     }
 
     //Getters and setters
+
 
     public Long getId() {
         return id;
@@ -69,12 +70,20 @@ public class Pago {
         this.tipoPago = tipoPago;
     }
 
-    public int getMonto() {
+    public double getMonto() {
         return monto;
     }
 
-    public void setMonto(int monto) {
+    public void setMonto(double monto) {
         this.monto = monto;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     public Date getFechaPago() {
@@ -107,13 +116,5 @@ public class Pago {
 
     public void setEquipo(Equipo equipo) {
         this.equipo = equipo;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
     }
 }

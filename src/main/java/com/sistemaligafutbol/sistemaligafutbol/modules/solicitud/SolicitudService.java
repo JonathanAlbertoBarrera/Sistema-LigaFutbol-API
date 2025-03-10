@@ -6,6 +6,7 @@ import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.EquipoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.pago.Pago;
 import com.sistemaligafutbol.sistemaligafutbol.modules.pago.PagoRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.pago.tipos.ConfiguracionPagoService;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.Torneo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.TorneoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Dueno.Dueno;
@@ -41,6 +42,9 @@ public class SolicitudService {
 
     @Autowired
     private PagoRepository pagoRepository;
+
+    @Autowired
+    private ConfiguracionPagoService configuracionPagoService;
 
     @Transactional(readOnly = true)
     public List<SolicitudDTO> listarTodasSolicitudes(){
@@ -269,9 +273,10 @@ public class SolicitudService {
         solicitudRepository.save(solicitud);
 
         // Generar pago de inscripción
+        double precioInscripcion=configuracionPagoService.obtenerPrecioPorTipo("Inscripción");
         Pago pagoInscripcion = new Pago();
         pagoInscripcion.setTipoPago("Inscripción");
-        pagoInscripcion.setMonto(1000);
+        pagoInscripcion.setMonto(precioInscripcion);
         pagoInscripcion.setFechaPago(null);
         pagoInscripcion.setFechaLimitePago(Date.from(torneo.getFechaInicio().minusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant()));
         pagoInscripcion.setEstatusPago(false);
