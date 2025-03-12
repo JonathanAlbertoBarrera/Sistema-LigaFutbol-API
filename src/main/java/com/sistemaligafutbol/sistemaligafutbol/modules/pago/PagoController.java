@@ -3,7 +3,6 @@ package com.sistemaligafutbol.sistemaligafutbol.modules.pago;
 import com.sistemaligafutbol.sistemaligafutbol.modules.pago.tipos.ConfiguracionPago;
 import com.sistemaligafutbol.sistemaligafutbol.modules.pago.tipos.ConfiguracionPagoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +32,11 @@ public class PagoController {
     @PutMapping("/admin/prorroga/{idPago}")
     public ResponseEntity<String> otorgarProrroga(@PathVariable Long idPago, @RequestParam LocalDate nuevaFechaLimite) {
         return ResponseEntity.ok(pagoService.otorgarProrroga(idPago, nuevaFechaLimite));
+    }
+
+    @GetMapping("/admin/todos")
+    public ResponseEntity<List<Pago>> obtenerTodos(){
+        return ResponseEntity.ok(pagoService.obtenerTodos());
     }
 
     @GetMapping("/admin/torneo/{idTorneo}")

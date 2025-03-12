@@ -132,6 +132,11 @@ public class PagoService {
     }
 
     @Transactional(readOnly = true)
+    public List<Pago> obtenerTodos(){
+        return pagoRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
     public List<Pago> obtenerPagosPorTorneo(Long idTorneo) {
         return pagoRepository.findPagosPorTorneo(idTorneo);
     }

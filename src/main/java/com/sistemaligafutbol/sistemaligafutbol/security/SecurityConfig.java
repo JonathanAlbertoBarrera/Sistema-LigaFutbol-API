@@ -1,37 +1,36 @@
 package com.sistemaligafutbol.sistemaligafutbol.security;
 
 import com.sistemaligafutbol.sistemaligafutbol.security.jwt.JwtRequestFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+    private final JwtRequestFilter jwtRequestFilter;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
+        this.jwtRequestFilter = jwtRequestFilter;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF
                 .authorizeHttpRequests(auth -> auth
                         //GESTION DE USUARIOS
@@ -69,18 +68,18 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/canchas/{id}").permitAll()//TODOS Pueden ver alguna cancha en especifico, por ejemplo al ver datos de un partido
 
                         //GESTION DE EQUIPOS
-                                .requestMatchers(HttpMethod.POST,"/api/equipos").hasRole("DUENO") //SOLO DUENOS pueden crear equipos
-                                .requestMatchers(HttpMethod.PUT,"/api/equipos").hasRole("DUENO")  //SOLO DUENOS pueden modificar a su equipo
-                                .requestMatchers(HttpMethod.GET,"/api/equipos/**").permitAll() //TODOS podran ver los equipos
+                        .requestMatchers(HttpMethod.POST,"/api/equipos").hasRole("DUENO") //SOLO DUENOS pueden crear equipos
+                        .requestMatchers(HttpMethod.PUT,"/api/equipos").hasRole("DUENO")  //SOLO DUENOS pueden modificar a su equipo
+                        .requestMatchers(HttpMethod.GET,"/api/equipos/**").permitAll() //TODOS podran ver los equipos
 
-                                //GESTION DE SOLICITUDES
-                                .requestMatchers(HttpMethod.POST,"/api/solicitudes/{idEquipo}/{idTorneo}").hasRole("DUENO") //SOLO DUENOS pueden solicitar unirse a un torneo
-                                .requestMatchers(HttpMethod.POST,"/api/solicitudes/admin/agregarEquipo/").hasRole("ADMIN") //solo ADMIN puede agregar equipos directamente al torneo
-                                .requestMatchers(HttpMethod.PUT,"/api/solicitudes/**").hasRole("ADMIN") //Solo ADMIN puede aceptar/rechazar las solicitudes
-                                .requestMatchers(HttpMethod.GET,"/api/solicitudes/admin/**").hasRole("ADMIN") //solo ADMIN puede ver las solicitudes
-                                .requestMatchers(HttpMethod.GET,"/api/solicitudes/dueno/**").hasAnyRole("ADMIN","DUENO") //tanto ADMIN como DUENOS pueden ver las solicitudes por Duenos
+                        //GESTION DE SOLICITUDES
+                        .requestMatchers(HttpMethod.POST,"/api/solicitudes/{idEquipo}/{idTorneo}").hasRole("DUENO") //SOLO DUENOS pueden solicitar unirse a un torneo
+                        .requestMatchers(HttpMethod.POST,"/api/solicitudes/admin/agregarEquipo/").hasRole("ADMIN") //solo ADMIN puede agregar equipos directamente al torneo
+                        .requestMatchers(HttpMethod.PUT,"/api/solicitudes/**").hasRole("ADMIN") //Solo ADMIN puede aceptar/rechazar las solicitudes
+                        .requestMatchers(HttpMethod.GET,"/api/solicitudes/admin/**").hasRole("ADMIN") //solo ADMIN puede ver las solicitudes
+                        .requestMatchers(HttpMethod.GET,"/api/solicitudes/dueno/**").hasAnyRole("ADMIN","DUENO") //tanto ADMIN como DUENOS pueden ver las solicitudes por Duenos
 
-                                //GESTION DE JUGADORES
+                        //GESTION DE JUGADORES
                         .requestMatchers(HttpMethod.POST, "/api/jugadores").hasRole("DUENO") //SOLO DUENOS PUEDEN REGISTRAR JUGADORES
                         .requestMatchers(HttpMethod.PUT,"/api/jugadores/").hasRole("DUENO") //SOLO DUENOS PUEDEN MODIFICAR/desactivar A SUS JUGADORES
                         .requestMatchers(HttpMethod.GET,"/api/jugadores/**").permitAll() // todos necesitarian ver el listado de jugadores
@@ -97,17 +96,16 @@ public class SecurityConfig {
 
                         //GESTION DE PAGOS
                         .requestMatchers(HttpMethod.PUT,"/api/pagos/admin/**").hasRole("ADMIN") //SOLO ADMIN puede indicar que se hizo una inscripcion, (cancha o arbitraje), y dar prorroga
+                        .requestMatchers(HttpMethod.GET,"/api/pagos/admin/todos").hasRole("ADMIN") //SOLO ADMIN PUEDE VER EL LISTADO DE TODOS los pagos
                         .requestMatchers(HttpMethod.GET,"/api/pagos/equipo/**").hasAnyRole("ADMIN","DUENO")//SOLO ADMIN Y DUENOS pueden ver pagos por equipo (todos, arbitraje, cancha)
                         .requestMatchers(HttpMethod.GET, "/api/pagos/todos/precios").permitAll()//todos pueden ver los precios de los tipos de pago
 
                         .anyRequest().authenticated() // Cualquier otra ruta requiere autenticación
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Sin sesiones
-                );
-
-        // Agregar el filtro JWT antes del filtro de autenticación
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -115,6 +113,11 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }
