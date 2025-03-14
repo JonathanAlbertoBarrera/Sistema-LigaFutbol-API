@@ -46,4 +46,6 @@ public interface PartidoRepository extends JpaRepository<Partido,Long> {
     // Buscar partido de ida dado un equipo local, visitante y fecha
     Optional<Partido> findByEquipoLocalAndEquipoVisitanteAndFechaPartido(
             Equipo equipoLocal, Equipo equipoVisitante, LocalDate fechaPartido);
+
+    boolean existsByArbitroAndJugadoFalse(Arbitro arbitro);
 }

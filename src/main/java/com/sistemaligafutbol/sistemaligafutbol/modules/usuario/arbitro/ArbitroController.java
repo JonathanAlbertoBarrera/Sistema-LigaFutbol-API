@@ -22,7 +22,7 @@ public class ArbitroController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Arbitro> obtenerArbitroPorId(@PathVariable Long id){
-        return ResponseEntity.ok(arbitroService.obtenerJugadorPorId(id));
+        return ResponseEntity.ok(arbitroService.obtenerArbitroPorId(id));
     }
 
     @PostMapping
@@ -30,9 +30,14 @@ public class ArbitroController {
          return ResponseEntity.ok(arbitroService.registrarArbitro(arbitroDTO,imagen));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Arbitro> actualizarArbitro(@PathVariable Long id, @RequestPart("arbitro") @Valid ArbitroActualizarDTO arbitroActualizarDTO, @RequestPart(value = "imagen", required = false) MultipartFile imagen){
-        return ResponseEntity.ok(arbitroService.actualizarArbitro(id,arbitroActualizarDTO,imagen));
+    @PutMapping("/actualizar/{idUsuario}")
+    public ResponseEntity<Arbitro> actualizarArbitro(@PathVariable Long idUsuario, @RequestPart("arbitro") @Valid ArbitroActualizarDTO arbitroActualizarDTO, @RequestPart(value = "imagen", required = false) MultipartFile imagen){
+        return ResponseEntity.ok(arbitroService.actualizarArbitro(idUsuario,arbitroActualizarDTO,imagen));
+    }
+
+    @PutMapping("/cambiarEstatus/{idArbitro}")
+    public ResponseEntity<String> cambiarEstatusArbitro(@PathVariable Long idArbitro) {
+        return ResponseEntity.ok(arbitroService.cambiarEstatusArbitro(idArbitro));
     }
 
 }

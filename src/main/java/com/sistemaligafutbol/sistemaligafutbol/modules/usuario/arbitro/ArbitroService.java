@@ -2,7 +2,9 @@ package com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro;
 
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ImageValidationException;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundException;
+import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ValidationException;
 import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.ImgurService;
+import com.sistemaligafutbol.sistemaligafutbol.modules.partido.PartidoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Usuario;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class ArbitroService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PartidoRepository partidoRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -57,8 +62,12 @@ public class ArbitroService {
 
     @Transactional
     public Arbitro actualizarArbitro(Long id, ArbitroActualizarDTO arbitroActualizarDTO, MultipartFile imagen) {
-        Arbitro arbitro = arbitroRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Árbitro no encontrado con ID: " + id));
+        Usuario user = usuarioRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
+
+        // Buscar el árbitro asociado a este usuario
+        Arbitro arbitro = arbitroRepository.findByUsuario(user)
+                .orElseThrow(() -> new NotFoundException("El usuario no está asociado a un árbitro"));
 
         try {
             // Si se proporciona una nueva imagen, actualizar la URL
@@ -84,6 +93,25 @@ public class ArbitroService {
         }
     }
 
+    @Transactional
+    public String cambiarEstatusArbitro(Long idArbitro) {
+        // Buscar el árbitro
+        Arbitro arbitro = arbitroRepository.findById(idArbitro)
+                .orElseThrow(() -> new NotFoundException("Árbitro no encontrado"));
+
+        // Verificar si tiene partidos pendientes (que aún no han sido jugados)
+        boolean tienePartidosPendientes = partidoRepository.existsByArbitroAndJugadoFalse(arbitro);
+        if (tienePartidosPendientes) {
+            throw new ValidationException("No se puede desactivar el árbitro porque tiene partidos asignados para pitar.");
+        }
+
+        // Cambiar el estatus del árbitro
+        boolean nuevoEstatus = !arbitro.getUsuario().isEstatus();
+        arbitro.getUsuario().setEstatus(nuevoEstatus);
+        usuarioRepository.save(arbitro.getUsuario());
+
+        return "Estatus del árbitro actualizado correctamente a " + (nuevoEstatus ? "Activo" : "Inactivo");
+    }
 
     @Transactional(readOnly = true)
     public List<Arbitro> obtenerTodosLosArbitros(){
@@ -91,7 +119,7 @@ public class ArbitroService {
     }
 
     @Transactional(readOnly = true)
-    public Arbitro obtenerJugadorPorId(Long id){
+    public Arbitro obtenerArbitroPorId(Long id){
         return arbitroRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Árbitro no encontrado"));
     }

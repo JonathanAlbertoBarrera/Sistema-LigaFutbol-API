@@ -137,12 +137,14 @@ public class PartidosTorneoRegularService {
 
                         // Buscar cancha disponible
                         Optional<Cancha> canchaDisponible = canchaRepository.findByCampo(local.getCampo()).stream()
+                                .filter(c -> c.isEstatusCancha())
                                 .filter(c -> partidoRepository.findByCanchaAndFechaPartido(c, fechaJuego).isEmpty())
                                 .findFirst();
 
-                        // Buscar árbitro disponible
+                        // Buscar árbitro activo y disponible
                         Optional<Arbitro> arbitroDisponible = arbitroRepository.findAll().stream()
-                                .filter(a -> partidoRepository.findByArbitroAndFechaPartido(a, fechaJuego).isEmpty())
+                                .filter(a -> a.getUsuario().isEstatus()) // Solo árbitros activos
+                                .filter(a -> partidoRepository.findByArbitroAndFechaPartido(a, fechaJuego).isEmpty()) // 🔥 Solo árbitros sin partido ese día
                                 .findFirst();
 
                         // Si no hay disponibilidad en domingo, probar en sábado
