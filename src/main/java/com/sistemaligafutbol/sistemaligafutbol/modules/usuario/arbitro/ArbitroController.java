@@ -25,6 +25,11 @@ public class ArbitroController {
         return ResponseEntity.ok(arbitroService.obtenerArbitroPorId(id));
     }
 
+    @GetMapping("/poruser/{id}")
+    public ResponseEntity<Arbitro> obtenerArbitroPorIdUsuario(@PathVariable Long id){
+        return ResponseEntity.ok(arbitroService.obtenerArbiPorIdUsuario(id));
+    }
+
     @PostMapping
     public ResponseEntity<Arbitro> registrarArbitro(@RequestPart("arbitro") @Valid ArbitroDTO arbitroDTO, @RequestPart("imagen") MultipartFile imagen) {
          return ResponseEntity.ok(arbitroService.registrarArbitro(arbitroDTO,imagen));

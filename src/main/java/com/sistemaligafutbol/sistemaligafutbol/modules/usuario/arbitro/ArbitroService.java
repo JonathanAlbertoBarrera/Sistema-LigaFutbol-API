@@ -123,4 +123,12 @@ public class ArbitroService {
         return arbitroRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Árbitro no encontrado"));
     }
+
+    @Transactional
+    public Arbitro obtenerArbiPorIdUsuario(Long idUsuario){
+        Usuario usuario=usuarioRepository.findById(idUsuario)
+                .orElseThrow(()-> new NotFoundException("Usuario no encontrado"));
+        return arbitroRepository.findByUsuario(usuario)
+                .orElseThrow(()-> new NotFoundException("El usuario no está asociado a un árbitro"));
+    }
 }

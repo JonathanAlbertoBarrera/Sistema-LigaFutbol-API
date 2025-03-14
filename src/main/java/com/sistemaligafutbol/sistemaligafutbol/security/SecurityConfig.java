@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/arbitros").hasRole("ADMIN") // Solo ADMIN puede REGISTRAR a árbitros
                         .requestMatchers(HttpMethod.GET,"/api/arbitros").hasRole("ADMIN") //solo ADMIN puede ver el listado de arbitros
                         .requestMatchers(HttpMethod.GET,"/api/arbitros/{id}").permitAll()//todos podrian ver a un arbitro especifico, por ejemplo al ver un partido
+                        .requestMatchers(HttpMethod.GET,"/api/arbitros/poruser/").hasRole("ARBITRO") //solo ARBITROS podran visualizar sus datos de arbitro segun el usuario que son
                         .requestMatchers(HttpMethod.PUT,"/api/arbitros/actualizar/**").hasRole("ARBITRO") // Solo ARBITROS podrian modificar sus datos
                         .requestMatchers(HttpMethod.PUT,"/api/arbitros/cambiarEstatus/").hasRole("ADMIN") //SOLO ADMIN PODRIA DESACTIVAR A LOS ARBITROS
 
