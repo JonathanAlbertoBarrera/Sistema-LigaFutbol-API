@@ -2,7 +2,10 @@ package com.sistemaligafutbol.sistemaligafutbol.modules.solicitud;
 
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.Torneo;
+import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Dueno.Dueno;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,4 +30,11 @@ public interface SolicitudRepository extends JpaRepository<Solicitud,Long> {
     void deleteByEquipoAndTorneo(Equipo equipo, Torneo torneo);
 
     boolean existsByEquipoAndTorneo(Equipo equipo, Torneo torneo);
+
+    boolean existsByEquipoAndResolucionTrueAndInscripcionEstatusTrueAndTorneoEstatusTorneoTrue(Equipo equipo);
+    // Buscar todas las solicitudes pendientes de una lista de equipos
+    List<Solicitud> findByEquipoInAndPendienteTrue(List<Equipo> equipos);
+
+    // ✅ Encuentra todas las solicitudes aceptadas pero sin pagar la inscripción
+    List<Solicitud> findByEquipoInAndResolucionTrueAndInscripcionEstatusFalse(List<Equipo> equipos);
 }

@@ -17,9 +17,6 @@ public class Equipo {
     private String nombreEquipo;
     private String logo;
 
-    @Column(name = "equipo_estatus")
-    private boolean equipoEstatus;
-
     @ManyToOne
     @JoinColumn(name = "id_dueno", nullable = false)
     private Dueno dueno;
@@ -34,11 +31,10 @@ public class Equipo {
     public Equipo() {
     }
 
-    public Equipo(Long id, String nombreEquipo, String logo, boolean equipoEstatus, Dueno dueno, Campo campo) {
+    public Equipo(Long id, String nombreEquipo, String logo, Dueno dueno, Campo campo) {
         this.id = id;
         this.nombreEquipo = nombreEquipo;
         this.logo = logo;
-        this.equipoEstatus = equipoEstatus;
         this.dueno = dueno;
         this.campo = campo;
     }
@@ -67,14 +63,6 @@ public class Equipo {
 
     public void setLogo(String logo) {
         this.logo = logo;
-    }
-
-    public boolean isEquipoEstatus() {
-        return equipoEstatus;
-    }
-
-    public void setEquipoEstatus(boolean equipoEstatus) {
-        this.equipoEstatus = equipoEstatus;
     }
 
     public Dueno getDueno() {

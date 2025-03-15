@@ -40,7 +40,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/duenos/**").permitAll() // TODOS PUEDEN REGISTRARSE COMO DUENO
                         .requestMatchers(HttpMethod.GET,"/api/duenos").hasRole("ADMIN") //Solo ADMIN puede ver el listado de duenos
                         .requestMatchers(HttpMethod.GET,"/api/duenos/{id}").permitAll() //todos podrian ver a un dueno especifico, por ejemplo al ver un equipo
+                        .requestMatchers(HttpMethod.GET,"/api/duenos/porusuario/{idUsuario}").hasRole("DUENO") //solo DUENOS podrian hacer busqueda segun el usuario que son
                         .requestMatchers(HttpMethod.PUT, "/api/duenos").hasRole("DUENO") //solo DUENOS podrian modificar sus datos
+                        .requestMatchers(HttpMethod.PUT,"/api/duenos/estatus/{idDueno}").hasRole("ADMIN") //SOLO ADMIN puede desactivar DUENOS
 
                         //GESTION DE ARBITROS
                         .requestMatchers(HttpMethod.POST,"/api/arbitros").hasRole("ADMIN") // Solo ADMIN puede REGISTRAR a árbitros

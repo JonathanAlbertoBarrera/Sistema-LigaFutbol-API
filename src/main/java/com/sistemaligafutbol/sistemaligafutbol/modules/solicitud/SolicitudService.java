@@ -267,6 +267,11 @@ public class SolicitudService {
             throw new ValidationException("El torneo ya ha alcanzado el número máximo de equipos permitidos.");
         }
 
+        // Verificar que el dueño del equipo esté activo antes de aceptar la solicitud
+        if (!solicitud.getEquipo().getDueno().getUsuario().isEstatus()) {
+            throw new ValidationException("No se puede aceptar la solicitud porque el dueño del equipo está desactivado.");
+        }
+
         // Aceptar la solicitud
         solicitud.setResolucion(true);
         solicitud.setPendiente(false);

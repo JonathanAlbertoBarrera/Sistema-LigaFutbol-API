@@ -25,6 +25,11 @@ public class DuenoController {
         return ResponseEntity.ok(duenoService.obtenerArbitroPorId(id));
     }
 
+    @GetMapping("/porusuario/{idUsuario}")
+    public ResponseEntity<Dueno> obtenerDuenoPorIdUsuario(@PathVariable Long idUsuario){
+        return ResponseEntity.ok(duenoService.obtenerDuenoPorIdUsuario(idUsuario));
+    }
+
     @PostMapping
     public Dueno registrarDueno(@RequestPart("dueno") @Valid DuenoRegistroDTO duenoRegistroDTO, @RequestPart("imagen") MultipartFile imagen) {
         return duenoService.registrarDueno(duenoRegistroDTO,imagen);
@@ -33,5 +38,10 @@ public class DuenoController {
     @PutMapping("/{id}")
     public ResponseEntity<Dueno> actualizarArbitro(@PathVariable Long id, @RequestPart("dueno") @Valid DuenoActualizarDTO duenoActualizarDTO, @RequestPart(value = "imagen",required = false) MultipartFile imagen){
         return ResponseEntity.ok(duenoService.actualizarDueno(id,duenoActualizarDTO,imagen));
+    }
+
+    @PutMapping("/estatus/{idDueno}")
+    public ResponseEntity<String> cambiarEstatus(@PathVariable Long idDueno){
+        return ResponseEntity.ok(duenoService.cambiarEstatusDueno(idDueno));
     }
 }

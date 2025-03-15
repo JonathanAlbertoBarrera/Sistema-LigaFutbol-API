@@ -53,7 +53,6 @@ public class EquipoService {
             Equipo equipo = new Equipo();
             equipo.setNombreEquipo(equipoDTO.getNombreEquipo());
             equipo.setLogo(imagenUrl);
-            equipo.setEquipoEstatus(true);
             equipo.setDueno(dueno);
             equipo.setCampo(campo);
 

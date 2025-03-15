@@ -62,12 +62,10 @@ public class ArbitroService {
 
     @Transactional
     public Arbitro actualizarArbitro(Long id, ArbitroActualizarDTO arbitroActualizarDTO, MultipartFile imagen) {
-        Usuario user = usuarioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
         // Buscar el árbitro asociado a este usuario
-        Arbitro arbitro = arbitroRepository.findByUsuario(user)
-                .orElseThrow(() -> new NotFoundException("El usuario no está asociado a un árbitro"));
+        Arbitro arbitro = arbitroRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Árbitro no encontrado"));
 
         try {
             // Si se proporciona una nueva imagen, actualizar la URL
