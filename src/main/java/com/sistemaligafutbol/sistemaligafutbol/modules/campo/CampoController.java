@@ -1,5 +1,6 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.campo;
 
+import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.Cancha;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,11 @@ public class CampoController {
     @GetMapping("/{id}")
     public ResponseEntity<Campo> obtenerCampoPorId(@PathVariable Long id) {
         return ResponseEntity.ok(campoService.obtenerCampoPorId(id));
+    }
+
+    @PutMapping("/estatus/{idCampo}")
+    public ResponseEntity<String> cambiarEstatus(@PathVariable Long idCampo){
+        return ResponseEntity.ok(campoService.cambiarEstatusCampo(idCampo));
     }
 }
 

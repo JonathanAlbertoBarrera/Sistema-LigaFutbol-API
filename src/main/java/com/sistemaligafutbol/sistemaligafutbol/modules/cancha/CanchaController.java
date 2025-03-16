@@ -24,6 +24,11 @@ public class CanchaController {
         return ResponseEntity.ok(canchaService.actualizarCancha(id, canchaDTO));
     }
 
+    @PutMapping("/estatus/{idCancha}")
+    public ResponseEntity<String> cambiarEstatus(@PathVariable Long idCancha){
+        return ResponseEntity.ok(canchaService.cambiarEstatusCancha(idCancha));
+    }
+
     @GetMapping
     public ResponseEntity<List<Cancha>> obtenerCanchas() {
         return ResponseEntity.ok(canchaService.obtenerCanchas());

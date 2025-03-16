@@ -48,4 +48,7 @@ public interface PartidoRepository extends JpaRepository<Partido,Long> {
             Equipo equipoLocal, Equipo equipoVisitante, LocalDate fechaPartido);
 
     boolean existsByArbitroAndJugadoFalse(Arbitro arbitro);
+
+    // Verifica si hay partidos no jugados en una cancha específica
+    boolean existsByCanchaAndJugadoFalse(Cancha cancha);
 }
