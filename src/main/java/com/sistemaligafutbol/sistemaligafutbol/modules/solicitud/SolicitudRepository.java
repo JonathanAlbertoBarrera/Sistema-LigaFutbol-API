@@ -2,10 +2,7 @@ package com.sistemaligafutbol.sistemaligafutbol.modules.solicitud;
 
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.Torneo;
-import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Dueno.Dueno;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +14,7 @@ public interface SolicitudRepository extends JpaRepository<Solicitud,Long> {
     List<Solicitud> findByTorneoAndResolucionTrue(Torneo torneo);
     List<Solicitud> findByEquipo_Dueno_Id(Long idDueno);
     List<Solicitud> findByEquipoAndResolucionTrueAndInscripcionEstatusTrue(Equipo equipo);
+    boolean existsByEquipoAndTorneo_IdAndResolucionTrueAndInscripcionEstatusTrue(Equipo equipo, Long torneoId);
     // Obtener la solicitud asociada a un equipo
     Optional<Solicitud> findByEquipo(Equipo equipo);
 
@@ -35,6 +33,8 @@ public interface SolicitudRepository extends JpaRepository<Solicitud,Long> {
     // Buscar todas las solicitudes pendientes de una lista de equipos
     List<Solicitud> findByEquipoInAndPendienteTrue(List<Equipo> equipos);
 
-    // ✅ Encuentra todas las solicitudes aceptadas pero sin pagar la inscripción
+    //  Encuentra todas las solicitudes aceptadas pero sin pagar la inscripción
     List<Solicitud> findByEquipoInAndResolucionTrueAndInscripcionEstatusFalse(List<Equipo> equipos);
+
+    List<Solicitud> findByEquipoAndResolucionTrueAndInscripcionEstatusTrueAndTorneoEstatusTorneoTrue(Equipo equipo);
 }

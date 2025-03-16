@@ -17,6 +17,8 @@ public class JugadorController {
     @Autowired
     private JugadorService jugadorService;
 
+    @Autowired
+    private JugadorReportService jugadorReportService;
 
     @PostMapping
     public ResponseEntity<Jugador> crearJugador(@RequestPart("jugador") @Valid JugadorDTO jugadorDTO, @RequestPart("imagen") MultipartFile imagen) {
@@ -46,6 +48,11 @@ public class JugadorController {
     @GetMapping("/porEquipo/{idEquipo}")
     public ResponseEntity<List<Jugador>> obtenerJugadoresPorEquipo(@PathVariable Long idEquipo){
         return ResponseEntity.ok(jugadorService.obtenerJugadoresPorEquipo(idEquipo));
+    }
+
+    @GetMapping("/credenciales/{idEquipo}/{idTorneo}")
+    public ResponseEntity<byte[]> generarCredenciales(@PathVariable Long idEquipo, @PathVariable Long idTorneo) {
+        return jugadorReportService.generarCredencialesPDF(idEquipo, idTorneo);
     }
 
 }

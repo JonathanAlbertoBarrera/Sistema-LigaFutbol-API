@@ -174,6 +174,26 @@ public class SolicitudService {
     }
 
     @Transactional(readOnly = true)
+    public List<SolicitudDTO> listarTorneosConfirmadosPorEquipo(Long equipoId) {
+        Equipo equipo = equipoRepository.findById(equipoId)
+                .orElseThrow(() -> new NotFoundException("Equipo no encontrado"));
+
+        return solicitudRepository.findByEquipoAndResolucionTrueAndInscripcionEstatusTrueAndTorneoEstatusTorneoTrue(equipo)
+                .stream()
+                .map(solicitud -> new SolicitudDTO(
+                        solicitud.getIdEquipoTorneo(),
+                        solicitud.getEquipo().getId(),
+                        solicitud.getEquipo().getNombreEquipo(),
+                        solicitud.getTorneo().getId(),
+                        solicitud.getTorneo().getNombreTorneo(),
+                        solicitud.getInscripcionEstatus(),
+                        solicitud.getResolucion(),
+                        solicitud.getPendiente()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<SolicitudDTO> listarSolicitudesPorDueno(Long idUsuario) {
         Usuario usuario=usuarioRepository.findById(idUsuario)
                 .orElseThrow(()-> new NotFoundException("Usuario no encontrado"));

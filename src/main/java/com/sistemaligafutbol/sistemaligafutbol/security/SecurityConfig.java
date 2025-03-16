@@ -52,12 +52,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/api/arbitros/actualizar/**").hasRole("ARBITRO") // Solo ARBITROS podrian modificar sus datos
                         .requestMatchers(HttpMethod.PUT,"/api/arbitros/cambiarEstatus/").hasRole("ADMIN") //SOLO ADMIN PODRIA DESACTIVAR A LOS ARBITROS
 
-                        //GESTION DE TORNEOS
-                        .requestMatchers(HttpMethod.POST, "/api/torneos").hasRole("ADMIN") // Solo ADMIN puede REGISTRAR torneos
-                        .requestMatchers(HttpMethod.GET,"/api/torneos/**").permitAll() //Todos pueden obtener la info de los torneos
-                        .requestMatchers(HttpMethod.PUT,"/api/torneos/**").hasRole("ADMIN") //solo ADMIN puede modificar torneos
-                        .requestMatchers(HttpMethod.PATCH, "/api/torneos/{id}/cancelar").hasRole("ADMIN")//solo ADMIN puede cancelar torneos
-
                         //GESTION DE CAMPOS
                         .requestMatchers(HttpMethod.POST,"/api/campos").hasAnyRole("ADMIN") //SOLO ADMIN puede crear CAMPOS
                         .requestMatchers(HttpMethod.PUT,"/api/campos").hasAnyRole("ADMIN") //SOLO ADMIN puede modificar CAMPOS
@@ -78,17 +72,24 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/api/equipos").hasRole("DUENO")  //SOLO DUENOS pueden modificar a su equipo
                         .requestMatchers(HttpMethod.GET,"/api/equipos/**").permitAll() //TODOS podran ver los equipos
 
+                        //GESTION DE JUGADORES
+                        .requestMatchers(HttpMethod.POST, "/api/jugadores").hasRole("DUENO") //SOLO DUENOS PUEDEN REGISTRAR JUGADORES
+                        .requestMatchers(HttpMethod.PUT,"/api/jugadores/").hasRole("DUENO") //SOLO DUENOS PUEDEN MODIFICAR/desactivar A SUS JUGADORES
+                        .requestMatchers(HttpMethod.GET,"/api/jugadores/**").permitAll() // todos necesitarian ver el listado de jugadores
+                        .requestMatchers(HttpMethod.GET,"/api/jugadores/credenciales/{idEquipo}/{idTorneo}").permitAll() //tanto ADMIN COMO DUENO PUEDEN DESCARGAR LAS CREDENCIALES POR EQUIPO
+
+                        //GESTION DE TORNEOS
+                        .requestMatchers(HttpMethod.POST, "/api/torneos").hasRole("ADMIN") // Solo ADMIN puede REGISTRAR torneos
+                        .requestMatchers(HttpMethod.GET,"/api/torneos/**").permitAll() //Todos pueden obtener la info de los torneos
+                        .requestMatchers(HttpMethod.PUT,"/api/torneos/**").hasRole("ADMIN") //solo ADMIN puede modificar torneos
+                        .requestMatchers(HttpMethod.PATCH, "/api/torneos/{id}/cancelar").hasRole("ADMIN")//solo ADMIN puede cancelar torneos
+
                         //GESTION DE SOLICITUDES
                         .requestMatchers(HttpMethod.POST,"/api/solicitudes/{idEquipo}/{idTorneo}").hasRole("DUENO") //SOLO DUENOS pueden solicitar unirse a un torneo
                         .requestMatchers(HttpMethod.POST,"/api/solicitudes/admin/agregarEquipo/").hasRole("ADMIN") //solo ADMIN puede agregar equipos directamente al torneo
                         .requestMatchers(HttpMethod.PUT,"/api/solicitudes/**").hasRole("ADMIN") //Solo ADMIN puede aceptar/rechazar las solicitudes
                         .requestMatchers(HttpMethod.GET,"/api/solicitudes/admin/**").hasRole("ADMIN") //solo ADMIN puede ver las solicitudes
                         .requestMatchers(HttpMethod.GET,"/api/solicitudes/dueno/**").hasAnyRole("ADMIN","DUENO") //tanto ADMIN como DUENOS pueden ver las solicitudes por Duenos
-
-                        //GESTION DE JUGADORES
-                        .requestMatchers(HttpMethod.POST, "/api/jugadores").hasRole("DUENO") //SOLO DUENOS PUEDEN REGISTRAR JUGADORES
-                        .requestMatchers(HttpMethod.PUT,"/api/jugadores/").hasRole("DUENO") //SOLO DUENOS PUEDEN MODIFICAR/desactivar A SUS JUGADORES
-                        .requestMatchers(HttpMethod.GET,"/api/jugadores/**").permitAll() // todos necesitarian ver el listado de jugadores
 
                         //GESTION DE PARTIDOS
                         .requestMatchers(HttpMethod.POST,"/api/partidos/iniciartorneo/").hasRole("ADMIN") //SOLO ADMIN puede inciar el torneo (generar partidos)

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="credencial_jugador" columnCount="2" pageWidth="595" pageHeight="842" columnWidth="280" leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10" uuid="cd828bd4-d99c-4504-87a7-58cc2ef129df">
+	<parameter name="LOGO_TORNEO" class="java.lang.String"/>
+	<parameter name="NOMBRE_TORNEO" class="java.lang.String"/>
+	<parameter name="LOGO_EQUIPO" class="java.lang.String"/>
+	<parameter name="NOMBRE_EQUIPO" class="java.lang.String"/>
+	<field name="nombreCompleto" class="java.lang.String"/>
+	<field name="fechaNacimiento" class="java.util.Date"/>
+	<field name="fotoJugador" class="java.lang.String"/>
+	<detail>
+		<band height="200">
+			<rectangle>
+				<reportElement x="0" y="0" width="270" height="190" backcolor="#FFFFFF" uuid="dcc91de7-c0aa-4aa8-a370-1cd31a144db7"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</graphicElement>
+			</rectangle>
+			<image>
+				<reportElement x="5" y="5" width="40" height="40" uuid="a275c596-9755-4b22-987a-7d32c5c9efe5"/>
+				<imageExpression><![CDATA[$P{LOGO_TORNEO}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="50" y="5" width="160" height="20" uuid="4c6eae84-775a-446e-a966-18fcab1977ae"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{NOMBRE_TORNEO}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="10" y="60" width="60" height="60" uuid="a4089a5d-31bb-4e6d-8004-4ec5d190d51c"/>
+				<imageExpression><![CDATA[$F{fotoJugador}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="95" y="60" width="165" height="20" uuid="5d818e33-5cf0-40ac-b3c8-e819b53ef453"/>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombreCompleto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="90" width="110" height="20" uuid="f827724b-5853-4274-939f-7f1462156538"/>
+				<textElement textAlignment="Left">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{fechaNacimiento})]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="220" y="5" width="40" height="40" uuid="192e71b9-ce70-4174-9e58-740d72b8c21d">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{LOGO_EQUIPO}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="10" y="120" width="80" height="20" uuid="0aeda5c0-afa6-49ad-9195-f2ad5d4d63aa"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Firma del Jugador"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="10" y="149" width="80" height="1" uuid="8893d7f7-4f79-46ff-8bf2-b471f081a13b"/>
+			</line>
+			<textField>
+				<reportElement x="100" y="120" width="80" height="20" uuid="1e21d6c1-c0b2-422d-b35b-cb32552b0c8e"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Firma Dueño Equipo"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="100" y="150" width="80" height="1" uuid="3723e0b0-6d57-4f4a-b617-9f24e686f1d3"/>
+			</line>
+			<textField>
+				<reportElement x="190" y="120" width="80" height="20" uuid="4f447a44-6259-47ff-b0c9-e23824e7e874"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Firma de la Liga"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="190" y="150" width="80" height="1" uuid="3d86af19-55da-4937-919f-e75a917fbbb0"/>
+			</line>
+			<textField>
+				<reportElement key="" x="70" y="180" width="130" height="20" uuid="523f09d3-d628-4aa6-b697-5fe5afe76d1e"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Sello de la Liga"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="80" y="179" width="120" height="1" uuid="aa98634c-d92f-4909-89a0-f8127b661dae"/>
+			</line>
+			<textField>
+				<reportElement x="50" y="30" width="160" height="20" uuid="432569b9-799a-46a3-9cab-41680947b348"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{NOMBRE_EQUIPO}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

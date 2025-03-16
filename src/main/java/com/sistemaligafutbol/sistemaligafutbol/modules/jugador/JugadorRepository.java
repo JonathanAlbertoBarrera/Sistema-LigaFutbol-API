@@ -22,6 +22,7 @@ public interface JugadorRepository extends JpaRepository<Jugador, Long> {
 
     List<Jugador> findByEquipo(Equipo equipo);
     List<Jugador> findByExpulsadoTrue();
+    List<Jugador> findByEquipo_IdAndHabilitadoTrue(Long idEquipo);
 }
 
 
