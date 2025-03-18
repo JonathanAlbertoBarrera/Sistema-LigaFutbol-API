@@ -219,6 +219,12 @@ public class PagoService {
         return pagoRepository.findByTorneoAndEquipoAndEstatusPagoTrue(torneo, equipo);
     }
 
+    @Transactional(readOnly = true)
+    public Long obtenerNumeroDePagosPendientes() {
+        return pagoRepository.contarPagosPendientes();
+    }
+
+
     @Transactional
     public String otorgarProrroga(Long idPago, LocalDate nuevaFechaLimite) {
         Pago pago = pagoRepository.findById(idPago)

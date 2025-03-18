@@ -45,4 +45,7 @@ public interface PagoRepository extends JpaRepository<Pago,Long> {
     @Query("SELECT p FROM Pago p WHERE p.equipo IN (SELECT s.equipo FROM Solicitud s WHERE s.torneo = :torneo) AND p.equipo = :equipo AND p.estatusPago = true")
     List<Pago> findByTorneoAndEquipoAndEstatusPagoTrue(@Param("torneo") Torneo torneo, @Param("equipo") Equipo equipo);
 
+    @Query("SELECT COUNT(p) FROM Pago p WHERE p.estatusPago = false")
+    Long contarPagosPendientes();
+
 }

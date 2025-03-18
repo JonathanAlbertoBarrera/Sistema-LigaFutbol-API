@@ -49,9 +49,14 @@ public class PagoController {
         return ResponseEntity.ok(pagoService.obtenerPagosPendientesPorTorneo(idTorneo));
     }
 
-    @GetMapping("admin/torneo/confirmados/{idTorneo}")
+    @GetMapping("/admin/torneo/confirmados/{idTorneo}")
     public ResponseEntity<List<Pago>> obtenerPagosConfirmadosPorTorneo(@PathVariable Long idTorneo) {
         return ResponseEntity.ok(pagoService.obtenerPagosConfirmadosPorTorneo(idTorneo));
+    }
+
+    @GetMapping("/admin/contarpendientes")
+    public ResponseEntity<Long> obtenerNumeroPendientes(){
+        return ResponseEntity.ok(pagoService.obtenerNumeroDePagosPendientes());
     }
 
     @GetMapping("/equipo/{idEquipo}")
