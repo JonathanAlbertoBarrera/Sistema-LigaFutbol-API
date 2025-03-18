@@ -4,7 +4,7 @@ import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ImageValidat
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundException;
 import com.sistemaligafutbol.sistemaligafutbol.modules.campo.Campo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.campo.CampoRepository;
-import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.ImgurService;
+import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.GoogleDriveService;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Dueno.Dueno;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Dueno.DuenoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Usuario;
@@ -27,7 +27,7 @@ public class EquipoService {
     private EquipoRepository equipoRepository;
 
     @Autowired
-    private ImgurService imgurService;
+    private GoogleDriveService imagenService;
 
     @Autowired
     private DuenoRepository duenoRepository;
@@ -41,7 +41,7 @@ public class EquipoService {
     @Transactional
     public ResponseEntity<EquipoResponseDTO> registrarEquipo(EquipoDTO equipoDTO, MultipartFile imagen) {
         try {
-            String imagenUrl = imgurService.uploadImage(imagen);
+            String imagenUrl = imagenService.uploadImage(imagen);
 
             Usuario usuario = usuarioRepository.findById(equipoDTO.getIdUsuario())
                     .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
@@ -82,7 +82,7 @@ public class EquipoService {
 
         try {
             if (imagen != null && !imagen.isEmpty()) {
-                String nuevaImagenUrl = imgurService.uploadImage(imagen);
+                String nuevaImagenUrl = imagenService.uploadImage(imagen);
                 equipo.setLogo(nuevaImagenUrl);
             }
 

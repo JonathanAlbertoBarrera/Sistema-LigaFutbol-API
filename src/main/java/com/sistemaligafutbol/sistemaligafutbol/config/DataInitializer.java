@@ -72,11 +72,11 @@ public class DataInitializer {
     @Value("${admin.password}")
     private String adminPassword;
 
-    private static final String IMAGEN_TORNEO = "https://i.imgur.com/WwiUN4K.jpeg";
-    private static final String IMAGEN_EQUIPO = "https://i.imgur.com/iYLVKCo.jpeg";
-    private static final String IMAGEN_DUENO = "https://i.imgur.com/BClPFAt.jpeg";
-    private static final String IMAGEN_ARBITRO = "https://i.imgur.com/cuIjks0.jpeg";
-    private static final String IMAGEN_JUGADOR = "https://i.imgur.com/NOG10zb.jpeg";
+    private static final String IMAGEN_TORNEO = "https://drive.google.com/uc?id=1s2_5cOUsoZJdFRcJ5naVrwwfuZfC8zSl";
+    private static final String IMAGEN_EQUIPO = "https://drive.google.com/uc?id=1y-o9JC_XeMfFB-RudAoY_VKULu0v5tfD";
+    private static final String IMAGEN_DUENO = "https://drive.google.com/uc?id=1F5_9rA24pBjsqNCTJxAwKMafhSJdevlK";
+    private static final String IMAGEN_ARBITRO = "https://drive.google.com/uc?id=1202Hru_FxrouKM9_UYyfyO3CNycu1TQv";
+    private static final String IMAGEN_JUGADOR = "https://drive.google.com/uc?id=1HPoAhNtSwvPAUSo_8Hite99YBqGD-omE";
 
     @PostConstruct
     public void init() {

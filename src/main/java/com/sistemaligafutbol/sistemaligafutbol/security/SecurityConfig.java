@@ -91,6 +91,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/solicitudes/admin/**").hasRole("ADMIN") //solo ADMIN puede ver las solicitudes
                         .requestMatchers(HttpMethod.GET,"/api/solicitudes/dueno/**").hasAnyRole("ADMIN","DUENO") //tanto ADMIN como DUENOS pueden ver las solicitudes por Duenos
 
+                        //GESTION DE CONVOCATORIAS
+                        .requestMatchers(HttpMethod.POST,"/api/convocatorias/publicar/{torneoId}").hasRole("ADMIN") //SOLO ADMIN puede publicar convocatorias
+                        .requestMatchers(HttpMethod.GET,"/api/convocatorias/activa").permitAll()//TODOS pueden ver la convocatoria ACTIVA
+
                         //GESTION DE PARTIDOS
                         .requestMatchers(HttpMethod.POST,"/api/partidos/iniciartorneo/").hasRole("ADMIN") //SOLO ADMIN puede inciar el torneo (generar partidos)
                         .requestMatchers(HttpMethod.POST,"/api/partidos/iniciarliguilla/").hasRole("ADMIN") //SOLO ADMIN puede iniciar la liguilla (generar partidos)

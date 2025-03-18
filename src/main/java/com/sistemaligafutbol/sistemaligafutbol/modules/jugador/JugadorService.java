@@ -5,7 +5,7 @@ import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundExce
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ValidationException;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.EquipoRepository;
-import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.ImgurService;
+import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.GoogleDriveService;
 import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.Solicitud;
 import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.SolicitudRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class JugadorService {
@@ -30,7 +29,7 @@ public class JugadorService {
     private SolicitudRepository solicitudRepository;
 
     @Autowired
-    private ImgurService imgurService;
+    private GoogleDriveService imagenService;
 
     @Transactional
     public Jugador crearJugador(JugadorDTO jugadorDTO, MultipartFile imagen) {
@@ -55,7 +54,7 @@ public class JugadorService {
         boolean esLiguilla = solicitudes.stream().anyMatch(s -> s.getTorneo().isEsliguilla());
 
         try {
-            String imagenUrl = imgurService.uploadImage(imagen);
+            String imagenUrl = imagenService.uploadImage(imagen);
 
             Jugador jugador = new Jugador();
             jugador.setNombreCompleto(jugadorDTO.getNombreCompleto());
@@ -117,7 +116,7 @@ public class JugadorService {
 
         try {
             if (imagen != null && !imagen.isEmpty()) {
-                String nuevaImagenUrl = imgurService.uploadImage(imagen);
+                String nuevaImagenUrl = imagenService.uploadImage(imagen);
                 jugador.setFotoJugador(nuevaImagenUrl);
             }
             jugador.setNombreCompleto(jugadorDTO.getNombreCompleto());

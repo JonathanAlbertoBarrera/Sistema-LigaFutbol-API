@@ -2,38 +2,21 @@ package com.sistemaligafutbol.sistemaligafutbol.modules.torneo;
 
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ImageValidationException;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundException;
-import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ValidationException;
-import com.sistemaligafutbol.sistemaligafutbol.modules.campo.Campo;
-import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.Cancha;
-import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.CanchaRepository;
-import com.sistemaligafutbol.sistemaligafutbol.modules.clasificacion.Clasificacion;
-import com.sistemaligafutbol.sistemaligafutbol.modules.clasificacion.ClasificacionRepository;
-import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
-import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.ImgurService;
-import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.Jugador;
-import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.JugadorRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.GoogleDriveService;
 import com.sistemaligafutbol.sistemaligafutbol.modules.pago.Pago;
 import com.sistemaligafutbol.sistemaligafutbol.modules.pago.PagoRepository;
-import com.sistemaligafutbol.sistemaligafutbol.modules.partido.Partido;
-import com.sistemaligafutbol.sistemaligafutbol.modules.partido.PartidoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.Solicitud;
 import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.SolicitudRepository;
-import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro.Arbitro;
-import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro.ArbitroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TorneoService {
@@ -41,7 +24,7 @@ public class TorneoService {
     private TorneoRepository torneoRepository;
 
     @Autowired
-    private ImgurService imgurService;
+    private GoogleDriveService imagenService;
 
     @Autowired
     private SolicitudRepository solicitudRepository;
@@ -53,7 +36,7 @@ public class TorneoService {
     public Torneo registrarTorneo(TorneoDTO torneoDTO, MultipartFile imagen) {
         try {
             // SUBIR LA IMAGEN
-            String imagenUrl = imgurService.uploadImage(imagen);
+            String imagenUrl = imagenService.uploadImage(imagen);
 
             // Crear torneo
             Torneo torneo = new Torneo();
@@ -100,7 +83,7 @@ public class TorneoService {
 
         try {
             if (imagen != null && !imagen.isEmpty()) {
-                String nuevaImagenUrl = imgurService.uploadImage(imagen);
+                String nuevaImagenUrl = imagenService.uploadImage(imagen);
                 torneo.setLogoTorneo(nuevaImagenUrl);
             }
 

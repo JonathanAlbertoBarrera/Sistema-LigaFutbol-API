@@ -3,7 +3,7 @@ package com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ImageValidationException;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundException;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ValidationException;
-import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.ImgurService;
+import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.GoogleDriveService;
 import com.sistemaligafutbol.sistemaligafutbol.modules.partido.PartidoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Usuario;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.UsuarioRepository;
@@ -33,13 +33,13 @@ public class ArbitroService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private ImgurService imgurService;
+    private GoogleDriveService imagenService;
 
     @Transactional
     public Arbitro registrarArbitro(ArbitroDTO arbitroDTO, MultipartFile imagen) {
         try{
             //INTENTAR SUBIR LA IMAGEN
-            String imagenUrl=imgurService.uploadImage(imagen);
+            String imagenUrl=imagenService.uploadImage(imagen);
 
             // Crear el usuario
             Usuario usuario = new Usuario();
@@ -70,7 +70,7 @@ public class ArbitroService {
         try {
             // Si se proporciona una nueva imagen, actualizar la URL
             if (imagen != null && !imagen.isEmpty()) {
-                String nuevaImagenUrl = imgurService.uploadImage(imagen);
+                String nuevaImagenUrl = imagenService.uploadImage(imagen);
                 arbitro.setImagenUrl(nuevaImagenUrl);
             }
 

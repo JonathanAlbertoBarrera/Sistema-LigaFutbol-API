@@ -14,9 +14,10 @@ spring.jpa.show-sql: true
 spring.servlet.multipart.max-file-size=10MB
 spring.servlet.multipart.max-request-size=10MB
 
-# Credenciales de Imgur
-imgur.client.id=
-imgur.client.secret=
+# Configuración de Google Drive
+google.drive.application-name=
+google.drive.credentials-file=
+google.drive.folder-id=
 
 # JWT
 jwt.secret=

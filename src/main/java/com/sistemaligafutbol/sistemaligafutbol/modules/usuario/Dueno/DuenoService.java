@@ -5,12 +5,11 @@ import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundExce
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ValidationException;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.EquipoRepository;
-import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.ImgurService;
+import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.GoogleDriveService;
 import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.Solicitud;
 import com.sistemaligafutbol.sistemaligafutbol.modules.solicitud.SolicitudRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Usuario;
 import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.UsuarioRepository;
-import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro.Arbitro;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,12 +40,12 @@ public class DuenoService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private ImgurService imgurService;
+    private GoogleDriveService imagenService;
 
     @Transactional
     public Dueno registrarDueno(DuenoRegistroDTO duenoRegistroDTO, MultipartFile imagen) {
         try{
-            String imagenUrl = imgurService.uploadImage(imagen);
+            String imagenUrl = imagenService.uploadImage(imagen);
             // Crear el usuario
             Usuario usuario = new Usuario();
             usuario.setEmail(duenoRegistroDTO.getEmail());
@@ -74,7 +73,7 @@ public class DuenoService {
         try{
             // Si se proporciona una nueva imagen, actualizar la URL
             if (imagen != null && !imagen.isEmpty()) {
-                String nuevaImagenUrl = imgurService.uploadImage(imagen);
+                String nuevaImagenUrl = imagenService.uploadImage(imagen);
                 dueno.setImagenUrl(nuevaImagenUrl);
             }
 

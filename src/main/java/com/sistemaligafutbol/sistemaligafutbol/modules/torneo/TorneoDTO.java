@@ -2,6 +2,7 @@ package com.sistemaligafutbol.sistemaligafutbol.modules.torneo;
 
 import com.sistemaligafutbol.sistemaligafutbol.custom_validations.anotation.ValidTorneo;
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
@@ -16,10 +17,12 @@ public class TorneoDTO {
     private String descripcion;
     @Future(message = "La fecha de inicio debe ser mayor a la actual")
     private LocalDate fechaInicio;
+    @Min(value=4, message = "El maxímo de equipos debe de ser al menos de 4 equipos")
+    @Max(value = 40,message = "El máximo de equipos no puede ser mayor a 40 equipos")
     private int maxEquipos;
-    @Min(value = 6, message = "El mínimo de equipos en el torneo es 6")
+    @Min(value = 4, message = "El mínimo de equipos en el torneo es 4")
     private int minEquipos;
-    @Min(value = 4, message = "El mínimo de equipos en liguilla es 4")
+    @Min(value = 2, message = "El mínimo de equipos en liguilla es 2")
     private int equiposLiguilla;
     @Min(value = 1,message = "Mínimo debe haber 1 vuelta de partidos")
     private int vueltas;
