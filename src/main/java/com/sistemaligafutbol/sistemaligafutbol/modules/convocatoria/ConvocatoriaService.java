@@ -59,7 +59,7 @@ public class ConvocatoriaService {
         String imagenUrl = generarImagenConvocatoria(torneo);
 
         if (convocatoriaExistente.isPresent()) {
-            // 🔥 Si la convocatoria ya existe, actualizarla en lugar de crear otra
+            //  Si la convocatoria ya existe, actualizarla en lugar de crear otra
             Convocatoria convocatoria = convocatoriaExistente.get();
             convocatoria.setFechaInicio(torneo.getFechaInicio());
             convocatoria.setFechaFin(torneo.getFechaFin());
@@ -76,7 +76,7 @@ public class ConvocatoriaService {
             return convocatoria.getImagenUrl();
         }
 
-        // 🔥 Si no existe una convocatoria, crear una nueva
+        //  Si no existe una convocatoria, crear una nueva
         Convocatoria convocatoria = new Convocatoria();
         convocatoria.setTorneo(torneo);
         convocatoria.setFechaInicio(torneo.getFechaInicio());

@@ -144,7 +144,7 @@ public class PartidosTorneoRegularService {
                         // Buscar árbitro activo y disponible
                         Optional<Arbitro> arbitroDisponible = arbitroRepository.findAll().stream()
                                 .filter(a -> a.getUsuario().isEstatus()) // Solo árbitros activos
-                                .filter(a -> partidoRepository.findByArbitroAndFechaPartido(a, fechaJuego).isEmpty()) // 🔥 Solo árbitros sin partido ese día
+                                .filter(a -> partidoRepository.findByArbitroAndFechaPartido(a, fechaJuego).isEmpty()) // Solo árbitros sin partido ese día
                                 .findFirst();
 
                         // Si no hay disponibilidad en domingo, probar en sábado
