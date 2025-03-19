@@ -51,4 +51,13 @@ public interface PartidoRepository extends JpaRepository<Partido,Long> {
 
     // Verifica si hay partidos no jugados en una cancha específica
     boolean existsByCanchaAndJugadoFalse(Cancha cancha);
+
+    List<Partido> findByEquipoLocalIdOrEquipoVisitanteId(Long idLocal, Long idVisitante);
+
+    List<Partido> findByTorneoAndEquipoLocalIdOrEquipoVisitanteId(Torneo torneo, Long idLocal, Long idVisitante);
+
+    List<Partido> findByTorneoAndJugadoFalseAndEquipoLocalIdOrEquipoVisitanteId(Torneo torneo, Long idLocal, Long idVisitante);
+
+    Optional<Partido> findTopByJugadoFalseAndEquipoLocalIdOrEquipoVisitanteIdOrderByFechaPartidoAsc(Long idLocal, Long idVisitante);
+    Optional<Partido> findTopByJugadoFalseOrderByFechaPartidoAsc();
 }

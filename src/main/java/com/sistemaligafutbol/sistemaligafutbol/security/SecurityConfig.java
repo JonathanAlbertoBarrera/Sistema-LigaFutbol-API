@@ -95,21 +95,22 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/convocatorias/publicar/{torneoId}").hasRole("ADMIN") //SOLO ADMIN puede publicar convocatorias
                         .requestMatchers(HttpMethod.GET,"/api/convocatorias/activa").permitAll()//TODOS pueden ver la convocatoria ACTIVA
 
-                        //GESTION DE PARTIDOS
-                        .requestMatchers(HttpMethod.POST,"/api/partidos/iniciartorneo/").hasRole("ADMIN") //SOLO ADMIN puede inciar el torneo (generar partidos)
-                        .requestMatchers(HttpMethod.POST,"/api/partidos/iniciarliguilla/").hasRole("ADMIN") //SOLO ADMIN puede iniciar la liguilla (generar partidos)
-                        .requestMatchers(HttpMethod.POST,"/api/partidos/registraresultado/").hasRole("ARBITRO") //SOLO ARBITROS pueden registrar resultados de los partidos
-                        .requestMatchers(HttpMethod.PUT,"/api/partidos/modificar/").hasRole("ADMIN")//SOLO ADMIN puede modificar los partidos
-
-                        //GESTION DE JUGADOR_ESTADISTICA
-                        .requestMatchers(HttpMethod.POST,"/api/jugadorestadisticas/registrar/").hasRole("ARBITRO")//Solo ARBITROS pueden registrar las estadististicas de los jugadores
-                        .requestMatchers(HttpMethod.PUT,"/api/jugadorestadisticas/modificar/").hasRole("ARBITRO")//Solo ARBITROS pueden modificar las estadisticas
-
                         //GESTION DE PAGOS
                         .requestMatchers(HttpMethod.PUT,"/api/pagos/admin/**").hasRole("ADMIN") //SOLO ADMIN puede indicar que se hizo una inscripcion, (cancha o arbitraje), y dar prorroga
                         .requestMatchers(HttpMethod.GET,"/api/pagos/admin/todos").hasRole("ADMIN") //SOLO ADMIN PUEDE VER EL LISTADO DE TODOS los pagos
                         .requestMatchers(HttpMethod.GET,"/api/pagos/equipo/**").hasAnyRole("ADMIN","DUENO")//SOLO ADMIN Y DUENOS pueden ver pagos por equipo (todos, arbitraje, cancha)
                         .requestMatchers(HttpMethod.GET, "/api/pagos/todos/precios").permitAll()//todos pueden ver los precios de los tipos de pago
+
+                        //GESTION DE PARTIDOS
+                        .requestMatchers(HttpMethod.POST,"/api/partidos/iniciartorneo/").hasRole("ADMIN") //SOLO ADMIN puede inciar el torneo (generar partidos)
+                        .requestMatchers(HttpMethod.POST,"/api/partidos/iniciarliguilla/").hasRole("ADMIN") //SOLO ADMIN puede iniciar la liguilla (generar partidos)
+                        .requestMatchers(HttpMethod.POST,"/api/partidos/registraresultado/").hasRole("ARBITRO") //SOLO ARBITROS pueden registrar resultados de los partidos
+                        .requestMatchers(HttpMethod.PUT,"/api/partidos/modificar/").hasRole("ADMIN")//SOLO ADMIN puede modificar los partidos
+                        .requestMatchers(HttpMethod.GET,"/api/partidos/todos/**").permitAll() //todos pueden ver los datos de partidos
+
+                        //GESTION DE JUGADOR_ESTADISTICA
+                        .requestMatchers(HttpMethod.POST,"/api/jugadorestadisticas/registrar/").hasRole("ARBITRO")//Solo ARBITROS pueden registrar las estadististicas de los jugadores
+                        .requestMatchers(HttpMethod.PUT,"/api/jugadorestadisticas/modificar/").hasRole("ARBITRO")//Solo ARBITROS pueden modificar las estadisticas
 
                         .anyRequest().authenticated() // Cualquier otra ruta requiere autenticación
                 )

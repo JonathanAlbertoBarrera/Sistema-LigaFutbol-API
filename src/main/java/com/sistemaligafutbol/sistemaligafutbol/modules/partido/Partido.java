@@ -1,5 +1,7 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.partido;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.Cancha;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
@@ -21,14 +23,17 @@ public class Partido {
 
     @ManyToOne
     @JoinColumn(name = "id_torneo", nullable = false)
+    @JsonIncludeProperties({"id", "nombreTorneo", "logoTorneo"})
     private Torneo torneo;
 
     @ManyToOne
     @JoinColumn(name = "id_equipo_local", nullable = false)
+    @JsonIncludeProperties({"id", "nombreEquipo", "logo"})
     private Equipo equipoLocal;
 
     @ManyToOne
     @JoinColumn(name = "id_equipo_visitante", nullable = false)
+    @JsonIncludeProperties({"id", "nombreEquipo", "logo"})
     private Equipo equipoVisitante;
 
     @ManyToOne
@@ -37,6 +42,7 @@ public class Partido {
 
     @ManyToOne
     @JoinColumn(name = "id_arbitro", nullable = false)
+    @JsonIgnoreProperties({"usuario"})
     private Arbitro arbitro;
 
     @Column(name = "fecha_partido")
