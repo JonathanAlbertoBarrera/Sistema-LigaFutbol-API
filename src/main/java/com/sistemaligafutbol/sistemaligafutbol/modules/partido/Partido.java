@@ -52,18 +52,25 @@ public class Partido {
 
     @Column(name = "goles_local")
     private int golesLocal;
+
     @Column(name = "goles_visitate")
     private int golesVisitante;
+
     private String descripcionResultado;
     private boolean jugado;
 
-    //Constructores
+    // Campos para tiempo extra y penales en liguilla
+    private Integer golesLocalPenales;
+    private Integer golesVisitantePenales;
 
+    @Column(name = "tipo_desempate")
+    private String tipoDesempate;  // "NORMAL", "TIEMPO_EXTRA", "PENALES"
+    private boolean isFinal;
 
     public Partido() {
     }
 
-    public Partido(Long id, Torneo torneo, Equipo equipoLocal, Equipo equipoVisitante, Cancha cancha, Arbitro arbitro, LocalDate fechaPartido, LocalTime hora, int golesLocal, int golesVisitante, String descripcionResultado, boolean jugado) {
+    public Partido(Long id, Torneo torneo, Equipo equipoLocal, Equipo equipoVisitante, Cancha cancha, Arbitro arbitro, LocalDate fechaPartido, LocalTime hora, int golesLocal, int golesVisitante, String descripcionResultado, boolean jugado, Integer golesLocalPenales, Integer golesVisitantePenales, String tipoDesempate, boolean isFinal) {
         this.id = id;
         this.torneo = torneo;
         this.equipoLocal = equipoLocal;
@@ -76,10 +83,13 @@ public class Partido {
         this.golesVisitante = golesVisitante;
         this.descripcionResultado = descripcionResultado;
         this.jugado = jugado;
+        this.golesLocalPenales = golesLocalPenales;
+        this.golesVisitantePenales = golesVisitantePenales;
+        this.tipoDesempate = tipoDesempate;
+        this.isFinal = isFinal;
     }
 
     //Getters and setters
-
 
     public Long getId() {
         return id;
@@ -161,10 +171,6 @@ public class Partido {
         this.golesVisitante = golesVisitante;
     }
 
-    public boolean isJugado() {
-        return jugado;
-    }
-
     public String getDescripcionResultado() {
         return descripcionResultado;
     }
@@ -173,7 +179,44 @@ public class Partido {
         this.descripcionResultado = descripcionResultado;
     }
 
+    public boolean isJugado() {
+        return jugado;
+    }
+
     public void setJugado(boolean jugado) {
         this.jugado = jugado;
     }
+
+    public Integer getGolesLocalPenales() {
+        return golesLocalPenales;
+    }
+
+    public void setGolesLocalPenales(Integer golesLocalPenales) {
+        this.golesLocalPenales = golesLocalPenales;
+    }
+
+    public Integer getGolesVisitantePenales() {
+        return golesVisitantePenales;
+    }
+
+    public void setGolesVisitantePenales(Integer golesVisitantePenales) {
+        this.golesVisitantePenales = golesVisitantePenales;
+    }
+
+    public String getTipoDesempate() {
+        return tipoDesempate;
+    }
+
+    public void setTipoDesempate(String tipoDesempate) {
+        this.tipoDesempate = tipoDesempate;
+    }
+
+    public boolean isFinal() {
+        return isFinal;
+    }
+
+    public void setFinal(boolean aFinal) {
+        isFinal = aFinal;
+    }
 }
+

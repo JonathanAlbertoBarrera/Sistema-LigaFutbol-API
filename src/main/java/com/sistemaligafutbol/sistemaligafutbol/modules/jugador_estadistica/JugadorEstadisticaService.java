@@ -6,6 +6,8 @@ import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.Jugador;
 import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.JugadorRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.partido.Partido;
 import com.sistemaligafutbol.sistemaligafutbol.modules.partido.PartidoRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.Torneo;
+import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.TorneoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +18,12 @@ import java.util.List;
 public class JugadorEstadisticaService {
     @Autowired
     private PartidoRepository partidoRepository;
-
     @Autowired
     private JugadorEstadisticaRepository jugadorEstadisticaRepository;
-
     @Autowired
     private JugadorRepository jugadorRepository;
+    @Autowired
+    private TorneoRepository torneoRepository;
 
     @Transactional
     public String registrarEstadisticas(Long idPartido, List<JugadorEstadisticaDTO> estadisticasDTO) {
@@ -38,7 +40,7 @@ public class JugadorEstadisticaService {
             Jugador jugador = jugadorRepository.findById(estadisticaDTO.getJugador().getId())
                     .orElseThrow(() -> new NotFoundException("Jugador no encontrado"));
 
-            // Validar si el jugador está expulsado
+            // Verificar si el jugador está expulsado
             if (jugador.isExpulsado()) {
                 throw new ValidationException("El jugador " + jugador.getNombreCompleto() + " está expulsado y no puede registrar estadísticas en este partido.");
             }
@@ -47,6 +49,11 @@ public class JugadorEstadisticaService {
             if (estadisticaDTO.getAmarillas() >= 2) {
                 estadisticaDTO.setRojas(1);
                 estadisticaDTO.setComentarioExpulsion("Expulsado por doble amarilla.");
+            }
+
+            // Verificar si el jugador ha jugado al menos 3 partidos para poder registrar estadísticas en liguilla
+            if (partido.getTorneo().isEsliguilla() && jugador.getPartidosJugados() < 3) {
+                throw new ValidationException("El jugador no ha jugado suficientes partidos para registrar estadísticas en liguilla.");
             }
 
             // Registrar la estadística
@@ -64,50 +71,15 @@ public class JugadorEstadisticaService {
                 jugador.setExpulsado(true);
                 jugadorRepository.save(jugador);
             }
+
+            // Incrementar el contador de partidos jugados
+            jugador.setPartidosJugados(jugador.getPartidosJugados() + 1);
+            jugadorRepository.save(jugador);
         }
 
         actualizarExpulsiones(partido);
 
         return "Estadísticas de jugadores registradas correctamente.";
-    }
-
-    @Transactional
-    public String modificarEstadistica(Long idEstadistica, JugadorEstadisticaDTO nuevaEstadisticaDTO) {
-        JugadorEstadistica estadistica = jugadorEstadisticaRepository.findById(idEstadistica)
-                .orElseThrow(() -> new NotFoundException("Estadística no encontrada"));
-
-        Partido partido = estadistica.getPartido();
-        Jugador jugador = estadistica.getJugador();
-
-        // Validar que el total de goles registrados no exceda los goles del partido
-        int totalGolesReportados = jugadorEstadisticaRepository.findByPartido(partido).stream()
-                .mapToInt(JugadorEstadistica::getGoles).sum() - estadistica.getGoles() + nuevaEstadisticaDTO.getGoles();
-        if (totalGolesReportados > (partido.getGolesLocal() + partido.getGolesVisitante())) {
-            throw new ValidationException("El total de goles registrados excede los goles del partido.");
-        }
-
-        // Validar expulsión por doble amarilla o roja directa
-        if (nuevaEstadisticaDTO.getAmarillas() >= 2) {
-            nuevaEstadisticaDTO.setRojas(1);
-            nuevaEstadisticaDTO.setComentarioExpulsion("Expulsado por doble amarilla.");
-        }
-
-        // Modificar la estadística
-        estadistica.setGoles(nuevaEstadisticaDTO.getGoles());
-        estadistica.setAmarillas(nuevaEstadisticaDTO.getAmarillas());
-        estadistica.setRojas(nuevaEstadisticaDTO.getRojas());
-        estadistica.setComentarioExpulsion(nuevaEstadisticaDTO.getComentarioExpulsion());
-        jugadorEstadisticaRepository.save(estadistica);
-
-        // Si el jugador fue expulsado en esta modificación, actualizar su estado
-        if (nuevaEstadisticaDTO.getRojas() > 0) {
-            jugador.setExpulsado(true);
-        }
-
-        actualizarExpulsiones(partido);
-        jugadorRepository.save(jugador);
-
-        return "Estadística del jugador modificada correctamente.";
     }
 
     private void actualizarExpulsiones(Partido partido) {
@@ -121,5 +93,8 @@ public class JugadorEstadisticaService {
         }
     }
 }
+
+
+
 
 

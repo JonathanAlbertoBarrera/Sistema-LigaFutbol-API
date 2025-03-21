@@ -18,9 +18,6 @@ public class PartidoController {
     private PartidoService partidoService;
 
     @Autowired
-    private PartidosLiguillaService partidosLiguillaService;
-
-    @Autowired
     private PartidosTorneoRegularService partidosTorneoRegularService;
 
     @Autowired
@@ -31,15 +28,10 @@ public class PartidoController {
         return ResponseEntity.ok(partidosTorneoRegularService.iniciarTorneo(idTorneo));
     }
 
-//    @PostMapping("/iniciarliguilla/{idTorneo}")
-//    public ResponseEntity<String> iniciarLiguilla(@PathVariable Long idTorneo) {
-//        return ResponseEntity.ok(partidosLiguillaService.iniciarLiguilla(idTorneo));
-//    }
-
-//    @PostMapping("/registraresultado/{idPartido}")
-//    public ResponseEntity<String> registrarResultado(@PathVariable Long idPartido, @RequestBody PartidoResultadoDTO resultadoDTO) {
-//        return ResponseEntity.ok(partidoService.registrarResultado(idPartido, resultadoDTO));
-//    }
+    @PostMapping("/arbitro/registraresultado/{idPartido}")
+    public ResponseEntity<String> registrarResultado(@PathVariable Long idPartido, @RequestBody PartidoResultadoDTO resultadoDTO) {
+        return ResponseEntity.ok(partidoService.registrarResultado(idPartido, resultadoDTO));
+    }
 
 //    @PutMapping("/modificar/{idPartido}")
 //    public ResponseEntity<String> modificarPartido(@PathVariable Long idPartido, @RequestBody PartidoModificarDTO partidoDTO) {

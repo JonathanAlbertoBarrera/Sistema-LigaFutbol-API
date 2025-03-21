@@ -4,6 +4,8 @@ import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundExce
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ValidationException;
 import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.Cancha;
 import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.CanchaRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.clasificacion.Clasificacion;
+import com.sistemaligafutbol.sistemaligafutbol.modules.clasificacion.ClasificacionRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.pago.PagoService;
 import com.sistemaligafutbol.sistemaligafutbol.modules.partido.Partido;
@@ -43,6 +45,8 @@ public class PartidosTorneoRegularService {
     private ArbitroRepository arbitroRepository;
     @Autowired
     private PagoService pagoService;
+    @Autowired
+    private ClasificacionRepository clasificacionRepository;
 
     //------------GENERAR PARTIDOS DEL TORNEO REGULAR
     @Transactional
@@ -79,6 +83,21 @@ public class PartidosTorneoRegularService {
 
         torneo.setIniciado(true);
         torneoRepository.save(torneo);
+
+        // Registra los equipos confirmados en la tabla de clasificación
+        for (Solicitud solicitud : equiposConfirmados) {
+            Clasificacion clasificacion = new Clasificacion();
+            clasificacion.setEquipo(solicitud.getEquipo());
+            clasificacion.setTorneo(torneo);
+            clasificacion.setGolesAFavor(0); // Inicializa goles
+            clasificacion.setGolesEnContra(0); // Inicializa goles contra
+            clasificacion.setPartidosEmpatados(0); // Inicializa partidos empatados
+            clasificacion.setPartidosGanados(0); // Inicializa partidos ganados
+            clasificacion.setPartidosPerdidos(0); // Inicializa partidos perdidos
+            clasificacion.setPuntos(0); // Inicializa los puntos
+
+            clasificacionRepository.save(clasificacion); // Guarda la clasificación del equipo
+        }
 
         // Generar partidos
         String resultadoGeneracion = generarPartidosFaseRegular(torneo, equiposConfirmados);
@@ -174,9 +193,9 @@ public class PartidosTorneoRegularService {
                         partido.setCancha(canchaDisponible.get());
                         partido.setArbitro(arbitroDisponible.get());
                         partido.setFechaPartido(fechaAjustada);
-                        partido.setHora(LocalTime.of(10 + i * 2, 0));
+                        partido.setHora(LocalTime.of(8 + i * 2, 0));
                         partido.setJugado(false);
-
+                        partido.setFinal(false);
                         partidosGenerados.add(partido);
                         pagoService.generarPagoPorPartido(partido);
                     }

@@ -1,7 +1,10 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.jugador;
 
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
+import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.Torneo;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,6 +26,12 @@ public interface JugadorRepository extends JpaRepository<Jugador, Long> {
     List<Jugador> findByEquipo(Equipo equipo);
     List<Jugador> findByExpulsadoTrue();
     List<Jugador> findByEquipo_IdAndHabilitadoTrue(Long idEquipo);
+    // Método para obtener los jugadores de un torneo, usando la relación con `Equipo`
+    // Consultar los jugadores de los equipos confirmados en un torneo
+    @Query("SELECT j FROM Jugador j WHERE j.equipo IN (" +
+            "SELECT s.equipo FROM Solicitud s WHERE s.torneo = :torneo " +
+            "AND s.resolucion = true AND s.inscripcionEstatus = true)" )
+    List<Jugador> findJugadoresPorTorneo(@Param("torneo") Torneo torneo);
 }
 
 

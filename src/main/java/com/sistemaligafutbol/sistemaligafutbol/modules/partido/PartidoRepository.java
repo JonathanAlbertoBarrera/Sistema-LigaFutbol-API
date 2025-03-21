@@ -21,31 +21,7 @@ public interface PartidoRepository extends JpaRepository<Partido,Long> {
 
     // Buscar partidos por árbitro y fecha
     List<Partido> findByArbitroAndFechaPartido(Arbitro arbitro, LocalDate fechaPartido);
-
-    // Buscar partidos por cancha, fecha y hora
-    List<Partido> findByCanchaAndFechaPartidoAndHora(Cancha cancha, LocalDate fechaPartido, LocalTime hora);
-
-    long countByTorneoAndJugadoFalse(Torneo torneo);
-
-    @Query("SELECT p FROM Partido p WHERE p.torneo = :torneo AND (p.equipoLocal IN :equipos OR p.equipoVisitante IN :equipos)")
-    List<Partido> findByTorneoAndEquiposIn(@Param("torneo") Torneo torneo, @Param("equipos") List<Equipo> equipos);
-
     List<Partido> findByTorneoAndJugadoFalse(Torneo torneo);
-    @Query("SELECT p FROM Partido p WHERE p.torneo = :torneo AND p.jugado = true " +
-            "AND p.fechaPartido = (SELECT MAX(p2.fechaPartido) FROM Partido p2 WHERE p2.torneo = :torneo AND p2.jugado = true)")
-    List<Partido> findUltimosPartidosFase(@Param("torneo") Torneo torneo);
-
-    // Obtener partidos sin jugar de una fecha específica
-    List<Partido> findByTorneoAndFechaPartidoAndJugadoFalse(Torneo torneo, LocalDate fecha);
-
-    // Contar partidos de un torneo (para verificar si es la final)
-    long countByTorneo(Torneo torneo);
-
-    List<Partido> findByTorneoAndJugadoTrue(Torneo torneo);
-
-    // Buscar partido de ida dado un equipo local, visitante y fecha
-    Optional<Partido> findByEquipoLocalAndEquipoVisitanteAndFechaPartido(
-            Equipo equipoLocal, Equipo equipoVisitante, LocalDate fechaPartido);
 
     boolean existsByArbitroAndJugadoFalse(Arbitro arbitro);
 
@@ -60,4 +36,15 @@ public interface PartidoRepository extends JpaRepository<Partido,Long> {
 
     Optional<Partido> findTopByJugadoFalseAndEquipoLocalIdOrEquipoVisitanteIdOrderByFechaPartidoAsc(Long idLocal, Long idVisitante);
     Optional<Partido> findTopByJugadoFalseOrderByFechaPartidoAsc();
+    // Método personalizado para obtener los equipos clasificados por torneo
+    @Query("SELECT DISTINCT p.equipoLocal FROM Partido p WHERE p.torneo = :torneo " +
+            "AND p.golesLocal > p.golesVisitante UNION " +
+            "SELECT DISTINCT p.equipoVisitante FROM Partido p WHERE p.torneo = :torneo " +
+            "AND p.golesVisitante > p.golesLocal")
+    List<Equipo> findEquiposClasificados(@Param("torneo") Torneo torneo);
+    @Query("SELECT p FROM Partido p WHERE p.torneo = :torneo AND p.isFinal = true")
+    Partido findFinalByTorneo(@Param("torneo") Torneo torneo);
+    @Query("SELECT p FROM Partido p WHERE p.torneo = :torneo AND p.torneo.esliguilla = true")
+    List<Partido> findByTorneoAndEsLiguillaTrue(@Param("torneo") Torneo torneo);
+    List<Partido> findByTorneoAndJugadoTrue(Torneo torneo);
 }

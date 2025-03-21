@@ -10,4 +10,6 @@ import java.util.List;
 public interface JugadorEstadisticaRepository extends JpaRepository<JugadorEstadistica,Long> {
     List<JugadorEstadistica> findByPartido(Partido partido);
     long countByJugadorAndPartido_FechaPartidoAfter(Jugador jugador, LocalDate fecha);
+    // Obtener la tabla de goleo por torneo, ordenada por goles
+    List<JugadorEstadistica> findByPartido_Torneo_IdOrderByGolesDesc(Long idTorneo);
 }

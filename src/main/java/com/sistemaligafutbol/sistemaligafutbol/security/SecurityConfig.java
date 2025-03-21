@@ -102,15 +102,17 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/pagos/todos/precios").permitAll()//todos pueden ver los precios de los tipos de pago
 
                         //GESTION DE PARTIDOS
-                        .requestMatchers(HttpMethod.POST,"/api/partidos/iniciartorneo/").hasRole("ADMIN") //SOLO ADMIN puede inciar el torneo (generar partidos)
-                        .requestMatchers(HttpMethod.POST,"/api/partidos/iniciarliguilla/").hasRole("ADMIN") //SOLO ADMIN puede iniciar la liguilla (generar partidos)
-                        .requestMatchers(HttpMethod.POST,"/api/partidos/registraresultado/").hasRole("ARBITRO") //SOLO ARBITROS pueden registrar resultados de los partidos
-                        .requestMatchers(HttpMethod.PUT,"/api/partidos/modificar/").hasRole("ADMIN")//SOLO ADMIN puede modificar los partidos
+                        .requestMatchers(HttpMethod.POST,"/api/partidos/admin/**").hasRole("ADMIN") //SOLO ADMIN puede inciar el torneo (generar partidos)
+                        .requestMatchers(HttpMethod.POST,"/api/partidos/arbitro/**").permitAll() //SOLO ARBITROS pueden registrar resultados de los partidos y demas funciones
                         .requestMatchers(HttpMethod.GET,"/api/partidos/todos/**").permitAll() //todos pueden ver los datos de partidos
 
                         //GESTION DE JUGADOR_ESTADISTICA
                         .requestMatchers(HttpMethod.POST,"/api/jugadorestadisticas/registrar/").hasRole("ARBITRO")//Solo ARBITROS pueden registrar las estadististicas de los jugadores
                         .requestMatchers(HttpMethod.PUT,"/api/jugadorestadisticas/modificar/").hasRole("ARBITRO")//Solo ARBITROS pueden modificar las estadisticas
+                        .requestMatchers(HttpMethod.GET,"/api/jugadorestadisticas/torneo/{idTorneo}").permitAll() //TODOS PODRIAN VER LA TABLA DE GOLEO
+
+                        //GESTION DE CLASIFICACION
+                        .requestMatchers(HttpMethod.GET,"/api/tabla-clasificacion/{idTorneo}").permitAll() //TODOS PUEDEN VER LA TABLA DE CLASIFICACION
 
                         .anyRequest().authenticated() // Cualquier otra ruta requiere autenticación
                 )
