@@ -43,4 +43,20 @@ public interface PartidoRepository extends JpaRepository<Partido,Long> {
     List<Partido> findByTorneoAndJugadoTrue(Torneo torneo);
     Optional<Partido> findByTorneoAndEquipoLocalAndEquipoVisitanteAndIdaVuelta(Torneo torneo, Equipo equipoLocal, Equipo equipoVisitante, String idaVuelta);
     List<Partido> findByArbitro(Arbitro arbitro);
+    // Buscar partidos de la cancha en el rango de horas
+    @Query("SELECT p FROM Partido p WHERE p.cancha = :cancha AND p.fechaPartido = :fechaPartido " +
+            "AND (p.hora BETWEEN :horaInicioRango AND :horaFinRango)")
+    Optional<Partido> findByCanchaAndFechaPartidoBetweenHora(@Param("cancha") Cancha cancha,
+                                                             @Param("fechaPartido") LocalDate fechaPartido,
+                                                             @Param("horaInicioRango") LocalTime horaInicioRango,
+                                                             @Param("horaFinRango") LocalTime horaFinRango);
+
+
+    // Buscar partidos del árbitro en el rango de horas
+    @Query("SELECT p FROM Partido p WHERE p.arbitro = :arbitro AND p.fechaPartido = :fechaPartido " +
+            "AND (p.hora BETWEEN :horaInicioRango AND :horaFinRango)")
+    Optional<Partido> findByArbitroAndFechaPartidoBetweenHora(@Param("arbitro") Arbitro arbitro,
+                                                              @Param("fechaPartido") LocalDate fechaPartido,
+                                                              @Param("horaInicioRango") LocalTime horaInicioRango,
+                                                              @Param("horaFinRango") LocalTime horaFinRango);
 }

@@ -38,10 +38,10 @@ public class PartidoController {
         return ResponseEntity.ok(partidoGetServices.findPartidosPartidosPorArbitro(idUsuario));
     }
 
-//    @PutMapping("/admin/modificar/{idPartido}")
-//    public ResponseEntity<String> modificarPartido(@PathVariable Long idPartido, @RequestBody PartidoModificarDTO partidoDTO) {
-//        return ResponseEntity.ok(partidoService.modificarPartido(idPartido, partidoDTO));
-//    }
+    @PutMapping("/admin/modificar/{idPartido}")
+    public ResponseEntity<String> modificarPartido(@PathVariable Long idPartido, @RequestBody ModificarPartidoDTO partidoDTO) {
+        return ResponseEntity.ok(partidoService.modificarPartido(idPartido, partidoDTO));
+    }
 
     //---  GETS
     @GetMapping("/todos")

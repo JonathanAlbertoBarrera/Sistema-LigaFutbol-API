@@ -2,22 +2,30 @@ package com.sistemaligafutbol.sistemaligafutbol.modules.partido.services;
 
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundException;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ValidationException;
+import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.Cancha;
+import com.sistemaligafutbol.sistemaligafutbol.modules.cancha.CanchaRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.clasificacion.Clasificacion;
 import com.sistemaligafutbol.sistemaligafutbol.modules.clasificacion.ClasificacionRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.Jugador;
 import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.JugadorRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.jugador_estadistica.JugadorEstadisticaService;
+import com.sistemaligafutbol.sistemaligafutbol.modules.partido.ModificarPartidoDTO;
 import com.sistemaligafutbol.sistemaligafutbol.modules.partido.Partido;
 import com.sistemaligafutbol.sistemaligafutbol.modules.partido.PartidoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.partido.PartidoResultadoDTO;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.Torneo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.TorneoRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro.Arbitro;
+import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro.ArbitroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +40,10 @@ public class PartidoService {
     private TorneoRepository torneoRepository;
     @Autowired
     private ClasificacionRepository clasificacionRepository;
+    @Autowired
+    private ArbitroRepository arbitroRepository;
+    @Autowired
+    private CanchaRepository canchaRepository;
 
     @Transactional
     public String registrarResultado(Long idPartido, PartidoResultadoDTO resultadoDTO) {
@@ -266,6 +278,81 @@ public class PartidoService {
             jugadorRepository.save(jugador);
         }
     }
+
+    @Transactional
+    public String modificarPartido(Long idPartido, ModificarPartidoDTO dto) {
+
+        Partido partido = partidoRepository.findById(idPartido)
+                .orElseThrow(() -> new NotFoundException("Partido no encontrado"));
+
+        if(partido.isJugado()){
+            throw new ValidationException("El partido ya se jugó por lo cual no se puede modificar");
+        }
+
+        // Verificar disponibilidad de la cancha
+        Optional<Cancha> canchaDisponible = canchaRepository.findById(dto.getIdCancha());
+        if (canchaDisponible.isEmpty()) {
+            throw new NotFoundException("Cancha no encontrada.");
+        }
+        // Verificar si la cancha está activa
+        if (!canchaDisponible.get().isEstatusCancha()) {
+            throw new ValidationException("La cancha no está activa.");
+        }
+
+        LocalDate fechaPartido = dto.getNuevaFecha();
+        LocalTime horaPartido = dto.getNuevaHora();
+
+        // Verificar si ya existe un partido en la cancha en el rango de tiempo alrededor de la nueva hora
+        LocalTime horaInicioRango = horaPartido.minusHours(2);  // 2 horas antes
+        LocalTime horaFinRango = horaPartido.plusHours(2);  // 2 horas después
+
+        // Verificar partidos solapados con el rango de tiempo
+        Optional<Partido> partidoExistenteCancha = partidoRepository.findByCanchaAndFechaPartidoBetweenHora(
+                canchaDisponible.get(), fechaPartido, horaInicioRango, horaFinRango);
+
+        // Si el partido encontrado es el mismo que se está modificando, no lanzamos error
+        if (partidoExistenteCancha.isPresent() && !partidoExistenteCancha.get().getId().equals(idPartido)) {
+            throw new ValidationException("Ya existe un partido en esa cancha en un rango de 2 horas antes o después respecto a la hora que quieres modificar.");
+        }
+
+        // Verificar disponibilidad del árbitro
+        Optional<Arbitro> arbitroDisponible = arbitroRepository.findById(dto.getIdArbitro());
+        if (arbitroDisponible.isEmpty()) {
+            throw new NotFoundException("Árbitro no encontrado.");
+        }
+        // Verificar si el árbitro tiene algún partido asignado en el rango de tiempo
+        if (!arbitroDisponible.get().getUsuario().isEstatus()) {
+            throw new ValidationException("El árbitro no está activo.");
+        }
+
+        Optional<Partido> partidoExistenteArbitro = partidoRepository.findByArbitroAndFechaPartidoBetweenHora(
+                arbitroDisponible.get(), fechaPartido, horaInicioRango, horaFinRango);
+
+        // Si el árbitro ya tiene un partido en el rango, no dejarlo modificar el horario
+        if (partidoExistenteArbitro.isPresent() && !partidoExistenteArbitro.get().getId().equals(idPartido)) {
+            throw new ValidationException("El árbitro ya tiene un partido asignado entre 2 horas antes o después de la hora que quieres establecer");
+        }
+
+        Torneo torneo = torneoRepository.findById(partido.getId())
+                .orElseThrow(() -> new NotFoundException("Torneo no encontrado"));
+
+        // Modificar los detalles del partido
+        partido.setFechaPartido(dto.getNuevaFecha());
+        partido.setHora(dto.getNuevaHora());
+        partido.setCancha(canchaDisponible.get());
+        partido.setArbitro(arbitroDisponible.get());
+
+        // Modificar la fecha del fin del torneo si es final de vuelta
+        if (partido.isFinal() && partido.getIdaVuelta().equals("VUELTA")) {
+            torneo.setFechaFin(dto.getNuevaFecha());
+        }
+
+        partidoRepository.save(partido);
+        torneoRepository.save(torneo);
+
+        return "Partido modificado correctamente.";
+    }
+
 }
 
 
