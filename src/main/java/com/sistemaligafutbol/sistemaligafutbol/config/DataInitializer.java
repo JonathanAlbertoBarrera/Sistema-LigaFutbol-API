@@ -210,7 +210,7 @@ public class DataInitializer {
             torneoEnEspera.setMaxEquipos(6);
             torneoEnEspera.setMinEquipos(4);
             torneoEnEspera.setEquiposLiguilla(4);
-            torneoEnEspera.setVueltas(2);
+            torneoEnEspera.setVueltas(1);
             torneoEnEspera.setLogoTorneo(IMAGEN_TORNEO);
             torneoEnEspera.setPremio("15,000 pesos para el equipo + medallas individuales");
             torneoEnEspera.setEstatusLlenado(false);

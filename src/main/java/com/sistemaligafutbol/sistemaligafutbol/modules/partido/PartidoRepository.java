@@ -36,15 +36,12 @@ public interface PartidoRepository extends JpaRepository<Partido,Long> {
 
     Optional<Partido> findTopByJugadoFalseAndEquipoLocalIdOrEquipoVisitanteIdOrderByFechaPartidoAsc(Long idLocal, Long idVisitante);
     Optional<Partido> findTopByJugadoFalseOrderByFechaPartidoAsc();
-    // Método personalizado para obtener los equipos clasificados por torneo
-    @Query("SELECT DISTINCT p.equipoLocal FROM Partido p WHERE p.torneo = :torneo " +
-            "AND p.golesLocal > p.golesVisitante UNION " +
-            "SELECT DISTINCT p.equipoVisitante FROM Partido p WHERE p.torneo = :torneo " +
-            "AND p.golesVisitante > p.golesLocal")
-    List<Equipo> findEquiposClasificados(@Param("torneo") Torneo torneo);
     @Query("SELECT p FROM Partido p WHERE p.torneo = :torneo AND p.isFinal = true")
     Partido findFinalByTorneo(@Param("torneo") Torneo torneo);
     @Query("SELECT p FROM Partido p WHERE p.torneo = :torneo AND p.torneo.esliguilla = true")
     List<Partido> findByTorneoAndEsLiguillaTrue(@Param("torneo") Torneo torneo);
     List<Partido> findByTorneoAndJugadoTrue(Torneo torneo);
+    Optional<Partido> findByTorneoAndEquipoLocalAndEquipoVisitanteAndIdaVuelta(Torneo torneo, Equipo equipoLocal, Equipo equipoVisitante, String idaVuelta);
+    @Query("SELECT p FROM Partido p WHERE p.torneo = :torneo AND p.idaVuelta = :idaVuelta AND p.isFinal = false")
+    List<Partido> findByTorneoAndIdaVueltaAndFinalFalse(@Param("torneo") Torneo torneo, @Param("idaVuelta") String idaVuelta);
 }

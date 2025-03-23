@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PartidoService {
@@ -51,144 +52,202 @@ public class PartidoService {
         partido.setGolesVisitante(resultadoDTO.getGolesVisitante());
         partido.setJugado(true);
 
-        // Guardar el resultado del partido
-        partido.setDescripcionResultado(resultadoDTO.getDescripcionResultado());
-        if ("PENALES".equals(partido.getTipoDesempate())) {
-            partido.setGolesLocalPenales(resultadoDTO.getGolesLocalPenales());
-            partido.setGolesVisitantePenales(resultadoDTO.getGolesVisitantePenales());
-        }
-
         partidoRepository.save(partido);
 
-        // Si el partido es de liguilla, registrar resultado de liguilla
+        // Gestionar clasificación solo en fase regular
+        if (!partido.getTorneo().isEsliguilla()) {
+            Clasificacion clasificacionLocal = clasificacionRepository.findByEquipo(partido.getEquipoLocal())
+                    .orElseThrow(() -> new NotFoundException("Clasificación de equipo no encontrada"));
+            Clasificacion clasificacionVisitante = clasificacionRepository.findByEquipo(partido.getEquipoVisitante())
+                    .orElseThrow(() -> new NotFoundException("Clasificación de equipo no encontrada"));
+
+            clasificacionLocal.setGolesAFavor(clasificacionLocal.getGolesAFavor() + resultadoDTO.getGolesLocal());
+            clasificacionVisitante.setGolesAFavor(clasificacionVisitante.getGolesAFavor() + resultadoDTO.getGolesVisitante());
+            clasificacionLocal.setGolesEnContra(clasificacionLocal.getGolesEnContra() + resultadoDTO.getGolesVisitante());
+            clasificacionVisitante.setGolesEnContra(clasificacionVisitante.getGolesEnContra() + resultadoDTO.getGolesLocal());
+
+            if (resultadoDTO.getGolesLocal() == resultadoDTO.getGolesVisitante()) {
+                clasificacionLocal.setPartidosEmpatados(clasificacionLocal.getPartidosEmpatados() + 1);
+                clasificacionVisitante.setPartidosEmpatados(clasificacionVisitante.getPartidosEmpatados() + 1);
+                clasificacionLocal.setPuntos(clasificacionLocal.getPuntos() + 1);
+                clasificacionVisitante.setPuntos(clasificacionVisitante.getPuntos() + 1);
+            }
+
+            if (resultadoDTO.getGolesLocal() > resultadoDTO.getGolesVisitante()) {
+                clasificacionLocal.setPartidosGanados(clasificacionLocal.getPartidosGanados() + 1);
+                clasificacionVisitante.setPartidosPerdidos(clasificacionVisitante.getPartidosPerdidos() + 1);
+                clasificacionLocal.setPuntos(clasificacionLocal.getPuntos() + 3);
+            }
+
+            if (resultadoDTO.getGolesLocal() < resultadoDTO.getGolesVisitante()) {
+                clasificacionLocal.setPartidosPerdidos(clasificacionLocal.getPartidosPerdidos() + 1);
+                clasificacionVisitante.setPartidosGanados(clasificacionVisitante.getPartidosGanados() + 1);
+                clasificacionVisitante.setPuntos(clasificacionVisitante.getPuntos() + 3);
+            }
+
+            clasificacionRepository.save(clasificacionLocal);
+            clasificacionRepository.save(clasificacionVisitante);
+        }
+
         if (partido.getTorneo().isEsliguilla()) {
             registrarResultadoLiguilla(partido.getId(), resultadoDTO);
         }
 
-        // Verificar si la fase está terminada y generar la siguiente fase
-        if (partidosLiguillaService.faseTerminada(partido.getTorneo())) {
+        if (partidosLiguillaService.faseTerminada(partido.getTorneo()) && !esFinalDeLiguilla(partido)) {
             partidosLiguillaService.iniciarLiguilla(partido.getTorneo().getId());
-        }
-
-        // Verificar si se ha llegado a la final de la liguilla y asignar al ganador
-        if (esFinalDeLiguilla(partido)) {
-            asignarGanadorYFinalizarTorneo(partido.getTorneo());
-
-            // Resetear los partidos jugados de los jugadores después de la final
-            resetearPartidosJugadosAlTerminarTorneo(partido.getTorneo());
-        }
-
-        Clasificacion clasificacionLocal =clasificacionRepository.findByEquipo(partido.getEquipoLocal())
-                .orElseThrow(()-> new NotFoundException("Clasificación de equipo no encontrada"));
-        Clasificacion clasificacionVisitante =clasificacionRepository.findByEquipo(partido.getEquipoVisitante())
-                .orElseThrow(()-> new NotFoundException("Clasificación de equipo no encontrada"));
-        //ASIGNAR DATOS PARA LA TABLA DE CLASIFICACION
-        if(!partido.getTorneo().isEsliguilla()){
-            clasificacionLocal.setGolesAFavor(clasificacionLocal.getGolesAFavor()+resultadoDTO.getGolesLocal());//sumar goles a favor al local
-            clasificacionVisitante.setGolesAFavor(clasificacionVisitante.getGolesAFavor()+resultadoDTO.getGolesVisitante());//sumar goles al visitante
-
-            clasificacionLocal.setGolesEnContra(clasificacionLocal.getGolesEnContra()+resultadoDTO.getGolesVisitante()); //sumar goles en contra al local
-            clasificacionVisitante.setGolesEnContra(clasificacionVisitante.getGolesEnContra()+resultadoDTO.getGolesLocal()); //sumar goles en contra al visitante
-            if(resultadoDTO.getGolesLocal()==resultadoDTO.getGolesVisitante()){
-                //ambos se les agrega partido empatado
-                clasificacionLocal.setPartidosEmpatados(clasificacionLocal.getPartidosEmpatados()+1);
-                clasificacionVisitante.setPartidosEmpatados(clasificacionVisitante.getPartidosEmpatados()+1);
-
-                //se les suma un punto
-                clasificacionLocal.setPuntos(clasificacionLocal.getPuntos()+1);
-                clasificacionVisitante.setPuntos(clasificacionVisitante.getPuntos()+1);
-            }
-
-            if (resultadoDTO.getGolesLocal()>resultadoDTO.getGolesVisitante()){
-                //se le agrega un partido ganado al local y uno perdido al visitante
-                clasificacionLocal.setPartidosGanados(clasificacionLocal.getPartidosGanados()+1);
-                clasificacionVisitante.setPartidosPerdidos(clasificacionVisitante.getPartidosPerdidos()+1);
-
-                //se le suma 3 puntos al local
-                clasificacionLocal.setPuntos(clasificacionLocal.getPuntos()+3);
-            }
-
-            if (resultadoDTO.getGolesLocal()<resultadoDTO.getGolesVisitante()){
-                //se le agrega un partido ganado al visitante y uno perdido al local
-                clasificacionLocal.setPartidosPerdidos(clasificacionLocal.getPartidosPerdidos()+1);
-                clasificacionVisitante.setPartidosGanados(clasificacionVisitante.getPartidosGanados()+1);
-
-                //se le suma 3 puntos al visitante
-                clasificacionLocal.setPuntos(clasificacionVisitante.getPuntos()+3);
-            }
         }
 
         return "Resultado registrado correctamente.";
     }
 
-    // Método para registrar resultado de liguilla
     @Transactional
     public String registrarResultadoLiguilla(Long idPartido, PartidoResultadoDTO resultadoDTO) {
         Partido partido = partidoRepository.findById(idPartido)
                 .orElseThrow(() -> new NotFoundException("Partido no encontrado"));
 
-        // Asignar goles de ida y vuelta
         partido.setGolesLocal(resultadoDTO.getGolesLocal());
         partido.setGolesVisitante(resultadoDTO.getGolesVisitante());
         partido.setJugado(true);
-
-        // Verificar si hubo tiempo extra o penales
-        if ("PENALES".equals(partido.getTipoDesempate())) {
-            partido.setGolesLocalPenales(resultadoDTO.getGolesLocalPenales());
-            partido.setGolesVisitantePenales(resultadoDTO.getGolesVisitantePenales());
+        if(resultadoDTO.getTipoDesempate()!=null && !resultadoDTO.equals("")){
+            partido.setTipoDesempate(resultadoDTO.getTipoDesempate());
         }
 
         partidoRepository.save(partido);
 
-        // Si la fase está terminada, generar la siguiente fase
+        if(partido.getIdaVuelta().equals("VUELTA")){
+            if(resultadoDTO.getTipoDesempate()==null || resultadoDTO.equals("")){
+                throw new ValidationException("Es un partido de vuelta de liguilla. Debes indicar el tipo de desempate (NORMAL,TIEMPO_EXTRA,PENALES) ");
+            }
+            if(!resultadoDTO.getTipoDesempate().equals("NORMAL") && !resultadoDTO.getTipoDesempate().equals("TIEMPO_EXTRA") && !resultadoDTO.getTipoDesempate().equals("PENALES")){
+                System.out.println("Dato: "+resultadoDTO.getTipoDesempate());
+                throw new ValidationException("Tipo de desempate desconocido. Intenta con estas opciones: (NORMAL, TIEMPO_EXTRA, PENALES) ");
+            }
+            //PARA DECIDIR QUIEN PASO
+            actualizarAvanceEquipo(partido, resultadoDTO);
+        }
+
+        // Si el partido es final, asignamos ganador y finalizamos el torneo
+        if (esFinalDeLiguilla(partido) & partido.getIdaVuelta().equals("VUELTA")) {
+            asignarGanadorYFinalizarTorneo(partido.getTorneo());
+            resetearPartidosJugadosAlTerminarTorneo(partido.getTorneo());
+        }
+
+        // Verificar si la fase está terminada y generar la siguiente fase
         if (partidosLiguillaService.faseTerminada(partido.getTorneo())) {
+            if (existeUnSoloGanador(partido.getTorneo())) {
+                // No generar la siguiente fase si ya hay un solo equipo ganador
+                return "Torneo finalizado, el ganador es: "+partido.getTorneo().getGanador().getNombreEquipo();
+            }
             partidosLiguillaService.generarSiguienteFase(partido.getTorneo());
         }
 
         return "Resultado registrado correctamente.";
     }
 
-    // Método para verificar si es la final de la liguilla
-    private boolean esFinalDeLiguilla(Partido partido) {
-        return partido.isFinal();  // Verificamos el campo 'isFinal' del partido
+    private void actualizarAvanceEquipo(Partido partido, PartidoResultadoDTO resultadoDTO) {
+        // Buscar el partido de ida relacionado con este partido de vuelta
+        Partido partidoIda = partidoRepository.findByTorneoAndEquipoLocalAndEquipoVisitanteAndIdaVuelta(partido.getTorneo(), partido.getEquipoVisitante(), partido.getEquipoLocal(), "IDA")
+                .orElseThrow(() -> new NotFoundException("No se encontró el partido de ida para este enfrentamiento"));
+
+        // Sumar los goles del partido de ida y el partido de vuelta
+        int golesLocalTotal = partidoIda.getGolesVisitante() + partido.getGolesLocal();
+        int golesVisitanteTotal = partidoIda.getGolesLocal() + partido.getGolesVisitante();
+
+        // Si el tipo de desempate fue NORMAL
+        Clasificacion clasificacionLocal=clasificacionRepository.findByEquipo(partido.getEquipoLocal())
+                .orElseThrow(()->new NotFoundException("Clasificación del equipo local no encontrada"));
+        Clasificacion clasificacionVisitante=clasificacionRepository.findByEquipo(partido.getEquipoVisitante())
+                .orElseThrow(()->new NotFoundException("Clasificación del equipo visitante no encontrada"));
+
+        if ("NORMAL".equals(partido.getTipoDesempate())) {
+            if (golesLocalTotal > golesVisitanteTotal) {
+                clasificacionLocal.setAvance(true);
+                clasificacionVisitante.setAvance(false);
+            } else if (golesVisitanteTotal > golesLocalTotal) {
+                clasificacionVisitante.setAvance(true);
+                clasificacionLocal.setAvance(false);
+            } else {
+                // En caso de empate, se decidirá por tiempo extra o penales
+                throw new ValidationException("El marcador está empatado. Se requiere tiempo extra o penales.");
+            }
+        }
+
+        // Si el tipo de desempate fue TIEMPO EXTRA
+        else if ("TIEMPO_EXTRA".equals(partido.getTipoDesempate())) {
+            if (golesLocalTotal > golesVisitanteTotal) {
+                clasificacionLocal.setAvance(true);
+                clasificacionVisitante.setAvance(false);
+            } else if (golesVisitanteTotal > golesLocalTotal) {
+                clasificacionVisitante.setAvance(true);
+                clasificacionLocal.setAvance(false);
+            }else{
+                throw new ValidationException("El marcador global está empatado. Se requiere decidir el partido en penales");
+            }
+        }
+
+        // Si el tipo de desempate fue PENALES
+        else if ("PENALES".equals(partido.getTipoDesempate())) {
+            if(resultadoDTO.getGolesLocalPenales()==null || resultadoDTO.getGolesVisitantePenales()==null){
+                throw new ValidationException("Debes ingresar los penales que anotó tanto el equipo local como el equipo visitante");
+            }
+            int golesLocalPenales = resultadoDTO.getGolesLocalPenales();
+            int golesVisitantePenales = resultadoDTO.getGolesVisitantePenales();
+
+            if (golesLocalPenales > golesVisitantePenales) {
+                clasificacionLocal.setAvance(true);
+                clasificacionVisitante.setAvance(false);
+            } else if (golesVisitantePenales > golesLocalPenales) {
+                clasificacionVisitante.setAvance(true);
+                clasificacionLocal.setAvance(false);
+            } else {
+                // En caso de empate en los penales, se debería de implementar una lógica adicional o declarar empate
+                throw new ValidationException("El marcador de penales está empatado. Alguien debe de ganar, así que por favor registra correctamente el resultado de los penales (Algún equipo debe anotar al menos un penal más que el otro equipo)");
+            }
+        }
+
+        clasificacionRepository.save(clasificacionLocal);
+        clasificacionRepository.save(clasificacionVisitante);
     }
 
-    // Asignar ganador y finalizar el torneo después de la final
-    public void asignarGanadorYFinalizarTorneo(Torneo torneo) {
-        // Obtener el partido final
-        Partido finalPartido = partidoRepository.findFinalByTorneo(torneo);
+    private boolean esFinalDeLiguilla(Partido partido) {
+        return partido.isFinal();
+    }
 
-        if (finalPartido != null && finalPartido.isJugado()) {
-            // Comprobar si el marcador global está empatado
-            if (finalPartido.getGolesLocal() == finalPartido.getGolesVisitante()) {
-                // Si el marcador global está empatado, se decide por penales
-                if (finalPartido.getGolesLocalPenales() > finalPartido.getGolesVisitantePenales()) {
-                    torneo.setGanador(finalPartido.getEquipoLocal());
-                } else if (finalPartido.getGolesVisitantePenales() > finalPartido.getGolesLocalPenales()) {
-                    torneo.setGanador(finalPartido.getEquipoVisitante());
-                } else {
-                    // Si el empate persiste en los penales, implementar lógica adicional si es necesario
-                    throw new ValidationException("El empate persiste en los penales. Implementa lógica adicional si es necesario.");
-                }
-            } else {
-                // Si no hay empate global, asignamos al ganador por el marcador global
-                if (finalPartido.getGolesLocal() > finalPartido.getGolesVisitante()) {
-                    torneo.setGanador(finalPartido.getEquipoLocal());
-                } else {
-                    torneo.setGanador(finalPartido.getEquipoVisitante());
-                }
-            }
+    public boolean existeUnSoloGanador(Torneo torneo) {
+        // Verificar si solo hay un equipo con el atributo 'avance' en true
+        return clasificacionRepository.findClasificacionesByTorneo(torneo).stream()
+                .filter(c -> c.isAvance())
+                .count() == 1;
+    }
+
+    private void asignarGanadorYFinalizarTorneo(Torneo torneo) {
+        // Buscar el equipo con avance true en la tabla de clasificación
+        List<Clasificacion> clasificaciones = clasificacionRepository.findClasificacionesByTorneo(torneo);
+
+        // Filtrar los equipos que tienen "avance" en true
+        List<Clasificacion> equiposConAvance = clasificaciones.stream()
+                .filter(Clasificacion::isAvance)
+                .collect(Collectors.toList());
+
+        // Verificar que solo haya un equipo con "avance" en true
+        if (equiposConAvance.size() == 1) {
+            // El equipo que tiene "avance" en true es el ganador
+            Equipo ganador = equiposConAvance.get(0).getEquipo();
+
+            // Asignar al ganador en el torneo
+            torneo.setGanador(ganador);
 
             // Cambiar el estatus del torneo a finalizado
             torneo.setEstatusTorneo(false); // Establece el estatus del torneo como terminado
             torneo.setEsliguilla(false); // Establece que la liguilla ya ha terminado
 
-            // Guardar cambios en el torneo
             torneoRepository.save(torneo);
+        } else {
+            // Si no hay un solo equipo con "avance" en true, no podemos asignar un ganador
+            throw new ValidationException("Solo puede haber un ganador del torneo");
         }
     }
 
-    // Método para resetear los partidos jugados de los jugadores al terminar el torneo
     public void resetearPartidosJugadosAlTerminarTorneo(Torneo torneo) {
         // Obtener todos los jugadores que participaron en el torneo
         List<Jugador> jugadoresDelTorneo = jugadorRepository.findJugadoresPorTorneo(torneo);
@@ -200,6 +259,7 @@ public class PartidoService {
         }
     }
 }
+
 
 
 

@@ -23,7 +23,7 @@ public class Partido {
 
     @ManyToOne
     @JoinColumn(name = "id_torneo", nullable = false)
-    @JsonIncludeProperties({"id", "nombreTorneo", "logoTorneo"})
+    @JsonIncludeProperties({"id", "nombreTorneo", "logoTorneo","esliguilla"})
     private Torneo torneo;
 
     @ManyToOne
@@ -55,22 +55,21 @@ public class Partido {
 
     @Column(name = "goles_visitate")
     private int golesVisitante;
-
-    private String descripcionResultado;
-    private boolean jugado;
-
+    @Column(name = "tipo_desempate")
+    private String tipoDesempate;  // "NORMAL", "TIEMPO_EXTRA", "PENALES"
     // Campos para tiempo extra y penales en liguilla
     private Integer golesLocalPenales;
     private Integer golesVisitantePenales;
-
-    @Column(name = "tipo_desempate")
-    private String tipoDesempate;  // "NORMAL", "TIEMPO_EXTRA", "PENALES"
     private boolean isFinal;
+    @Column(name="ida_vuelta")
+    private String idaVuelta;
+    private boolean jugado;
+
 
     public Partido() {
     }
 
-    public Partido(Long id, Torneo torneo, Equipo equipoLocal, Equipo equipoVisitante, Cancha cancha, Arbitro arbitro, LocalDate fechaPartido, LocalTime hora, int golesLocal, int golesVisitante, String descripcionResultado, boolean jugado, Integer golesLocalPenales, Integer golesVisitantePenales, String tipoDesempate, boolean isFinal) {
+    public Partido(Long id, Torneo torneo, Equipo equipoLocal, Equipo equipoVisitante, Cancha cancha, Arbitro arbitro, LocalDate fechaPartido, LocalTime hora, int golesLocal, int golesVisitante, String tipoDesempate, Integer golesLocalPenales, Integer golesVisitantePenales, boolean isFinal, String idaVuelta, boolean jugado) {
         this.id = id;
         this.torneo = torneo;
         this.equipoLocal = equipoLocal;
@@ -81,15 +80,16 @@ public class Partido {
         this.hora = hora;
         this.golesLocal = golesLocal;
         this.golesVisitante = golesVisitante;
-        this.descripcionResultado = descripcionResultado;
-        this.jugado = jugado;
+        this.tipoDesempate = tipoDesempate;
         this.golesLocalPenales = golesLocalPenales;
         this.golesVisitantePenales = golesVisitantePenales;
-        this.tipoDesempate = tipoDesempate;
         this.isFinal = isFinal;
+        this.idaVuelta = idaVuelta;
+        this.jugado = jugado;
     }
 
     //Getters and setters
+
 
     public Long getId() {
         return id;
@@ -171,20 +171,12 @@ public class Partido {
         this.golesVisitante = golesVisitante;
     }
 
-    public String getDescripcionResultado() {
-        return descripcionResultado;
+    public String getTipoDesempate() {
+        return tipoDesempate;
     }
 
-    public void setDescripcionResultado(String descripcionResultado) {
-        this.descripcionResultado = descripcionResultado;
-    }
-
-    public boolean isJugado() {
-        return jugado;
-    }
-
-    public void setJugado(boolean jugado) {
-        this.jugado = jugado;
+    public void setTipoDesempate(String tipoDesempate) {
+        this.tipoDesempate = tipoDesempate;
     }
 
     public Integer getGolesLocalPenales() {
@@ -203,20 +195,28 @@ public class Partido {
         this.golesVisitantePenales = golesVisitantePenales;
     }
 
-    public String getTipoDesempate() {
-        return tipoDesempate;
-    }
-
-    public void setTipoDesempate(String tipoDesempate) {
-        this.tipoDesempate = tipoDesempate;
-    }
-
     public boolean isFinal() {
         return isFinal;
     }
 
     public void setFinal(boolean aFinal) {
         isFinal = aFinal;
+    }
+
+    public String getIdaVuelta() {
+        return idaVuelta;
+    }
+
+    public void setIdaVuelta(String idaVuelta) {
+        this.idaVuelta = idaVuelta;
+    }
+
+    public boolean isJugado() {
+        return jugado;
+    }
+
+    public void setJugado(boolean jugado) {
+        this.jugado = jugado;
     }
 }
 

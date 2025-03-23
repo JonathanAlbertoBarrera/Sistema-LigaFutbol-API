@@ -95,6 +95,7 @@ public class PartidosTorneoRegularService {
             clasificacion.setPartidosGanados(0); // Inicializa partidos ganados
             clasificacion.setPartidosPerdidos(0); // Inicializa partidos perdidos
             clasificacion.setPuntos(0); // Inicializa los puntos
+            clasificacion.setAvance(false);//por defecto nadie esta clasificado
 
             clasificacionRepository.save(clasificacion); // Guarda la clasificación del equipo
         }
@@ -212,6 +213,5 @@ public class PartidosTorneoRegularService {
             return "Error inesperado al generar partidos: " + e.getMessage();
         }
     }
-
 
 }

@@ -23,6 +23,7 @@ public class Clasificacion {
     private int golesAFavor;
     @Column(name = "goles_contra")
     private int golesEnContra;
+    private boolean avance;
 
     // Relación con Torneo (Muchas clasificaciones pertenecen a un torneo)
     @ManyToOne
@@ -40,7 +41,7 @@ public class Clasificacion {
     public Clasificacion() {
     }
 
-    public Clasificacion(Long id, int puntos, int partidosGanados, int partidosPerdidos, int partidosEmpatados, int golesAFavor, int golesEnContra, Torneo torneo, Equipo equipo) {
+    public Clasificacion(Long id, int puntos, int partidosGanados, int partidosPerdidos, int partidosEmpatados, int golesAFavor, int golesEnContra, boolean avance, Torneo torneo, Equipo equipo) {
         this.id = id;
         this.puntos = puntos;
         this.partidosGanados = partidosGanados;
@@ -48,6 +49,7 @@ public class Clasificacion {
         this.partidosEmpatados = partidosEmpatados;
         this.golesAFavor = golesAFavor;
         this.golesEnContra = golesEnContra;
+        this.avance = avance;
         this.torneo = torneo;
         this.equipo = equipo;
     }
@@ -109,6 +111,14 @@ public class Clasificacion {
 
     public void setGolesEnContra(int golesEnContra) {
         this.golesEnContra = golesEnContra;
+    }
+
+    public boolean isAvance() {
+        return avance;
+    }
+
+    public void setAvance(boolean avance) {
+        this.avance = avance;
     }
 
     public Torneo getTorneo() {

@@ -7,50 +7,53 @@ public class PartidoResultadoDTO {
     private int golesLocal;
     @NotNull(message = "Debes ingresar los goles que anotó el equipo visitante")
     private int golesVisitante;
-    private int golesLocalPenales;
-    private int golesVisitantePenales;
-    private String descripcionResultado;
+    private Integer golesLocalPenales;
+    private Integer golesVisitantePenales;
+    private String tipoDesempate;
 
     // Getters and Setters
 
+
+    @NotNull(message = "Debes ingresar los goles que anotó el equipo local")
     public int getGolesLocal() {
         return golesLocal;
     }
 
-    public void setGolesLocal(int golesLocal) {
+    public void setGolesLocal(@NotNull(message = "Debes ingresar los goles que anotó el equipo local") int golesLocal) {
         this.golesLocal = golesLocal;
     }
 
+    @NotNull(message = "Debes ingresar los goles que anotó el equipo visitante")
     public int getGolesVisitante() {
         return golesVisitante;
     }
 
-    public void setGolesVisitante(int golesVisitante) {
+    public void setGolesVisitante(@NotNull(message = "Debes ingresar los goles que anotó el equipo visitante") int golesVisitante) {
         this.golesVisitante = golesVisitante;
     }
 
-    public int getGolesLocalPenales() {
+    public Integer getGolesLocalPenales() {
         return golesLocalPenales;
     }
 
-    public void setGolesLocalPenales(int golesLocalPenales) {
+    public void setGolesLocalPenales(Integer golesLocalPenales) {
         this.golesLocalPenales = golesLocalPenales;
     }
 
-    public int getGolesVisitantePenales() {
+    public Integer getGolesVisitantePenales() {
         return golesVisitantePenales;
     }
 
-    public void setGolesVisitantePenales(int golesVisitantePenales) {
+    public void setGolesVisitantePenales(Integer golesVisitantePenales) {
         this.golesVisitantePenales = golesVisitantePenales;
     }
 
-    public String getDescripcionResultado() {
-        return descripcionResultado;
+    public String getTipoDesempate() {
+        return tipoDesempate;
     }
 
-    public void setDescripcionResultado(String descripcionResultado) {
-        this.descripcionResultado = descripcionResultado;
+    public void setTipoDesempate(String tipoDesempate) {
+        this.tipoDesempate = tipoDesempate;
     }
 }
 
