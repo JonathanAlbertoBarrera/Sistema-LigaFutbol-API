@@ -148,6 +148,8 @@ public class PartidoService {
         // Buscar el partido de ida relacionado con este partido de vuelta
         Partido partidoIda = partidoRepository.findByTorneoAndEquipoLocalAndEquipoVisitanteAndIdaVuelta(partido.getTorneo(), partido.getEquipoVisitante(), partido.getEquipoLocal(), "IDA")
                 .orElseThrow(() -> new NotFoundException("No se encontró el partido de ida para este enfrentamiento"));
+        Partido partidoVuelta=partidoRepository.findById(partido.getId())
+                .orElseThrow(()->new NotFoundException("Partido no encontrado"));
 
         // Sumar los goles del partido de ida y el partido de vuelta
         int golesLocalTotal = partidoIda.getGolesVisitante() + partido.getGolesLocal();
@@ -190,6 +192,12 @@ public class PartidoService {
             if(resultadoDTO.getGolesLocalPenales()==null || resultadoDTO.getGolesVisitantePenales()==null){
                 throw new ValidationException("Debes ingresar los penales que anotó tanto el equipo local como el equipo visitante");
             }
+            if(golesLocalTotal != golesVisitanteTotal){
+                throw new ValidationException("El marcador global no está empatado por lo que no se puede decidir el partido por penales");
+            }
+            partidoVuelta.setGolesLocalPenales(resultadoDTO.getGolesLocalPenales());
+            partidoVuelta.setGolesVisitante(resultadoDTO.getGolesVisitantePenales());
+            partidoRepository.save(partidoVuelta);
             int golesLocalPenales = resultadoDTO.getGolesLocalPenales();
             int golesVisitantePenales = resultadoDTO.getGolesVisitantePenales();
 

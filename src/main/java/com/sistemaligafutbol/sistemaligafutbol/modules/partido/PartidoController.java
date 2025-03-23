@@ -33,7 +33,12 @@ public class PartidoController {
         return ResponseEntity.ok(partidoService.registrarResultado(idPartido, resultadoDTO));
     }
 
-//    @PutMapping("/modificar/{idPartido}")
+    @GetMapping("/arbitro/asignados/{idUsuario}")
+    public ResponseEntity<List<Partido>> finPartidosPorArbitro(@PathVariable Long idUsuario){
+        return ResponseEntity.ok(partidoGetServices.findPartidosPartidosPorArbitro(idUsuario));
+    }
+
+//    @PutMapping("/admin/modificar/{idPartido}")
 //    public ResponseEntity<String> modificarPartido(@PathVariable Long idPartido, @RequestBody PartidoModificarDTO partidoDTO) {
 //        return ResponseEntity.ok(partidoService.modificarPartido(idPartido, partidoDTO));
 //    }

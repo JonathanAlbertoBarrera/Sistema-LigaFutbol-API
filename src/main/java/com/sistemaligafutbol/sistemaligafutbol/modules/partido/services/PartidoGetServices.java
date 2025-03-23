@@ -5,6 +5,10 @@ import com.sistemaligafutbol.sistemaligafutbol.modules.partido.Partido;
 import com.sistemaligafutbol.sistemaligafutbol.modules.partido.PartidoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.Torneo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.torneo.TorneoRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.Usuario;
+import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.UsuarioRepository;
+import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro.Arbitro;
+import com.sistemaligafutbol.sistemaligafutbol.modules.usuario.arbitro.ArbitroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +23,10 @@ public class PartidoGetServices {
     private PartidoRepository partidoRepository;
     @Autowired
     private TorneoRepository torneoRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private ArbitroRepository arbitroRepository;
 
     @Transactional(readOnly = true)
     public List<Partido> getAllPartidos(){
@@ -61,6 +69,15 @@ public class PartidoGetServices {
                 .orElseThrow(() -> new NotFoundException("Torneo no encontrado"));
 
         return partidoRepository.findByTorneoAndJugadoFalseAndEquipoLocalIdOrEquipoVisitanteId(torneo, idEquipo, idEquipo);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Partido> findPartidosPartidosPorArbitro(Long idUsuario){
+        Usuario usuario=usuarioRepository.findById(idUsuario)
+                .orElseThrow(()-> new NotFoundException("Usuario no encontrado"));
+        Arbitro arbitro=arbitroRepository.findByUsuario(usuario)
+                .orElseThrow(()-> new NotFoundException("Arbitro no encontrado"));
+        return partidoRepository.findByArbitro(arbitro);
     }
 
     @Transactional(readOnly = true)

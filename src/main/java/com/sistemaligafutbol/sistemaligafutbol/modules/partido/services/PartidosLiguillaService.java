@@ -96,8 +96,8 @@ public class PartidosLiguillaService {
 
         List<Partido> partidosLiguilla = new ArrayList<>();
         for (int i = 0; i < equiposClasificados.size() / 2; i++) {
-            Equipo local = equiposClasificados.get(i);
-            Equipo visitante = equiposClasificados.get(equiposClasificados.size() - 1 - i);
+            Equipo local = equiposClasificados.get(equiposClasificados.size() - 1 - i);
+            Equipo visitante = equiposClasificados.get(i);
 
             LocalDate finalFechaPartido = fechaPartido;
             Optional<Cancha> canchaDisponible = canchaRepository.findByCampo(local.getCampo()).stream()
@@ -203,8 +203,8 @@ public class PartidosLiguillaService {
 
         List<Partido> finales = new ArrayList<>();
         for (int i = 0; i < equiposGanadores.size() / 2; i++) {
-            Equipo local = equiposGanadores.get(i);
-            Equipo visitante = equiposGanadores.get(equiposGanadores.size() - 1 - i);
+            Equipo local = equiposGanadores.get(equiposGanadores.size() - 1 - i);
+            Equipo visitante = equiposGanadores.get(i);
 
             LocalDate finalFechaPartido = fechaPartido;
             Optional<Cancha> canchaDisponible = canchaRepository.findByCampo(local.getCampo()).stream()
@@ -246,6 +246,10 @@ public class PartidosLiguillaService {
             finalVuelta.setHora(LocalTime.of(8 + (i % 4) * 2 + 1, 0));
             finalVuelta.setIdaVuelta("VUELTA");
             finales.add(finalVuelta);
+            Torneo torneoa=torneoRepository.findById(torneo.getId())
+                    .orElseThrow(()->new NotFoundException("Torneo no encontrado"));
+            torneoa.setFechaFin(fechaPartido.plusWeeks(1));
+            torneoRepository.save(torneoa);
         }
 
         partidoRepository.saveAll(finales);

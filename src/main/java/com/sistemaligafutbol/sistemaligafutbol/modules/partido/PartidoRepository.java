@@ -42,6 +42,5 @@ public interface PartidoRepository extends JpaRepository<Partido,Long> {
     List<Partido> findByTorneoAndEsLiguillaTrue(@Param("torneo") Torneo torneo);
     List<Partido> findByTorneoAndJugadoTrue(Torneo torneo);
     Optional<Partido> findByTorneoAndEquipoLocalAndEquipoVisitanteAndIdaVuelta(Torneo torneo, Equipo equipoLocal, Equipo equipoVisitante, String idaVuelta);
-    @Query("SELECT p FROM Partido p WHERE p.torneo = :torneo AND p.idaVuelta = :idaVuelta AND p.isFinal = false")
-    List<Partido> findByTorneoAndIdaVueltaAndFinalFalse(@Param("torneo") Torneo torneo, @Param("idaVuelta") String idaVuelta);
+    List<Partido> findByArbitro(Arbitro arbitro);
 }

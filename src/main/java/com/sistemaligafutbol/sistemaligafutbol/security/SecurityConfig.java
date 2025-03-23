@@ -103,7 +103,7 @@ public class SecurityConfig {
 
                         //GESTION DE PARTIDOS
                         .requestMatchers(HttpMethod.POST,"/api/partidos/admin/**").hasRole("ADMIN") //SOLO ADMIN puede inciar el torneo (generar partidos)
-                        .requestMatchers(HttpMethod.POST,"/api/partidos/arbitro/**").permitAll() //SOLO ARBITROS pueden registrar resultados de los partidos y demas funciones
+                        .requestMatchers(HttpMethod.POST,"/api/partidos/arbitro/**").hasRole("ARBITRO") //SOLO ARBITROS pueden registrar resultados de los partidos y demas funciones
                         .requestMatchers(HttpMethod.GET,"/api/partidos/todos/**").permitAll() //todos pueden ver los datos de partidos
 
                         //GESTION DE JUGADOR_ESTADISTICA
