@@ -1,6 +1,7 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.cancha;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.sistemaligafutbol.sistemaligafutbol.modules.campo.Campo;
 import jakarta.persistence.*;
 
@@ -22,7 +23,7 @@ public class Cancha {
 
     @ManyToOne
     @JoinColumn(name = "id_campo", nullable = false)
-    @JsonBackReference
+    @JsonIncludeProperties({"nombre","direccion"})
     private Campo campo;
 
     //Constructores

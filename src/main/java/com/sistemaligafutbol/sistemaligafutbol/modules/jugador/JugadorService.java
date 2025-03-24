@@ -149,5 +149,10 @@ public class JugadorService {
         return jugadorRepository.findByEquipo_Id(idEquipo);
     }
 
+    @Transactional(readOnly = true)
+    public List<Jugador> jugadoresActivosyNoExpulsadosPorEquipo(Long idEquipo){
+        return jugadorRepository.findByEquipo_IdAndHabilitadoTrueAndExpulsadoFalse(idEquipo);
+    }
+
 }
 

@@ -1,6 +1,7 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.jugador;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.sistemaligafutbol.sistemaligafutbol.modules.equipo.Equipo;
 import jakarta.persistence.*;
 
@@ -33,7 +34,7 @@ public class Jugador {
     // Relación con Equipo (Muchos jugadores pertenecen a un equipo)
     @ManyToOne
     @JoinColumn(name = "id_equipo", nullable = false)
-    @JsonBackReference
+    @JsonIncludeProperties({"id","nombreEquipo","logo"})
     private Equipo equipo;
 
     //Constructores

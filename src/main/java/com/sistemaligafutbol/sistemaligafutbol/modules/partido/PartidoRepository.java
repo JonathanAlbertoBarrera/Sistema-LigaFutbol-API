@@ -38,11 +38,15 @@ public interface PartidoRepository extends JpaRepository<Partido,Long> {
     Optional<Partido> findTopByJugadoFalseOrderByFechaPartidoAsc();
     @Query("SELECT p FROM Partido p WHERE p.torneo = :torneo AND p.isFinal = true")
     Partido findFinalByTorneo(@Param("torneo") Torneo torneo);
+    @Query("SELECT p FROM Partido p WHERE p.equipoLocal = :equipo OR p.equipoVisitante = :equipo AND p.fechaPartido > :fecha")
+    List<Partido> findByEquipoAndFechaPartidoAfter(@Param("equipo") Equipo equipo, @Param("fecha") LocalDate fecha);
     @Query("SELECT p FROM Partido p WHERE p.torneo = :torneo AND p.torneo.esliguilla = true")
     List<Partido> findByTorneoAndEsLiguillaTrue(@Param("torneo") Torneo torneo);
     List<Partido> findByTorneoAndJugadoTrue(Torneo torneo);
     Optional<Partido> findByTorneoAndEquipoLocalAndEquipoVisitanteAndIdaVuelta(Torneo torneo, Equipo equipoLocal, Equipo equipoVisitante, String idaVuelta);
     List<Partido> findByArbitro(Arbitro arbitro);
+    List<Partido> findByArbitroAndJugadoFalse(Arbitro arbitro);
+    List<Partido> findByArbitroAndJugadoTrue(Arbitro arbitro);
     // Buscar partidos de la cancha en el rango de horas
     @Query("SELECT p FROM Partido p WHERE p.cancha = :cancha AND p.fechaPartido = :fechaPartido " +
             "AND (p.hora BETWEEN :horaInicioRango AND :horaFinRango)")
@@ -59,4 +63,5 @@ public interface PartidoRepository extends JpaRepository<Partido,Long> {
                                                               @Param("fechaPartido") LocalDate fechaPartido,
                                                               @Param("horaInicioRango") LocalTime horaInicioRango,
                                                               @Param("horaFinRango") LocalTime horaFinRango);
+
 }

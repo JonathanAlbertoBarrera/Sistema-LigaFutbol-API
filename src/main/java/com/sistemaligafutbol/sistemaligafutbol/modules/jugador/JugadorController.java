@@ -2,6 +2,7 @@ package com.sistemaligafutbol.sistemaligafutbol.modules.jugador;
 
 
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,11 @@ public class JugadorController {
     @GetMapping("/porEquipo/{idEquipo}")
     public ResponseEntity<List<Jugador>> obtenerJugadoresPorEquipo(@PathVariable Long idEquipo){
         return ResponseEntity.ok(jugadorService.obtenerJugadoresPorEquipo(idEquipo));
+    }
+
+    @GetMapping("/porEquipo/filtrados/{idEquipo}")
+    public ResponseEntity<List<Jugador>> jugadoresActivosyNoExpulsadosPorEquipo(@PathVariable Long idEquipo){
+        return ResponseEntity.ok(jugadorService.jugadoresActivosyNoExpulsadosPorEquipo(idEquipo));
     }
 
     @GetMapping("/credenciales/{idEquipo}/{idTorneo}")

@@ -26,6 +26,7 @@ public interface JugadorRepository extends JpaRepository<Jugador, Long> {
     List<Jugador> findByEquipo(Equipo equipo);
     List<Jugador> findByExpulsadoTrue();
     List<Jugador> findByEquipo_IdAndHabilitadoTrue(Long idEquipo);
+    List<Jugador> findByEquipo_IdAndHabilitadoTrueAndExpulsadoFalse(Long idEquipo);
     // Método para obtener los jugadores de un torneo, usando la relación con `Equipo`
     // Consultar los jugadores de los equipos confirmados en un torneo
     @Query("SELECT j FROM Jugador j WHERE j.equipo IN (" +

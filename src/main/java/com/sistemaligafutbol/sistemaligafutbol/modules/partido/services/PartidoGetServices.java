@@ -81,6 +81,24 @@ public class PartidoGetServices {
     }
 
     @Transactional(readOnly = true)
+    public List<Partido> findPartidosPendientesPorArbitro(Long idUsuario){
+        Usuario usuario=usuarioRepository.findById(idUsuario)
+                .orElseThrow(()-> new NotFoundException("Usuario no encontrado"));
+        Arbitro arbitro=arbitroRepository.findByUsuario(usuario)
+                .orElseThrow(()-> new NotFoundException("Arbitro no encontrado"));
+        return partidoRepository.findByArbitroAndJugadoFalse(arbitro);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Partido> findPartidosListosPorArbitros(Long idUsuario){
+        Usuario usuario=usuarioRepository.findById(idUsuario)
+                .orElseThrow(()-> new NotFoundException("Usuario no encontrado"));
+        Arbitro arbitro=arbitroRepository.findByUsuario(usuario)
+                .orElseThrow(()-> new NotFoundException("Arbitro no encontrado"));
+        return partidoRepository.findByArbitroAndJugadoTrue(arbitro);
+    }
+
+    @Transactional(readOnly = true)
     public LocalDate findFechaPartidoMasProximoPorEquipo(Long idEquipo) {
         return partidoRepository.findTopByJugadoFalseAndEquipoLocalIdOrEquipoVisitanteIdOrderByFechaPartidoAsc(idEquipo, idEquipo)
                 .map(Partido::getFechaPartido)
