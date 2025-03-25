@@ -61,15 +61,18 @@ public class Partido {
     private Integer golesLocalPenales;
     private Integer golesVisitantePenales;
     private boolean isFinal;
+    private String tipoPartido;
     @Column(name="ida_vuelta")
     private String idaVuelta;
     private boolean jugado;
+    private Integer autogolesLocal;
+    private Integer autogolesVisitante;
 
 
     public Partido() {
     }
 
-    public Partido(Long id, Torneo torneo, Equipo equipoLocal, Equipo equipoVisitante, Cancha cancha, Arbitro arbitro, LocalDate fechaPartido, LocalTime hora, int golesLocal, int golesVisitante, String tipoDesempate, Integer golesLocalPenales, Integer golesVisitantePenales, boolean isFinal, String idaVuelta, boolean jugado) {
+    public Partido(Long id, Torneo torneo, Equipo equipoLocal, Equipo equipoVisitante, Cancha cancha, Arbitro arbitro, LocalDate fechaPartido, LocalTime hora, int golesLocal, int golesVisitante, String tipoDesempate, Integer golesLocalPenales, Integer golesVisitantePenales, boolean isFinal, String tipoPartido, String idaVuelta, boolean jugado, Integer autogolesLocal, Integer autogolesVisitante) {
         this.id = id;
         this.torneo = torneo;
         this.equipoLocal = equipoLocal;
@@ -84,8 +87,11 @@ public class Partido {
         this.golesLocalPenales = golesLocalPenales;
         this.golesVisitantePenales = golesVisitantePenales;
         this.isFinal = isFinal;
+        this.tipoPartido = tipoPartido;
         this.idaVuelta = idaVuelta;
         this.jugado = jugado;
+        this.autogolesLocal = autogolesLocal;
+        this.autogolesVisitante = autogolesVisitante;
     }
 
     //Getters and setters
@@ -203,6 +209,14 @@ public class Partido {
         isFinal = aFinal;
     }
 
+    public String getTipoPartido() {
+        return tipoPartido;
+    }
+
+    public void setTipoPartido(String tipoPartido) {
+        this.tipoPartido = tipoPartido;
+    }
+
     public String getIdaVuelta() {
         return idaVuelta;
     }
@@ -217,6 +231,22 @@ public class Partido {
 
     public void setJugado(boolean jugado) {
         this.jugado = jugado;
+    }
+
+    public Integer getAutogolesLocal() {
+        return autogolesLocal;
+    }
+
+    public void setAutogolesLocal(Integer autogolesLocal) {
+        this.autogolesLocal = autogolesLocal;
+    }
+
+    public Integer getAutogolesVisitante() {
+        return autogolesVisitante;
+    }
+
+    public void setAutogolesVisitante(Integer autogolesVisitante) {
+        this.autogolesVisitante = autogolesVisitante;
     }
 }
 

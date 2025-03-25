@@ -124,6 +124,7 @@ public class PartidosLiguillaService {
             partidoIda.setJugado(false);
             partidoIda.setFinal(false);
             partidoIda.setHora(LocalTime.of(8 + (i % 4) * 2, 0));
+            partidoIda.setTipoPartido("LIGUILLA");
             partidoIda.setIdaVuelta("IDA");
             partidosLiguilla.add(partidoIda);
 
@@ -138,6 +139,7 @@ public class PartidosLiguillaService {
             partidoVuelta.setJugado(false);
             partidoVuelta.setFinal(false);
             partidoVuelta.setHora(LocalTime.of(8 + (i % 4) * 2 + 1, 0));
+            partidoVuelta.setTipoPartido("LIGUILLA");
             partidoVuelta.setIdaVuelta("VUELTA");
             partidosLiguilla.add(partidoVuelta);
         }

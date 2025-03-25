@@ -44,6 +44,8 @@ public class PartidoService {
     private ArbitroRepository arbitroRepository;
     @Autowired
     private CanchaRepository canchaRepository;
+    @Autowired
+    private JugadorEstadisticaService jugadorEstadisticaService;
 
     @Transactional
     public String registrarResultado(Long idPartido, PartidoResultadoDTO resultadoDTO) {
@@ -62,6 +64,8 @@ public class PartidoService {
         // Asignar goles de los equipos
         partido.setGolesLocal(resultadoDTO.getGolesLocal());
         partido.setGolesVisitante(resultadoDTO.getGolesVisitante());
+        partido.setAutogolesLocal(resultadoDTO.getAutogolesLocal());
+        partido.setAutogolesVisitante(resultadoDTO.getAutogolesVisitante());
         partido.setJugado(true);
 
         partidoRepository.save(partido);
@@ -105,6 +109,9 @@ public class PartidoService {
             registrarResultadoLiguilla(partido.getId(), resultadoDTO);
         }
 
+        //Registramos estadisticas tanto del equipo local como del visitante
+        jugadorEstadisticaService.registrarEstadisticas(partido.getId(),resultadoDTO.getEstadisticasLocal(),resultadoDTO.getEstadisticasVisitante());
+
         if (partidosLiguillaService.faseTerminada(partido.getTorneo()) && !esFinalDeLiguilla(partido)) {
             partidosLiguillaService.iniciarLiguilla(partido.getTorneo().getId());
         }
@@ -122,6 +129,9 @@ public class PartidoService {
         partido.setJugado(true);
         if(resultadoDTO.getTipoDesempate()!=null && !resultadoDTO.equals("")){
             partido.setTipoDesempate(resultadoDTO.getTipoDesempate());
+            if(partido.getIdaVuelta().equals("IDA")){
+                partido.setTipoDesempate("NORMAL");
+            }
         }
 
         partidoRepository.save(partido);
@@ -208,7 +218,7 @@ public class PartidoService {
                 throw new ValidationException("El marcador global no está empatado por lo que no se puede decidir el partido por penales");
             }
             partidoVuelta.setGolesLocalPenales(resultadoDTO.getGolesLocalPenales());
-            partidoVuelta.setGolesVisitante(resultadoDTO.getGolesVisitantePenales());
+            partidoVuelta.setGolesVisitantePenales(resultadoDTO.getGolesVisitantePenales());
             partidoRepository.save(partidoVuelta);
             int golesLocalPenales = resultadoDTO.getGolesLocalPenales();
             int golesVisitantePenales = resultadoDTO.getGolesVisitantePenales();

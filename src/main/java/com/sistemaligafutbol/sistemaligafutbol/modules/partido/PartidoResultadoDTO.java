@@ -1,6 +1,9 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.partido;
 
+import com.sistemaligafutbol.sistemaligafutbol.modules.jugador_estadistica.JugadorEstadisticaDTO;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
 
 public class PartidoResultadoDTO {
     @NotNull(message = "Debes ingresar los goles que anotó el equipo local")
@@ -10,6 +13,10 @@ public class PartidoResultadoDTO {
     private Integer golesLocalPenales;
     private Integer golesVisitantePenales;
     private String tipoDesempate;
+    private Integer autogolesLocal;
+    private Integer autogolesVisitante;
+    private List<JugadorEstadisticaDTO> estadisticasLocal;
+    private List<JugadorEstadisticaDTO> estadisticasVisitante;
 
     // Getters and Setters
 
@@ -54,6 +61,38 @@ public class PartidoResultadoDTO {
 
     public void setTipoDesempate(String tipoDesempate) {
         this.tipoDesempate = tipoDesempate;
+    }
+
+    public Integer getAutogolesLocal() {
+        return autogolesLocal;
+    }
+
+    public void setAutogolesLocal(Integer autogolesLocal) {
+        this.autogolesLocal = autogolesLocal;
+    }
+
+    public Integer getAutogolesVisitante() {
+        return autogolesVisitante;
+    }
+
+    public void setAutogolesVisitante(Integer autogolesVisitante) {
+        this.autogolesVisitante = autogolesVisitante;
+    }
+
+    public List<JugadorEstadisticaDTO> getEstadisticasLocal() {
+        return estadisticasLocal;
+    }
+
+    public void setEstadisticasLocal(List<JugadorEstadisticaDTO> estadisticasLocal) {
+        this.estadisticasLocal = estadisticasLocal;
+    }
+
+    public List<JugadorEstadisticaDTO> getEstadisticasVisitante() {
+        return estadisticasVisitante;
+    }
+
+    public void setEstadisticasVisitante(List<JugadorEstadisticaDTO> estadisticasVisitante) {
+        this.estadisticasVisitante = estadisticasVisitante;
     }
 }
 

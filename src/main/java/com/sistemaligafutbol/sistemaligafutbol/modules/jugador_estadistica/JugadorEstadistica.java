@@ -1,6 +1,7 @@
 package com.sistemaligafutbol.sistemaligafutbol.modules.jugador_estadistica;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.sistemaligafutbol.sistemaligafutbol.modules.jugador.Jugador;
 import com.sistemaligafutbol.sistemaligafutbol.modules.partido.Partido;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ public class JugadorEstadistica {
     // Relación con Jugador (Muchos registros de estadísticas pertenecen a un jugador)
     @ManyToOne
     @JoinColumn(name = "id_jugador", nullable = false)
-    @JsonBackReference
+    @JsonIncludeProperties({"id","nombreCompleto","fotoJugador"})
     private Jugador jugador;
 
     @ManyToOne

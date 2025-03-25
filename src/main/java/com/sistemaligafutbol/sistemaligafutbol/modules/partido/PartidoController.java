@@ -38,6 +38,16 @@ public class PartidoController {
         return ResponseEntity.ok(partidoGetServices.findPartidosPartidosPorArbitro(idUsuario));
     }
 
+    @GetMapping("/arbitro/pendientes/{idUsuario}")
+    public ResponseEntity<List<Partido>> finPartidosPendientesPorArbitro(@PathVariable Long idUsuario){
+        return ResponseEntity.ok(partidoGetServices.findPartidosPendientesPorArbitro(idUsuario));
+    }
+
+    @GetMapping("/arbitro/listos/{idUsuario}")
+    public ResponseEntity<List<Partido>> finPartidosListosPorArbitro(@PathVariable Long idUsuario){
+        return ResponseEntity.ok(partidoGetServices.findPartidosListosPorArbitros(idUsuario));
+    }
+
     @PutMapping("/admin/modificar/{idPartido}")
     public ResponseEntity<String> modificarPartido(@PathVariable Long idPartido, @RequestBody ModificarPartidoDTO partidoDTO) {
         return ResponseEntity.ok(partidoService.modificarPartido(idPartido, partidoDTO));

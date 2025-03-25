@@ -195,6 +195,7 @@ public class PartidosTorneoRegularService {
                         partido.setArbitro(arbitroDisponible.get());
                         partido.setFechaPartido(fechaAjustada);
                         partido.setHora(LocalTime.of(8 + i * 2, 0));
+                        partido.setTipoPartido("JORNADA REGULAR");
                         partido.setJugado(false);
                         partido.setFinal(false);
                         partidosGenerados.add(partido);

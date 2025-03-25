@@ -10,19 +10,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/jugadorestadisticas")
 public class JugadorEstadisticaController {
-    @Autowired
-    private JugadorEstadisticaService jugadorEstadisticaService;
 
     @Autowired
     private JugadorEstadisticaRepository jugadorEstadisticaRepository;
 
-    @PostMapping("/registrar/{idPartido}")
-    public ResponseEntity<String> registrarEstadisticas(@PathVariable Long idPartido, @RequestBody List<JugadorEstadisticaDTO> estadisticasDTO) {
-        return ResponseEntity.ok(jugadorEstadisticaService.registrarEstadisticas(idPartido, estadisticasDTO));
-    }
+//    @PostMapping("/registrar/{idPartido}")
+//    public ResponseEntity<String> registrarEstadisticas(@PathVariable Long idPartido, @RequestBody List<JugadorEstadisticaDTO> estadisticasDTO) {
+//        return ResponseEntity.ok(jugadorEstadisticaService.registrarEstadisticas(idPartido, estadisticasDTO));
+//    }
 
     @GetMapping("/torneo/{idTorneo}")
-    public List<JugadorEstadistica> obtenerTablaGoleo(@PathVariable Long idTorneo) {
+    public List<ResponseTablaGoleo> obtenerTablaGoleo(@PathVariable Long idTorneo) {
         return jugadorEstadisticaRepository.findByPartido_Torneo_IdOrderByGolesDesc(idTorneo);
     }
 
