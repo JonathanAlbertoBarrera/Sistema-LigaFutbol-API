@@ -73,8 +73,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/equipos/**").permitAll() //TODOS podran ver los equipos
 
                         //GESTION DE JUGADORES
-                        .requestMatchers(HttpMethod.POST, "/api/jugadores").hasRole("DUENO") //SOLO DUENOS PUEDEN REGISTRAR JUGADORES
-                        .requestMatchers(HttpMethod.PUT,"/api/jugadores/").hasRole("DUENO") //SOLO DUENOS PUEDEN MODIFICAR/desactivar A SUS JUGADORES
+                        .requestMatchers(HttpMethod.POST, "/api/jugadores/**").hasRole("DUENO") //SOLO DUENOS PUEDEN REGISTRAR JUGADORES
+                        .requestMatchers(HttpMethod.PUT,"/api/jugadores/**").hasRole("DUENO") //SOLO DUENOS PUEDEN MODIFICAR/desactivar A SUS JUGADORES
                         .requestMatchers(HttpMethod.GET,"/api/jugadores/**").permitAll() // todos necesitarian ver el listado de jugadores
                         .requestMatchers(HttpMethod.GET,"/api/jugadores/credenciales/{idEquipo}/{idTorneo}").permitAll() //tanto ADMIN COMO DUENO PUEDEN DESCARGAR LAS CREDENCIALES POR EQUIPO
 
