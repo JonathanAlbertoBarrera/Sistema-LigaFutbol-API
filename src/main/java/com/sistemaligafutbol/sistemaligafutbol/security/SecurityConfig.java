@@ -79,7 +79,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/jugadores/credenciales/{idEquipo}/{idTorneo}").permitAll() //tanto ADMIN COMO DUENO PUEDEN DESCARGAR LAS CREDENCIALES POR EQUIPO
 
                         //GESTION DE TORNEOS
-                        .requestMatchers(HttpMethod.POST, "/api/torneos").hasRole("ADMIN") // Solo ADMIN puede REGISTRAR torneos
+                        .requestMatchers(HttpMethod.POST, "/api/torneos/**").hasRole("ADMIN") // Solo ADMIN puede REGISTRAR torneos
                         .requestMatchers(HttpMethod.GET,"/api/torneos/**").permitAll() //Todos pueden obtener la info de los torneos
                         .requestMatchers(HttpMethod.PUT,"/api/torneos/**").hasRole("ADMIN") //solo ADMIN puede modificar torneos
                         .requestMatchers(HttpMethod.PATCH, "/api/torneos/{id}/cancelar").hasRole("ADMIN")//solo ADMIN puede cancelar torneos
