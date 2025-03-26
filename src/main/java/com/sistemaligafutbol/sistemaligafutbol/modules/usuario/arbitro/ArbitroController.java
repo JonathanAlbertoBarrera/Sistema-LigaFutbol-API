@@ -68,7 +68,7 @@ public class ArbitroController {
         return ResponseEntity.ok(arbitroService.actualizarArbitro(id,arbitroActualizarDTO,imagen));
     }
 
-    @PutMapping("/actualizar/movil{id}")
+    @PutMapping("/actualizar/movil/{id}")
     public ResponseEntity<Arbitro> actualizarArbitroMovil(@PathVariable Long id, @RequestBody @Valid ArbitroUpdateRequest request) {
 
         // 1. Crear DTO de actualización

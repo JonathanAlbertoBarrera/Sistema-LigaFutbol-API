@@ -13,6 +13,12 @@ public class DuenoActualizarDTO {
 
     private String password;
 
+    public DuenoActualizarDTO(String email, String nombreCompleto, String password) {
+        this.email = email;
+        this.nombreCompleto = nombreCompleto;
+        this.password = password;
+    }
+
     // Getters y Setters
 
     public @NotBlank(message = "El email no puede estar vacío") @Email(message = "El email no es válido") String getEmail() {

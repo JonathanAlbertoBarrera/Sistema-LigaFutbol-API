@@ -15,6 +15,12 @@ public class DuenoRegistroDTO {
     @NotBlank
     private String nombreCompleto;
 
+    public DuenoRegistroDTO(String email, String password, String nombreCompleto) {
+        this.email = email;
+        this.password = password;
+        this.nombreCompleto = nombreCompleto;
+    }
+
     // Getters y Setters
 
     public @NotBlank @Email String getEmail() {
