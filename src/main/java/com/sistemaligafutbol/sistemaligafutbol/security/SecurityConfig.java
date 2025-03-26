@@ -68,8 +68,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/canchas/{id}").permitAll()//TODOS Pueden ver alguna cancha en especifico, por ejemplo al ver datos de un partido
 
                         //GESTION DE EQUIPOS
-                        .requestMatchers(HttpMethod.POST,"/api/equipos").hasRole("DUENO") //SOLO DUENOS pueden crear equipos
-                        .requestMatchers(HttpMethod.PUT,"/api/equipos").hasRole("DUENO")  //SOLO DUENOS pueden modificar a su equipo
+                        .requestMatchers(HttpMethod.POST,"/api/equipos/**").hasRole("DUENO") //SOLO DUENOS pueden crear equipos
+                        .requestMatchers(HttpMethod.PUT,"/api/equipos/**").hasRole("DUENO")  //SOLO DUENOS pueden modificar a su equipo
                         .requestMatchers(HttpMethod.GET,"/api/equipos/**").permitAll() //TODOS podran ver los equipos
 
                         //GESTION DE JUGADORES
