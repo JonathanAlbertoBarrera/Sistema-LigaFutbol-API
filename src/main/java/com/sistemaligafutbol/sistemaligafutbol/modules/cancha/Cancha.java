@@ -23,7 +23,7 @@ public class Cancha {
 
     @ManyToOne
     @JoinColumn(name = "id_campo", nullable = false)
-    @JsonIncludeProperties({"nombre","direccion"})
+    @JsonIncludeProperties({"nombre","direccion","latitud","longitud"})
     private Campo campo;
 
     //Constructores
