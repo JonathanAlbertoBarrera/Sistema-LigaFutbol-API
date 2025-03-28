@@ -249,7 +249,7 @@ public class DataInitializer {
         if (equipoRepository.count() == 0) {
             // Mapa de nombres de equipos con sus URLs de Clearbit
             Map<String, String> imagenesEquipos = Map.of(
-                    "Barcelona", "https://logo.clearbit.com/fcbarcelona.com",
+                    "Barcelona", "https://upload.wikimedia.org/wikipedia/en/thumb/4/47/FC_Barcelona_%28crest%29.svg/1200px-FC_Barcelona_%28crest%29.svg.png",
                     "Real Madrid", "https://logo.clearbit.com/realmadrid.com",
                     "Manchester United", "https://logo.clearbit.com/manutd.com",
                     "Juventus", "https://logo.clearbit.com/juventus.com",
@@ -295,19 +295,19 @@ public class DataInitializer {
 
                 // Determinar la categoría del equipo
                 String nombreEquipo = equipo.getNombreEquipo();
-                String categoria = nombreEquipo.substring(nombreEquipo.lastIndexOf(" ") + 1);
+                String categoria = nombreEquipo.substring(nombreEquipo.lastIndexOf(" ") + 1); // Obtiene la última parte del nombre (Sub-12, Sub-15, etc.)
 
                 // Calcular la fecha de nacimiento según la categoría
                 LocalDate fechaNacimientoBase;
                 switch (categoria) {
                     case "Sub-12":
-                        fechaNacimientoBase = LocalDate.now().minusYears(12);
+                        fechaNacimientoBase = LocalDate.now().minusYears(12); // Jugadores menores de 12 años
                         break;
                     case "Sub-15":
-                        fechaNacimientoBase = LocalDate.now().minusYears(15);
+                        fechaNacimientoBase = LocalDate.now().minusYears(15); // Jugadores menores de 15 años
                         break;
                     case "Sub-17":
-                        fechaNacimientoBase = LocalDate.now().minusYears(17);
+                        fechaNacimientoBase = LocalDate.now().minusYears(17); // Jugadores menores de 17 años
                         break;
                     default:
                         throw new IllegalArgumentException("Categoría no válida: " + categoria);
@@ -317,16 +317,11 @@ public class DataInitializer {
                     Jugador jugador = new Jugador();
                     jugador.setNombreCompleto("Jugador " + i + " - " + equipo.getNombreEquipo());
 
-                    // Fecha de nacimiento aleatoria
-                    LocalDate fechaNacimiento = fechaNacimientoBase.minusDays((long) (Math.random() * 365));
+                    // Fecha de nacimiento aleatoria dentro del rango de la categoría
+                    LocalDate fechaNacimiento = fechaNacimientoBase.minusDays((long) (Math.random() * 365)); // +/- 1 año
                     jugador.setFechaNacimiento(fechaNacimiento);
 
-                    // Imagen única para cada jugador usando servicio de avatares aleatorios
-                    String imagenJugador = "https://robohash.org/" +
-                            UUID.randomUUID().toString() +
-                            "?set=set4&size=200x200";
-                    jugador.setFotoJugador(imagenJugador);
-
+                    jugador.setFotoJugador(IMAGEN_JUGADOR);
                     jugador.setNumeroCamiseta(i);
                     jugador.setPartidosJugados(0);
                     jugador.setHabilitado(true);
