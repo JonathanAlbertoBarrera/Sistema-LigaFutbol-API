@@ -161,9 +161,9 @@ public class DataInitializer {
 
     private void inicializarTorneos() {
         // Torneo finalizado (Sub-12)
-        if (torneoRepository.findByNombreTorneo("Torneo Sub-12 Finalizado").isEmpty()) {
+        if (torneoRepository.findByNombreTorneo("Torneo Sub-12").isEmpty()) {
             Torneo torneoFinalizado = new Torneo();
-            torneoFinalizado.setNombreTorneo("Torneo Sub-12 Finalizado");
+            torneoFinalizado.setNombreTorneo("Torneo Sub-12");
             torneoFinalizado.setDescripcion("Torneo para menores de 12 años.");
             torneoFinalizado.setFechaInicio(LocalDate.now().minusMonths(3));
             torneoFinalizado.setFechaFin(LocalDate.now().minusWeeks(1));
@@ -180,37 +180,17 @@ public class DataInitializer {
             torneoRepository.save(torneoFinalizado);
         }
 
-        // Torneo en juego (Sub-15)
-        if (torneoRepository.findByNombreTorneo("Torneo Sub-15 En Juego").isEmpty()) {
-            Torneo torneoEnJuego = new Torneo();
-            torneoEnJuego.setNombreTorneo("Torneo Sub-15 En Juego");
-            torneoEnJuego.setDescripcion("Torneo para menores de 15 años.");
-            torneoEnJuego.setFechaInicio(LocalDate.now().minusWeeks(6));
-            torneoEnJuego.setFechaFin(LocalDate.now().plusWeeks(1));
-            torneoEnJuego.setMaxEquipos(8);
-            torneoEnJuego.setMinEquipos(4);
-            torneoEnJuego.setEquiposLiguilla(4);
-            torneoEnJuego.setVueltas(1);
-            torneoEnJuego.setLogoTorneo(IMAGEN_TORNEO);
-            torneoEnJuego.setPremio("5000 pesos por equipo + medallas");
-            torneoEnJuego.setEstatusLlenado(true);
-            torneoEnJuego.setIniciado(true);
-            torneoEnJuego.setEsliguilla(true);
-            torneoEnJuego.setEstatusTorneo(true);
-            torneoRepository.save(torneoEnJuego);
-        }
-
         // Torneo en espera (Sub-17)
-        if (torneoRepository.findByNombreTorneo("Torneo Sub-17 En Espera").isEmpty()) {
+        if (torneoRepository.findByNombreTorneo("Torneo Sub-17").isEmpty()) {
             Torneo torneoEnEspera = new Torneo();
-            torneoEnEspera.setNombreTorneo("Torneo Sub-17 En Espera");
+            torneoEnEspera.setNombreTorneo("Torneo Sub-17");
             torneoEnEspera.setDescripcion("Torneo para menores de 17 años.");
             torneoEnEspera.setFechaInicio(LocalDate.now().plusWeeks(2));
             torneoEnEspera.setFechaFin(LocalDate.now().plusMonths(3));
             torneoEnEspera.setMaxEquipos(6);
             torneoEnEspera.setMinEquipos(4);
             torneoEnEspera.setEquiposLiguilla(4);
-            torneoEnEspera.setVueltas(2);
+            torneoEnEspera.setVueltas(1);
             torneoEnEspera.setLogoTorneo(IMAGEN_TORNEO);
             torneoEnEspera.setPremio("15,000 pesos para el equipo + medallas individuales");
             torneoEnEspera.setEstatusLlenado(false);
@@ -227,8 +207,8 @@ public class DataInitializer {
             Campo campoGalaxy = new Campo();
             campoGalaxy.setNombre("Campo Galaxy");
             campoGalaxy.setDireccion("Col. Temixco Centro, Calle 22");
-            campoGalaxy.setLatitud(18.8525);
-            campoGalaxy.setLongitud(-99.2314);
+            campoGalaxy.setLatitud(18.841568);
+            campoGalaxy.setLongitud(-99.228491);
             campoGalaxy.setEstatusCampo(true);
             campoRepository.save(campoGalaxy);
 
@@ -267,8 +247,17 @@ public class DataInitializer {
 
     private void inicializarEquipos() {
         if (equipoRepository.count() == 0) {
-            // Lista de nombres de equipos famosos
-            String[] nombresEquipos = {"Barcelona", "Real Madrid", "Manchester United", "Juventus", "Bayern Munich", "Paris Saint-Germain", "Chelsea", "Liverpool"};
+            // Mapa de nombres de equipos con sus URLs de Clearbit
+            Map<String, String> imagenesEquipos = Map.of(
+                    "Barcelona", "https://logo.clearbit.com/fcbarcelona.com",
+                    "Real Madrid", "https://logo.clearbit.com/realmadrid.com",
+                    "Manchester United", "https://logo.clearbit.com/manutd.com",
+                    "Juventus", "https://logo.clearbit.com/juventus.com",
+                    "Bayern Munich", "https://logo.clearbit.com/fcbayern.com",
+                    "Paris Saint-Germain", "https://logo.clearbit.com/psg.fr",
+                    "Chelsea", "https://logo.clearbit.com/chelseafc.com",
+                    "Liverpool", "https://logo.clearbit.com/liverpoolfc.com"
+            );
 
             // Campo
             Campo campoGalaxy = campoRepository.findById(1L)
@@ -279,12 +268,16 @@ public class DataInitializer {
                 Dueno dueno = duenoRepository.findById((long) i)
                         .orElseThrow(() -> new RuntimeException("Dueño no encontrado"));
 
-                // Cada dueño tiene 2 o 3 equipos en diferentes categorías
+                // Obtener el nombre del equipo correspondiente al índice
+                String nombreEquipoBase = imagenesEquipos.keySet().toArray(new String[0])[i - 1];
+                String logoUrl = imagenesEquipos.get(nombreEquipoBase);
+
+                // Cada dueño tiene equipos en diferentes categorías
                 for (int j = 0; j < 3; j++) {
                     String categoria = j == 0 ? "Sub-12" : (j == 1 ? "Sub-15" : "Sub-17");
                     Equipo equipo = new Equipo();
-                    equipo.setNombreEquipo(nombresEquipos[i - 1] + " " + categoria);
-                    equipo.setLogo(IMAGEN_EQUIPO);
+                    equipo.setNombreEquipo(nombreEquipoBase + " " + categoria);
+                    equipo.setLogo(logoUrl);
                     equipo.setDueno(dueno);
                     equipo.setCampo(campoGalaxy);
                     equipoRepository.save(equipo);
@@ -302,19 +295,19 @@ public class DataInitializer {
 
                 // Determinar la categoría del equipo
                 String nombreEquipo = equipo.getNombreEquipo();
-                String categoria = nombreEquipo.substring(nombreEquipo.lastIndexOf(" ") + 1); // Obtiene la última parte del nombre (Sub-12, Sub-15, etc.)
+                String categoria = nombreEquipo.substring(nombreEquipo.lastIndexOf(" ") + 1);
 
                 // Calcular la fecha de nacimiento según la categoría
                 LocalDate fechaNacimientoBase;
                 switch (categoria) {
                     case "Sub-12":
-                        fechaNacimientoBase = LocalDate.now().minusYears(12); // Jugadores menores de 12 años
+                        fechaNacimientoBase = LocalDate.now().minusYears(12);
                         break;
                     case "Sub-15":
-                        fechaNacimientoBase = LocalDate.now().minusYears(15); // Jugadores menores de 15 años
+                        fechaNacimientoBase = LocalDate.now().minusYears(15);
                         break;
                     case "Sub-17":
-                        fechaNacimientoBase = LocalDate.now().minusYears(17); // Jugadores menores de 17 años
+                        fechaNacimientoBase = LocalDate.now().minusYears(17);
                         break;
                     default:
                         throw new IllegalArgumentException("Categoría no válida: " + categoria);
@@ -324,11 +317,16 @@ public class DataInitializer {
                     Jugador jugador = new Jugador();
                     jugador.setNombreCompleto("Jugador " + i + " - " + equipo.getNombreEquipo());
 
-                    // Fecha de nacimiento aleatoria dentro del rango de la categoría
-                    LocalDate fechaNacimiento = fechaNacimientoBase.minusDays((long) (Math.random() * 365)); // +/- 1 año
+                    // Fecha de nacimiento aleatoria
+                    LocalDate fechaNacimiento = fechaNacimientoBase.minusDays((long) (Math.random() * 365));
                     jugador.setFechaNacimiento(fechaNacimiento);
 
-                    jugador.setFotoJugador(IMAGEN_JUGADOR);
+                    // Imagen única para cada jugador usando servicio de avatares aleatorios
+                    String imagenJugador = "https://robohash.org/" +
+                            UUID.randomUUID().toString() +
+                            "?set=set4&size=200x200";
+                    jugador.setFotoJugador(imagenJugador);
+
                     jugador.setNumeroCamiseta(i);
                     jugador.setPartidosJugados(0);
                     jugador.setHabilitado(true);
