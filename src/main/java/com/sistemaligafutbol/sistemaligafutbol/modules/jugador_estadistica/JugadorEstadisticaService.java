@@ -64,7 +64,7 @@ public class JugadorEstadisticaService {
 
             // Verificar si el jugador ha jugado al menos 3 partidos para poder registrar estadísticas en liguilla
             if (partido.getTorneo().isEsliguilla() && jugador.getPartidosJugados() < 3) {
-                throw new ValidationException("El jugador no ha jugado al menos 3 partidos en jornada regular, por ello no es posible registrarle estadísticas en liguilla.");
+                throw new ValidationException("El jugador "+jugador.getNombreCompleto()+ "no ha jugado al menos 3 partidos en jornada regular, por ello no es posible registrarle estadísticas en liguilla.");
             }
 
             // Registrar la estadística

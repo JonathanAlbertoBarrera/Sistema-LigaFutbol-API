@@ -120,17 +120,18 @@ public class PartidosTorneoRegularService {
         int totalEquipos = equipos.size();
         int totalJornadas = totalEquipos - 1;
         int vueltas = torneo.getVueltas();
-        LocalDate fechaPartido = torneo.getFechaInicio();
+
+        // FORZAR fecha inicial domingo
+        LocalDate fechaPartido = torneo.getFechaInicio().with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
 
         List<Equipo> rotacion = new ArrayList<>(equipos);
-        Equipo fijo = rotacion.remove(0); // El primer equipo se mantiene fijo en el round-robin
-
+        Equipo fijo = rotacion.remove(0);
         List<Partido> partidosGenerados = new ArrayList<>();
 
         try {
             for (int vuelta = 0; vuelta < vueltas; vuelta++) {
                 for (int jornada = 0; jornada < totalJornadas; jornada++) {
-                    List<Equipo> rotacionActual = new ArrayList<>(rotacion); // Copia para evitar modificaciones en la lambda
+                    List<Equipo> rotacionActual = new ArrayList<>(rotacion);
 
                     for (int i = 0; i < totalEquipos / 2; i++) {
                         final Equipo equipoA, equipoB;
@@ -143,7 +144,6 @@ public class PartidosTorneoRegularService {
                             equipoB = rotacionActual.get(totalEquipos - 2 - i);
                         }
 
-                        // Alternancia en la segunda vuelta
                         final Equipo local, visitante;
                         if ((vuelta % 2 == 0 && jornada % 2 == 0) || (vuelta % 2 == 1 && jornada % 2 == 1)) {
                             local = equipoA;
@@ -153,58 +153,58 @@ public class PartidosTorneoRegularService {
                             visitante = equipoA;
                         }
 
-                        final LocalDate fechaJuego = fechaPartido;
-
-                        // Buscar cancha disponible
-                        Optional<Cancha> canchaDisponible = canchaRepository.findByCampo(local.getCampo()).stream()
-                                .filter(c -> c.isEstatusCancha())
-                                .filter(c -> partidoRepository.findByCanchaAndFechaPartido(c, fechaJuego).isEmpty())
+                        // 1. Intento OBLIGATORIO con DOMINGO
+                        LocalDate finalFechaPartido = fechaPartido;
+                        int finalI1 = i;
+                        Optional<Cancha> canchaDomingo = canchaRepository.findByCampo(local.getCampo()).stream()
+                                .filter(Cancha::isEstatusCancha)
+                                .filter(c -> {
+                                    List<Partido> partidos = partidoRepository.findByCanchaAndFechaPartido(c, finalFechaPartido);
+                                    return partidos.isEmpty() ||
+                                            partidos.stream().noneMatch(p -> p.getHora().equals(LocalTime.of(8 + finalI1 * 2, 0)));
+                                })
                                 .findFirst();
 
-                        // Buscar árbitro activo y disponible
-                        Optional<Arbitro> arbitroDisponible = arbitroRepository.findAll().stream()
-                                .filter(a -> a.getUsuario().isEstatus()) // Solo árbitros activos
-                                .filter(a -> partidoRepository.findByArbitroAndFechaPartido(a, fechaJuego).isEmpty()) // Solo árbitros sin partido ese día
+                        LocalDate finalFechaPartido1 = fechaPartido;
+                        int finalI = i;
+                        Optional<Arbitro> arbitroDomingo = arbitroRepository.findAll().stream()
+                                .filter(a -> a.getUsuario().isEstatus())
+                                .filter(a -> {
+                                    List<Partido> partidos = partidoRepository.findByArbitroAndFechaPartido(a, finalFechaPartido1);
+                                    return partidos.isEmpty() ||
+                                            partidos.stream().noneMatch(p -> p.getHora().equals(LocalTime.of(8 + finalI * 2, 0)));
+                                })
                                 .findFirst();
 
-                        // Si no hay disponibilidad en domingo, probar en sábado
-                        final LocalDate fechaAjustada = canchaDisponible.isEmpty() || arbitroDisponible.isEmpty()
-                                ? fechaJuego.minusDays(1) // Intentar el sábado
-                                : fechaJuego;
-
-                        if (canchaDisponible.isEmpty() || arbitroDisponible.isEmpty()) {
-                            canchaDisponible = canchaRepository.findByCampo(local.getCampo()).stream()
-                                    .filter(c -> partidoRepository.findByCanchaAndFechaPartido(c, fechaAjustada).isEmpty())
-                                    .findFirst();
-                            arbitroDisponible = arbitroRepository.findAll().stream()
-                                    .filter(a -> partidoRepository.findByArbitroAndFechaPartido(a, fechaAjustada).isEmpty())
-                                    .findFirst();
+                        // Verificación EXTRA de disponibilidad
+                        if (canchaDomingo.isEmpty()) {
+                            System.out.println("No hay cancha disponible para " + local.getNombreEquipo() + " el domingo " + fechaPartido);
+                        }
+                        if (arbitroDomingo.isEmpty()) {
+                            System.out.println("No hay árbitro disponible para " + local.getNombreEquipo() + " el domingo " + fechaPartido);
                         }
 
-                        // Si sigue sin haber disponibilidad, no se pueden generar los partidos
-                        if (canchaDisponible.isEmpty() || arbitroDisponible.isEmpty()) {
-                            return "No hay suficientes recursos para generar los partidos.";
+                        // SIEMPRE crear en domingo (fallar si no hay recursos)
+                        if (canchaDomingo.isEmpty() || arbitroDomingo.isEmpty()) {
+                            return "No hay recursos suficientes para generar los partidos el domingo " + fechaPartido;
                         }
 
-                        // Crear partido
                         Partido partido = new Partido();
                         partido.setTorneo(torneo);
                         partido.setEquipoLocal(local);
                         partido.setEquipoVisitante(visitante);
-                        partido.setCancha(canchaDisponible.get());
-                        partido.setArbitro(arbitroDisponible.get());
-                        partido.setFechaPartido(fechaAjustada);
+                        partido.setCancha(canchaDomingo.get());
+                        partido.setArbitro(arbitroDomingo.get());
+                        partido.setFechaPartido(fechaPartido); // DOMINGO OBLIGATORIO
                         partido.setHora(LocalTime.of(8 + i * 2, 0));
                         partido.setTipoPartido("JORNADA REGULAR");
                         partido.setJugado(false);
                         partido.setFinal(false);
                         partidosGenerados.add(partido);
-                        pagoService.generarPagoPorPartido(partido);
                     }
 
-                    // Rotar la lista de equipos para el siguiente enfrentamiento
                     Collections.rotate(rotacion, 1);
-                    fechaPartido = fechaPartido.plusWeeks(1);
+                    fechaPartido = fechaPartido.plusWeeks(1); // Siguiente domingo
                 }
             }
 
