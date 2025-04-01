@@ -233,6 +233,7 @@ public class PartidosLiguillaService {
             finalIda.setJugado(false);
             finalIda.setFinal(true);
             finalIda.setHora(LocalTime.of(8 + (i % 4) * 2, 0));
+            finalIda.setTipoPartido("LIGUILLA");
             finalIda.setIdaVuelta("IDA");
             finales.add(finalIda);
 
@@ -244,6 +245,7 @@ public class PartidosLiguillaService {
             finalVuelta.setArbitro(arbitroDisponible.get());
             finalVuelta.setFechaPartido(fechaPartido.plusWeeks(1));
             finalVuelta.setJugado(false);
+            finalIda.setTipoPartido("LIGUILLA");
             finalVuelta.setFinal(true);
             finalVuelta.setHora(LocalTime.of(8 + (i % 4) * 2 + 1, 0));
             finalVuelta.setIdaVuelta("VUELTA");

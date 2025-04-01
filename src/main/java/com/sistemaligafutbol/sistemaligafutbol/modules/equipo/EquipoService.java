@@ -2,6 +2,7 @@ package com.sistemaligafutbol.sistemaligafutbol.modules.equipo;
 
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ImageValidationException;
 import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.NotFoundException;
+import com.sistemaligafutbol.sistemaligafutbol.exceptions.exception.ValidationException;
 import com.sistemaligafutbol.sistemaligafutbol.modules.campo.Campo;
 import com.sistemaligafutbol.sistemaligafutbol.modules.campo.CampoRepository;
 import com.sistemaligafutbol.sistemaligafutbol.modules.imagen.GoogleDriveService;
@@ -49,6 +50,10 @@ public class EquipoService {
                     .orElseThrow(() -> new NotFoundException("Dueño no encontrado"));
             Campo campo = campoRepository.findById(equipoDTO.getIdCampo())
                     .orElseThrow(() -> new NotFoundException("Campo no encontrado"));
+
+            if(equipoRepository.findByNombreEquipo(equipoDTO.getNombreEquipo()).isPresent()) {
+                throw new ValidationException("Ya se registró a un equipo con ese nombre");
+            }
 
             Equipo equipo = new Equipo();
             equipo.setNombreEquipo(equipoDTO.getNombreEquipo());
